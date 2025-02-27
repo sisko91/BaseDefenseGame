@@ -42,12 +42,10 @@ public partial class Player : Area2D
         var zoomIncrementVec = new Vector2(zoomIncrement, zoomIncrement);
         if (Input.IsActionJustPressed("camera_zoom_in"))
         {
-            GD.Print("Zoom In: " + Camera.Zoom);
             Camera.Zoom += zoomIncrementVec;
         }
         else if (Input.IsActionJustPressed("camera_zoom_out"))
         {
-            GD.Print("Zoom Out: " + Camera.Zoom);
             Camera.Zoom -= zoomIncrementVec;
         }
         // Enforce min/max zoom.
