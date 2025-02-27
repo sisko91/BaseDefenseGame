@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://dy47gg8c687bv"]
 
-[ext_resource type="Script" path="res://Player.cs" id="1_imx3i"]
+[ext_resource type="Script" path="res://Player/Player.cs" id="1_imx3i"]
 [ext_resource type="Texture2D" uid="uid://doaffvj52e0h1" path="res://art/debug_texture_gradient.tres" id="2_s5van"]
-[ext_resource type="Script" path="res://PlayerCamera.cs" id="3_vrqgk"]
+[ext_resource type="Script" path="res://Player/PlayerCamera.cs" id="3_vrqgk"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_3d41u"]
 radius = 32.0
