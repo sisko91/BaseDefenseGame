@@ -5,11 +5,11 @@
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_tr0n8")
+RegionBounds = Vector2(12288, 12288)
 
 [node name="Background" type="Sprite2D" parent="."]
 texture_repeat = 2
 texture = ExtResource("2_oe38f")
-offset = Vector2(-1024, -1024)
 region_enabled = true
-region_rect = Rect2(0, 0, 12288, 12288)
+region_rect = Rect2(0, 0, 6144, 6144)
 region_filter_clip_enabled = true
