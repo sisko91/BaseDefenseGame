@@ -10,9 +10,8 @@ public partial class WeaponRing : Node2D
 	[Export]
 	public float AttachmentRadius = 50.0f;
 
-	// Temporary cached reference to the equipped weapon.
-	// TODO: Make this a real Weapon type.
-	private Node2D equippedWeapon;
+	// Cached reference to the currently equipped weapon.
+	private Weapon equippedWeapon;
 
     // The current angle (radians) that the equipped weapon is being aimed in.
     // Aim angle for the weapon ring is wherever the ring's Node2D location is relative to its parent. If for some reason the parent doesn't have a position then we assume the rotation of the ring directs the aim.
@@ -35,11 +34,21 @@ public partial class WeaponRing : Node2D
         }
 	}
 	private float _aimAngle;
+
+	public void Equip(Weapon weapon)
+	{
+		if(equippedWeapon != null)
+		{
+			RemoveChild(equippedWeapon);
+		}
+
+		equippedWeapon = weapon;
+		AddChild(weapon);
+	}
     
 	// Called when the node enters the scene tree for the first time.
     public override void _Ready()
 	{
-		equippedWeapon = GetNode<Node2D>("debugWeapon");
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.

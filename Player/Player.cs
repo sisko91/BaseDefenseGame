@@ -7,6 +7,10 @@ public partial class Player : CharacterBody2D
     [Export]
     public float MovementSpeed = 400.0f;
 
+    // The default / starter weapon that the player always spawns with. May be null.
+    [Export]
+    public PackedScene StarterWeaponTemplate = null;
+
     // Cached camera reference from the player.tscn.
     public PlayerCamera Camera { get; private set; }
 
@@ -18,6 +22,12 @@ public partial class Player : CharacterBody2D
     {
         Camera = GetNode<PlayerCamera>("Camera2D");
         WeaponRing = GetNode<WeaponRing>("WeaponRing");
+
+        if(StarterWeaponTemplate != null)
+        {
+            var starterWeapon = StarterWeaponTemplate.Instantiate<Weapon>();
+            WeaponRing.Equip(starterWeapon);
+        }
     }
 
     // Called every tick of the physics thread.
