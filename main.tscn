@@ -1,6 +1,12 @@
-[gd_scene load_steps=2 format=3 uid="uid://fsemlkislawf"]
+[gd_scene load_steps=4 format=3 uid="uid://fsemlkislawf"]
 
 [ext_resource type="Script" path="res://Main.cs" id="1_yq6fc"]
+[ext_resource type="PackedScene" uid="uid://bapcmf72ww8v3" path="res://world.tscn" id="2_f1mpy"]
+[ext_resource type="PackedScene" uid="uid://h8frpggagysk" path="res://hud.tscn" id="3_ipp5o"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_yq6fc")
+
+[node name="World" parent="." instance=ExtResource("2_f1mpy")]
+
+[node name="Hud" parent="." instance=ExtResource("3_ipp5o")]
