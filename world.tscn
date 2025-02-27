@@ -1,6 +1,15 @@
-[gd_scene load_steps=2 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=3 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" path="res://World.cs" id="1_tr0n8"]
+[ext_resource type="Texture2D" uid="uid://dlqr00qrgup3j" path="res://art/debug_texture_ground.png" id="2_oe38f"]
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_tr0n8")
+
+[node name="Background" type="Sprite2D" parent="."]
+texture_repeat = 2
+texture = ExtResource("2_oe38f")
+offset = Vector2(-1024, -1024)
+region_enabled = true
+region_rect = Rect2(0, 0, 12288, 12288)
+region_filter_clip_enabled = true
