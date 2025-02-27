@@ -10,16 +10,26 @@ public partial class Player : CharacterBody2D
     // Cached camera reference from the player.tscn.
     public PlayerCamera Camera { get; private set; }
 
+    // Cached weapon ring reference from the player.tscn.
+    public WeaponRing WeaponRing { get; private set; }
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         Camera = GetNode<PlayerCamera>("Camera2D");
+        WeaponRing = GetNode<WeaponRing>("WeaponRing");
     }
 
     // Called every tick of the physics thread.
     public override void _PhysicsProcess(double delta)
     {
         HandleMovement(delta);
+    }
+
+    // Called every rendered frame.
+    public override void _Process(double delta)
+    {
+        HandleAim(delta);
     }
 
     private void HandleMovement(double delta)
@@ -34,6 +44,14 @@ public partial class Player : CharacterBody2D
         {
             HandleCollision(collision);
         }
+    }
+
+    private void HandleAim(double delta)
+    {
+        Vector2 mousePosition = GetGlobalMousePosition();
+        float mouseAim = (GetGlobalMousePosition() - GlobalPosition).Angle();
+
+        WeaponRing.AimAngle = mouseAim;
     }
 
     private void HandleCollision(KinematicCollision2D collision)

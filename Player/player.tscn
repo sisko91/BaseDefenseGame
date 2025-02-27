@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://dy47gg8c687bv"]
+[gd_scene load_steps=6 format=3 uid="uid://dy47gg8c687bv"]
 
 [ext_resource type="Script" path="res://Player/Player.cs" id="1_imx3i"]
 [ext_resource type="Texture2D" uid="uid://doaffvj52e0h1" path="res://art/debug_texture_gradient.tres" id="2_s5van"]
 [ext_resource type="Script" path="res://Player/PlayerCamera.cs" id="3_vrqgk"]
+[ext_resource type="Script" path="res://Player/WeaponRing.cs" id="4_q66cr"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_3d41u"]
 radius = 32.0
@@ -19,3 +20,11 @@ script = ExtResource("3_vrqgk")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_3d41u")
+
+[node name="WeaponRing" type="Node2D" parent="."]
+script = ExtResource("4_q66cr")
+AttachmentRadius = 80.0
+
+[node name="debugWeapon" type="Sprite2D" parent="WeaponRing"]
+scale = Vector2(0.5, 0.2)
+texture = ExtResource("2_s5van")
