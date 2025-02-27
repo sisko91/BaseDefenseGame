@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class Player : Area2D
+public partial class Player : CharacterBody2D
 {
     // How fast the camera should zoom in or out. At 1.0, the camera zooms by a factor of 100% per /second/ of continuous zoom input.
     [Export]
@@ -15,6 +15,10 @@ public partial class Player : Area2D
     [Export]
     public float CameraZoomMin = 0.5f;
 
+    // How fast the player can move in any direction.
+    [Export]
+    public float MovementSpeed = 400.0f;
+
     // Cached camera reference from the player.tscn.
     public Camera2D Camera { get; private set; }
 
@@ -27,6 +31,32 @@ public partial class Player : Area2D
         {
             CameraZoomRate = 1.0f;
         }
+    }
+
+    // Called every tick of the physics thread.
+    public override void _PhysicsProcess(double delta)
+    {
+        HandleMovement(delta);
+    }
+
+    private void HandleMovement(double delta)
+    {
+        // Below is based loosely on: https://docs.godotengine.org/en/stable/tutorials/physics/using_character_body_2d.html#platformer-movement
+        Vector2 movement = Input.GetVector("player_move_left", "player_move_right", "player_move_up", "player_move_down");
+        
+        Velocity = movement * MovementSpeed * (float)delta;
+
+        var collision = MoveAndCollide(Velocity);
+        if (collision != null)
+        {
+            HandleCollision(collision);
+        }
+    }
+
+    private void HandleCollision(KinematicCollision2D collision)
+    {
+        // For now we just default to sliding along surfaces the player collides with.
+        Velocity = Velocity.Slide(collision.GetNormal());
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.

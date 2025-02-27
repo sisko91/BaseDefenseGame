@@ -6,14 +6,14 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_3d41u"]
 radius = 32.0
 
-[node name="Player" type="Area2D"]
+[node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_imx3i")
 metadata/_edit_group_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_s5van")
 
+[node name="Camera2D" type="Camera2D" parent="."]
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_3d41u")
-
-[node name="Camera2D" type="Camera2D" parent="."]
