@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://bapcmf72ww8v3"]
+
+[ext_resource type="Script" path="res://World/World.cs" id="1_tr0n8"]
+[ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
+[ext_resource type="PackedScene" uid="uid://c0fcw0x8ku6c6" path="res://World/wall.tscn" id="3_jc71b"]
+
+[node name="World" type="Node2D"]
+script = ExtResource("1_tr0n8")
+RegionBounds = Vector2(12288, 12288)
+
+[node name="Background" type="Sprite2D" parent="."]
+texture_repeat = 2
+scale = Vector2(0.996511, 1)
+texture = ExtResource("2_rsvub")
+region_enabled = true
+region_rect = Rect2(0, 0, 6144, 6144)
+region_filter_clip_enabled = true
+
+[node name="Wall" parent="." instance=ExtResource("3_jc71b")]
+position = Vector2(200, 0)
+
+[node name="Wall2" parent="." instance=ExtResource("3_jc71b")]
+position = Vector2(-200, 0)
