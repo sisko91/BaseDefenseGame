@@ -18,8 +18,15 @@ public partial class Bullet : CharacterBody2D
             //Make bullets bounce off walls
             Velocity = Velocity.Bounce(collision.GetNormal());
 
-            if (collision.GetCollider().HasMethod("Hit")) {
+            if (collision.GetCollider().HasMethod("Hit"))
+            {
                 collision.GetCollider().Call("Hit");
+            }
+
+            if (collision.GetCollider() is NonPlayerCharacter npc)
+            {
+                npc.ReceiveHit(this);
+                QueueFree();
             }
         }
     }

@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://2ln17vmwibjn"]
+
+[ext_resource type="Script" path="res://NPC/NonPlayerCharacter.cs" id="1_mv5et"]
+[ext_resource type="Texture2D" uid="uid://b81hiig0xdgiv" path="res://icon.svg" id="1_yx5x3"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_fkr33"]
+radius = 31.0
+height = 62.0
+
+[node name="TestNpc" type="CharacterBody2D"]
+script = ExtResource("1_mv5et")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_yx5x3")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_fkr33")
