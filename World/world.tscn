@@ -10,7 +10,6 @@ RegionBounds = Vector2(12288, 12288)
 
 [node name="Background" type="Sprite2D" parent="."]
 texture_repeat = 2
-scale = Vector2(0.996511, 1)
 texture = ExtResource("2_rsvub")
 region_enabled = true
 region_rect = Rect2(0, 0, 6144, 6144)
