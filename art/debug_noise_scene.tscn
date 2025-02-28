@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://cmm0onbo2cg28"]
+
+[ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="1_2nbog"]
+
+[node name="DebugNoiseScene" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_2nbog")
