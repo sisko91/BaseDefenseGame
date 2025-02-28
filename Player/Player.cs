@@ -34,6 +34,7 @@ public partial class Player : CharacterBody2D
     public override void _PhysicsProcess(double delta)
     {
         HandleMovement(delta);
+        HandleShoot(delta);
     }
 
     // Called every rendered frame.
@@ -67,5 +68,11 @@ public partial class Player : CharacterBody2D
     {
         // For now we just default to sliding along surfaces the player collides with.
         Velocity = Velocity.Slide(collision.GetNormal());
+    }
+
+    private void HandleShoot(double delta) {
+        if (Input.IsActionJustPressed("shoot")) {
+            WeaponRing.EquippedWeapon.Shoot();
+        }
     }
 }

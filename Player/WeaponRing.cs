@@ -11,7 +11,7 @@ public partial class WeaponRing : Node2D
 	public float AttachmentRadius = 50.0f;
 
 	// Cached reference to the currently equipped weapon.
-	private Weapon equippedWeapon;
+	public Weapon EquippedWeapon;
 
     // The current angle (radians) that the equipped weapon is being aimed in.
     // Aim angle for the weapon ring is wherever the ring's Node2D location is relative to its parent. If for some reason the parent doesn't have a position then we assume the rotation of the ring directs the aim.
@@ -37,12 +37,12 @@ public partial class WeaponRing : Node2D
 
 	public void Equip(Weapon weapon)
 	{
-		if(equippedWeapon != null)
+		if(EquippedWeapon != null)
 		{
-			RemoveChild(equippedWeapon);
+			RemoveChild(EquippedWeapon);
 		}
 
-		equippedWeapon = weapon;
+		EquippedWeapon = weapon;
 		AddChild(weapon);
 	}
     
@@ -55,9 +55,9 @@ public partial class WeaponRing : Node2D
 	public override void _Process(double delta)
 	{
 		// Update the rotation of the equipped weapon so that it stays oriented parallel to the aim vector.
-		if(equippedWeapon != null)
+		if(EquippedWeapon != null)
 		{
-            equippedWeapon.Rotation = _aimAngle;
+            EquippedWeapon.Rotation = _aimAngle;
         }
     }
 }

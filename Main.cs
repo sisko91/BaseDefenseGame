@@ -20,10 +20,16 @@ public partial class Main : Node
         player = PlayerTemplate.Instantiate<Player>();
         player.Name = "Player";
         world.AddChild(player);
+
+        Weapon.ProjectileSpawner += OnPlayerShoot;
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
+    }
+
+    private void OnPlayerShoot(Node2D projectile) {
+        world.AddChild(projectile);
     }
 }
