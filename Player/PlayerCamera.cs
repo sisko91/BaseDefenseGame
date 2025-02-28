@@ -15,6 +15,8 @@ public partial class PlayerCamera : Camera2D
     [Export]
     public float CameraZoomMin = 0.5f;
 
+    private Vector2 targetZoom;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -22,6 +24,8 @@ public partial class PlayerCamera : Camera2D
         {
             CameraZoomRate = 1.0f;
         }
+
+        targetZoom = Zoom;
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -37,13 +41,17 @@ public partial class PlayerCamera : Camera2D
         var zoomIncrementVec = new Vector2(zoomIncrement, zoomIncrement);
         if (Input.IsActionJustPressed("camera_zoom_in"))
         {
-            Zoom += zoomIncrementVec;
+            targetZoom += zoomIncrementVec;
         }
         else if (Input.IsActionJustPressed("camera_zoom_out"))
         {
-            Zoom -= zoomIncrementVec;
+            targetZoom -= zoomIncrementVec;
         }
+
         // Enforce min/max zoom.
-        Zoom = Zoom.Clamp(new Vector2(CameraZoomMin, CameraZoomMin), Vector2.One * CameraZoomMax);
+        targetZoom = targetZoom.Clamp(new Vector2(CameraZoomMin, CameraZoomMin), Vector2.One * CameraZoomMax);
+
+        //Smooth zoom in / out with linear interpolation
+        Zoom = Zoom.Slerp(targetZoom, CameraZoomRate  * (float) delta);
     }
 }

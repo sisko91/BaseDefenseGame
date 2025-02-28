@@ -58,9 +58,8 @@ public partial class Player : CharacterBody2D
 
     private void HandleAim(double delta)
     {
-        Vector2 mousePosition = GetGlobalMousePosition();
         float mouseAim = (GetGlobalMousePosition() - GlobalPosition).Angle();
-
+         
         WeaponRing.AimAngle = mouseAim;
     }
 

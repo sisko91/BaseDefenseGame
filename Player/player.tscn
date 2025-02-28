@@ -18,6 +18,10 @@ metadata/_edit_group_ = true
 texture = ExtResource("2_s5van")
 
 [node name="Camera2D" type="Camera2D" parent="."]
+process_callback = 0
+position_smoothing_enabled = true
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
 script = ExtResource("3_vrqgk")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
