@@ -18,12 +18,13 @@ public partial class Bullet : CharacterBody2D
             //Make bullets bounce off walls
             Velocity = Velocity.Bounce(collision.GetNormal());
 
-            if (collision.GetCollider().HasMethod("Hit"))
-            {
-                collision.GetCollider().Call("Hit");
-            }
+            if (collision.GetCollider() is Player) {
+                GD.Print("Hit player");
 
-            if (collision.GetCollider() is NonPlayerCharacter npc)
+                //For now, despawn projectiles that hit the player (could implement friendly fire)
+                //It would be good to learn how to impart physics from this impact before removing the projectile
+                QueueFree();
+            } else if (collision.GetCollider() is NonPlayerCharacter npc)
             {
                 npc.ReceiveHit(this);
                 QueueFree();
