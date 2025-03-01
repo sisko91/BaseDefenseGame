@@ -26,5 +26,4 @@ script = ExtResource("1_jfrxl")
 texture = SubResource("GradientTexture2D_t3qvy")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-scale = Vector2(0.998871, 1.19625)
 shape = SubResource("CircleShape2D_d3ew6")
