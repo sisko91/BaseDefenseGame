@@ -26,17 +26,19 @@ shader_parameter/noise_texture = SubResource("NoiseTexture2D_xy6ls")
 script = ExtResource("1_tr0n8")
 RegionBounds = Vector2(12288, 12288)
 
-[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
-layer = 2
-scroll_ignore_camera_zoom = true
+[node name="ParallaxBackground" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.9, 0.9)
+repeat_size = Vector2(6144, 6144)
+repeat_times = 2
 
-[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground"]
-motion_mirroring = Vector2(1152, 648)
-
-[node name="ColorRect" type="ColorRect" parent="ParallaxBackground/ParallaxLayer"]
+[node name="ColorRect" type="ColorRect" parent="ParallaxBackground"]
+z_index = 1
+texture_repeat = 3
 material = SubResource("ShaderMaterial_kx652")
-offset_right = 1152.0
-offset_bottom = 648.0
+offset_left = -3072.0
+offset_top = -3072.0
+offset_right = 3072.0
+offset_bottom = 3072.0
 metadata/_edit_use_anchors_ = true
 
 [node name="Background" type="Sprite2D" parent="."]
