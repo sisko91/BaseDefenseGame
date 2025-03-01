@@ -6,6 +6,11 @@ public partial class NonPlayerCharacter : CharacterBody2D
     [Export]
     public float MoveSpeed = 100.0f;
 
+    [Export]
+    public float MaxHealth = 100.0f;
+
+    public float CurrentHealth { get; private set; }
+
     // Which logical grouping of characters in the scene this character is part of.
     // TODO: Should probably be an enum? Suggested values: [Hostile, Friendly, Player, Neutral].
     [Export]
@@ -20,6 +25,7 @@ public partial class NonPlayerCharacter : CharacterBody2D
     {
         AddToGroup(Group, true);
         CollisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
+        CurrentHealth = MaxHealth;
     }
 
     public override void _Process(double delta)
@@ -57,10 +63,34 @@ public partial class NonPlayerCharacter : CharacterBody2D
 
     // This function is called by bullet.cs if found during collisions.
     // TODO: We should probably define a stronger typed interface for processing collisions, damage, etc.
-    public void ReceiveHit(Bullet bullet)
+    public void ReceiveHit(Bullet bullet, KinematicCollision2D impact)
     {
-        GD.Print("Ouch!");
-        QueueFree();
+        // TODO: Probably should have this on the bullet.
+        const float damage = 30.0f;
+        CurrentHealth = Mathf.Max(CurrentHealth - damage, 0);
+
+        if(CurrentHealth > 0)
+        {
+            // knockback
+            //var kbDirection = bullet.Velocity.Normalized();
+            var kbDirection = impact.GetAngle() - Mathf.Pi;
+            // Just use the damage as the momentum transferred, essentially.
+            var kbVelocity = Vector2.FromAngle(kbDirection) * damage*3;
+
+            // Render the impact angle if debugging is enabled.
+            this.DrawDebugLine(GlobalPosition, GlobalPosition + kbVelocity, new Color(1, 0, 0), 2.0f);
+
+            var collision = MoveAndCollide(kbVelocity);
+            if(collision != null)
+            {
+                OnCollide(collision);
+            }
+        }
+        else
+        {
+            //die
+            QueueFree();
+        }
     }
 
     private Node2D FindTarget()

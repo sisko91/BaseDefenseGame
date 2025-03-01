@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public partial class World : Node2D
 {
@@ -38,10 +39,5 @@ public partial class World : Node2D
         var rect = backgroundSprite.RegionRect;
         rect.Size = RegionBounds;
         backgroundSprite.RegionRect = rect;
-    }
-
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta)
-    {
     }
 }

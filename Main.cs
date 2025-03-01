@@ -1,3 +1,4 @@
+using ExtensionMethods;
 using Godot;
 using System;
 
@@ -7,6 +8,9 @@ public partial class Main : Node
     private World world;
     // Cached reference to the player node instantiated below during scene startup.
     private Player player;
+
+    [Export]
+    public bool bEnableDebugRendering = true;
 
     // Configurable template for the player to instantiate within the world during startup.
     [Export]
@@ -22,6 +26,11 @@ public partial class Main : Node
         world.AddChild(player);
 
         //Weapon.ProjectileSpawner += OnPlayerShoot;
+
+        if(bEnableDebugRendering)
+        {
+            DebugNodeExtensions.EnableDebugRenderers();
+        }
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.

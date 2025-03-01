@@ -15,6 +15,16 @@ namespace ExtensionMethods
             GD.PushError($"Game requires MainLoop to be a SceneTree but was {Engine.GetMainLoop().GetType()}");
             return null;
         }
+
+        public static SceneTree GetSceneTree()
+        {
+            if (Engine.GetMainLoop() is SceneTree mainSceneTree)
+            {
+                return mainSceneTree;
+            }
+            GD.PushError($"Game requires MainLoop to be a SceneTree but was {Engine.GetMainLoop().GetType()}");
+            return null;
+        }
     }
 }
 

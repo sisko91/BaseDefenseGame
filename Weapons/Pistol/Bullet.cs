@@ -26,7 +26,7 @@ public partial class Bullet : CharacterBody2D
                 QueueFree();
             } else if (collision.GetCollider() is NonPlayerCharacter npc)
             {
-                npc.ReceiveHit(this);
+                npc.ReceiveHit(this, collision);
                 QueueFree();
             }
         }
