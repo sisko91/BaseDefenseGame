@@ -5,6 +5,7 @@ public partial class Bullet : CharacterBody2D
 {
     public int Speed = 750;
     public float LifetimeSeconds = 3f;
+    public float Damage = 10.0f;
 
     public void Start(Vector2 position, float direction) {
         Rotation = direction;
@@ -26,7 +27,7 @@ public partial class Bullet : CharacterBody2D
                 QueueFree();
             } else if (collision.GetCollider() is NonPlayerCharacter npc)
             {
-                npc.ReceiveHit(this, collision);
+                npc.ReceiveHit(collision, this, Damage);
                 QueueFree();
             }
         }

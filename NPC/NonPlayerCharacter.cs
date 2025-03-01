@@ -61,24 +61,25 @@ public partial class NonPlayerCharacter : CharacterBody2D
         GD.Print($"{Name} walked into {collision.GetCollider()}");
     }
 
-    // This function is called by bullet.cs if found during collisions.
-    // TODO: We should probably define a stronger typed interface for processing collisions, damage, etc.
-    public void ReceiveHit(Bullet bullet, KinematicCollision2D impact)
+    // Process an incoming impact from the sourceNode. The impact is calculated by the other collider, i.e. impact.Collider == this.
+    public void ReceiveHit(KinematicCollision2D impact, Node2D sourceNode, float damage)
     {
         // TODO: Probably should have this on the bullet.
-        const float damage = 30.0f;
         CurrentHealth = Mathf.Max(CurrentHealth - damage, 0);
 
         if(CurrentHealth > 0)
         {
-            // knockback
+            // knockback - neither of the computations of kbDirection below actually give us what we want so we just calculate
+            // the incident angle from positions.
             //var kbDirection = bullet.Velocity.Normalized();
-            var kbDirection = impact.GetAngle() - Mathf.Pi;
+            //var kbDirection = impact.GetAngle() - Mathf.Pi;
+            var kbDirection = (GlobalPosition - sourceNode.GlobalPosition).Normalized();
             // Just use the damage as the momentum transferred, essentially.
-            var kbVelocity = Vector2.FromAngle(kbDirection) * damage*3;
+            var kbVelocity = kbDirection * damage;
 
             // Render the impact angle if debugging is enabled.
-            this.DrawDebugLine(GlobalPosition, GlobalPosition + kbVelocity, new Color(1, 0, 0), 2.0f);
+            //this.DrawDebugLine(GlobalPosition, GlobalPosition + kbVelocity, new Color(1, 0, 0), 2.0f);
+            //this.DrawDebugLine(GlobalPosition - bullet.Velocity, GlobalPosition, new Color(0, 1, 0), 2.0f);
 
             var collision = MoveAndCollide(kbVelocity);
             if(collision != null)
