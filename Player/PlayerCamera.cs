@@ -7,13 +7,13 @@ public partial class PlayerCamera : Camera2D
     [Export]
     public float CameraZoomRate = 10.0f;
 
-    // The largest camera zoom factor permitted. At 2.0, the camera is zoomed in 2x (from default).
+    // The largest camera zoom factor permitted
     [Export]
-    public float CameraZoomMax = 2.0f;
+    public float CameraZoomMax = 2f;
 
-    // The smallest camera zoom factor permitted. At 0.5, the camrea is zoomed out 2x (from default).
+    // The smallest camera zoom factor permitted
     [Export]
-    public float CameraZoomMin = 0.5f;
+    public float CameraZoomMin = 0.25f;
 
     private Vector2 targetZoom;
 
@@ -49,7 +49,7 @@ public partial class PlayerCamera : Camera2D
         }
 
         // Enforce min/max zoom.
-        targetZoom = targetZoom.Clamp(new Vector2(CameraZoomMin, CameraZoomMin), Vector2.One * CameraZoomMax);
+        targetZoom = targetZoom.Clamp(Vector2.One * CameraZoomMin, Vector2.One * CameraZoomMax);
 
         //Smooth zoom in / out with linear interpolation
         Zoom = Zoom.Slerp(targetZoom, CameraZoomRate  * (float) delta);
