@@ -1,13 +1,43 @@
-[gd_scene load_steps=5 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=9 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
+[ext_resource type="Shader" path="res://Shaders/fog.gdshader" id="2_vxmty"]
 [ext_resource type="PackedScene" uid="uid://c0fcw0x8ku6c6" path="res://World/wall.tscn" id="3_jc71b"]
 [ext_resource type="PackedScene" uid="uid://2ln17vmwibjn" path="res://NPC/test_npc.tscn" id="4_ygryw"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_fn2eg"]
+frequency = 0.0075
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_xy6ls"]
+width = 320
+height = 180
+seamless = true
+seamless_blend_skirt = 0.75
+noise = SubResource("FastNoiseLite_fn2eg")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kx652"]
+shader = ExtResource("2_vxmty")
+shader_parameter/density = 0.25
+shader_parameter/speed = Vector2(0.02, 0.01)
+shader_parameter/noise_texture = SubResource("NoiseTexture2D_xy6ls")
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_tr0n8")
 RegionBounds = Vector2(12288, 12288)
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+layer = 2
+scroll_ignore_camera_zoom = true
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="ParallaxBackground"]
+motion_mirroring = Vector2(1152, 648)
+
+[node name="ColorRect" type="ColorRect" parent="ParallaxBackground/ParallaxLayer"]
+material = SubResource("ShaderMaterial_kx652")
+offset_right = 1152.0
+offset_bottom = 648.0
+metadata/_edit_use_anchors_ = true
 
 [node name="Background" type="Sprite2D" parent="."]
 texture_repeat = 2
