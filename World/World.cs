@@ -7,6 +7,24 @@ public partial class World : Node2D
     [Export]
     public Vector2 RegionBounds { get; set; }
 
+    // All Player nodes currently in the scene.
+    public Godot.Collections.Array<Node> Players
+    {
+        get
+        {
+            return GetTree().GetNodesInGroup("Player");
+        }
+    }
+
+    // All Hostile NPC nodes currently in the scene.
+    public Godot.Collections.Array<Node> Hostiles
+    {
+        get
+        {
+            return GetTree().GetNodesInGroup("Hostile");
+        }
+    }
+
     // Cached reference to the background sprite defined by world.tscn.
     private Sprite2D backgroundSprite;
 
