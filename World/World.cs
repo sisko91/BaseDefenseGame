@@ -38,6 +38,10 @@ public partial class World : Node2D
         SetupBackground();
 
         SetupNavMesh();
+
+        SetupDynamicWall();
+
+        navRegion.BakeNavigationPolygon();
     }
 
     private void SetupBackground()
@@ -63,6 +67,13 @@ public partial class World : Node2D
         };
         polygon.AddOutline(boundingOutline);
         navRegion.NavigationPolygon = polygon;
-        navRegion.BakeNavigationPolygon();
+    }
+
+    private void SetupDynamicWall()
+    {
+        var wallScene = GD.Load<PackedScene>("res://World/wall.tscn");
+        var wall = wallScene.Instantiate<Node2D>();
+        navRegion.AddChild(wall);
+        wall.Position = new Vector2(0, -150);
     }
 }
