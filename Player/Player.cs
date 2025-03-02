@@ -1,5 +1,7 @@
+using ExtensionMethods;
 using Godot;
 using System;
+using static Godot.TextServer;
 
 public partial class Player : CharacterBody2D
 {
@@ -36,7 +38,7 @@ public partial class Player : CharacterBody2D
     public override void _PhysicsProcess(double delta)
     {
         HandleMovement(delta);
-        HandleShoot(delta);
+        HandleAction(delta);
     }
 
     // Called every rendered frame.
@@ -72,9 +74,25 @@ public partial class Player : CharacterBody2D
         Velocity = Velocity.Slide(collision.GetNormal());
     }
 
-    private void HandleShoot(double delta) {
+    private void HandleAction(double delta) {
         if (Input.IsActionJustPressed("shoot")) {
             WeaponRing.EquippedWeapon.Shoot();
+        }
+        if (Input.IsActionJustPressed("throw_grenade"))
+        {
+            //TODO: Make Throwables container
+            var grenadeScene = GD.Load<PackedScene>("res://Weapons/FragGrenade/FragGrenade.tscn");
+            var grenade = grenadeScene.Instantiate<FragGrenade>();
+
+            //Spawn a bit in front of the player aim dir
+            var rot = (GetGlobalMousePosition() - GlobalPosition).Angle();
+            var dir = new Vector2((float)Math.Cos(rot), (float)Math.Sin(rot)).Normalized();
+            var pos = GlobalPosition + dir * new Vector2(100, 100);
+            grenade.Start(pos, rot);
+            var timer = GetTree().CreateTimer(grenade.LifetimeSeconds);
+            timer.Timeout += grenade.Explode;
+
+            this.GetGameWorld().AddChild(grenade);
         }
     }
 }

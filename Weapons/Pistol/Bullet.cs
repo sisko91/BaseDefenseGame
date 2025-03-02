@@ -20,8 +20,6 @@ public partial class Bullet : CharacterBody2D
             Velocity = Velocity.Bounce(collision.GetNormal());
 
             if (collision.GetCollider() is Player) {
-                GD.Print("Hit player");
-
                 //For now, despawn projectiles that hit the player (could implement friendly fire)
                 //It would be good to learn how to impart physics from this impact before removing the projectile
                 QueueFree();
