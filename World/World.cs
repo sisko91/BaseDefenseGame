@@ -35,6 +35,13 @@ public partial class World : Node2D
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        SetupBackground();
+
+        SetupNavMesh();
+    }
+
+    private void SetupBackground()
+    {
         backgroundSprite = GetNode<Sprite2D>("Background");
         // We enable Regions + Tiling and stretch the background to cover the world RegionBounds.
         backgroundSprite.RegionEnabled = true;
@@ -42,8 +49,20 @@ public partial class World : Node2D
         var rect = backgroundSprite.RegionRect;
         rect.Size = RegionBounds;
         backgroundSprite.RegionRect = rect;
+    }
 
+    private void SetupNavMesh()
+    {
         navRegion = GetNode<NavigationRegion2D>("NavRegion");
+        var polygon = new NavigationPolygon();
+        var boundingOutline = new Vector2[] {
+            new Vector2(-RegionBounds.X/2, -RegionBounds.Y/2),
+            new Vector2(-RegionBounds.X/2, RegionBounds.Y/2),
+            new Vector2(RegionBounds.X/2, RegionBounds.Y/2),
+            new Vector2(RegionBounds.X/2, -RegionBounds.Y/2),
+        };
+        polygon.AddOutline(boundingOutline);
+        navRegion.NavigationPolygon = polygon;
         navRegion.BakeNavigationPolygon();
     }
 }
