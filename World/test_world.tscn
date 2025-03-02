@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=10 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
@@ -21,6 +21,11 @@ shader = ExtResource("2_vxmty")
 shader_parameter/density = 0.25
 shader_parameter/speed = Vector2(0.02, 0.01)
 shader_parameter/noise_texture = SubResource("NoiseTexture2D_xy6ls")
+
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_nopiq"]
+vertices = PackedVector2Array(3043, 3035.03, -3057.98, 3056.96, -3046.02, -3066, 3043, -3066)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(-3056, -3076, 3053, -3076, 3053, 3045, -3068, 3067)])
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_tr0n8")
@@ -48,11 +53,36 @@ region_enabled = true
 region_rect = Rect2(0, 0, 6144, 6144)
 region_filter_clip_enabled = true
 
-[node name="Wall" parent="." instance=ExtResource("3_jc71b")]
-position = Vector2(200, 0)
-
-[node name="Wall2" parent="." instance=ExtResource("3_jc71b")]
-position = Vector2(-200, 0)
-
 [node name="TestNpc" parent="." instance=ExtResource("4_ygryw")]
 position = Vector2(230, -219)
+
+[node name="NavRegion" type="NavigationRegion2D" parent="."]
+navigation_polygon = SubResource("NavigationPolygon_nopiq")
+
+[node name="Wall2" parent="NavRegion" instance=ExtResource("3_jc71b")]
+position = Vector2(-263, 0)
+
+[node name="Wall7" parent="NavRegion" instance=ExtResource("3_jc71b")]
+position = Vector2(-62, 64)
+
+[node name="Wall" parent="NavRegion" instance=ExtResource("3_jc71b")]
+position = Vector2(-163, -27)
+rotation = 1.5708
+
+[node name="Wall8" parent="NavRegion" instance=ExtResource("3_jc71b")]
+position = Vector2(-226, -27)
+rotation = 1.5708
+
+[node name="Wall4" parent="NavRegion" instance=ExtResource("3_jc71b")]
+position = Vector2(-99, -27)
+rotation = 1.5708
+
+[node name="Wall6" parent="NavRegion" instance=ExtResource("3_jc71b")]
+position = Vector2(-99, 91)
+rotation = 1.5708
+
+[node name="Wall3" parent="NavRegion" instance=ExtResource("3_jc71b")]
+position = Vector2(-263, 64)
+
+[node name="Wall5" parent="NavRegion" instance=ExtResource("3_jc71b")]
+position = Vector2(-62, 0)

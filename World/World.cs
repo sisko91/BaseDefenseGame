@@ -26,8 +26,11 @@ public partial class World : Node2D
         }
     }
 
-    // Cached reference to the background sprite defined by world.tscn.
+    // Cached reference to the background sprite defined by the .tscn.
     private Sprite2D backgroundSprite;
+
+    // Cached reference to the navigation region defined by the .tscn
+    private NavigationRegion2D navRegion;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -39,5 +42,8 @@ public partial class World : Node2D
         var rect = backgroundSprite.RegionRect;
         rect.Size = RegionBounds;
         backgroundSprite.RegionRect = rect;
+
+        navRegion = GetNode<NavigationRegion2D>("NavRegion");
+        navRegion.BakeNavigationPolygon();
     }
 }

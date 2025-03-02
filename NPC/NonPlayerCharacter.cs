@@ -9,12 +9,20 @@ public partial class NonPlayerCharacter : CharacterBody2D
     [Export]
     public float MaxHealth = 100.0f;
 
-    public float CurrentHealth { get; private set; }
-
     // Which logical grouping of characters in the scene this character is part of.
     // TODO: Should probably be an enum? Suggested values: [Hostile, Friendly, Player, Neutral].
     [Export]
     public string Group = "Hostile";
+
+    public float CurrentHealth { get; private set; }
+
+    public NavigationAgent2D NavAgent { get; private set; } = null;
+
+    public Vector2 MovementTarget
+    {
+        get { return NavAgent.TargetPosition; }
+        set { NavAgent.TargetPosition = value; }
+    }
 
     private Node2D enemyTarget = null;
 
@@ -26,6 +34,21 @@ public partial class NonPlayerCharacter : CharacterBody2D
         AddToGroup(Group, true);
         CollisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
         CurrentHealth = MaxHealth;
+
+        // SetupNavAgent awaits() a signal so we want to make sure we don't call it from _Ready().
+        Callable.From(SetupNavAgent).CallDeferred();
+    }
+
+    private async void SetupNavAgent()
+    {
+        await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
+
+        NavAgent = new NavigationAgent2D();
+        NavAgent.AvoidanceEnabled = true;
+        //NavAgent.DebugEnabled = true;
+        NavAgent.PathDesiredDistance = 5.0f;
+        NavAgent.TargetDesiredDistance = 5.0f;
+        AddChild(NavAgent);
     }
 
     public override void _Process(double delta)
@@ -35,9 +58,18 @@ public partial class NonPlayerCharacter : CharacterBody2D
             enemyTarget = FindTarget();
         }
 
-        if(enemyTarget != null)
+        if(NavAgent != null)
         {
-            var direction = (enemyTarget.GlobalPosition - GlobalPosition).Normalized();
+            UpdateNavigation();
+        }
+    }
+
+    public override void _PhysicsProcess(double delta)
+    {
+        if (enemyTarget != null)
+        {
+            Vector2 nextPathPosition = NavAgent.GetNextPathPosition();
+            var direction = (nextPathPosition - GlobalPosition).Normalized();
             Velocity = direction * MoveSpeed;
         }
         else
@@ -45,10 +77,7 @@ public partial class NonPlayerCharacter : CharacterBody2D
             // No targets, stop moving.
             Velocity = Vector2.Zero;
         }
-    }
 
-    public override void _PhysicsProcess(double delta)
-    {
         var collision = MoveAndCollide(Velocity * (float)delta);
         if(collision != null)
         {
@@ -107,5 +136,19 @@ public partial class NonPlayerCharacter : CharacterBody2D
 
         // TODO: Target the crystal(s) if no player is within aggro radius.
         return null;
+    }
+
+    private void UpdateNavigation()
+    {
+        if(enemyTarget == null && NavAgent.IsNavigationFinished())
+        {
+            GD.Print("reached");
+            return;
+        }
+
+        if (enemyTarget != null)
+        {
+            MovementTarget = enemyTarget.GlobalPosition;
+        }
     }
 }
