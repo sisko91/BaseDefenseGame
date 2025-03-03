@@ -35,7 +35,13 @@ public partial class Projectile : CharacterBody2D
             {
                 npc.ReceiveHit(collision, this, Damage);
             }
-            QueueFree();
+            OnCollide(collision);
         }
+    }
+
+    // TODO: Maybe we should just have this base type detect certain things, and have explicit OnCollideNPC(), OnCollidePlayer(), etc.?
+    protected virtual void OnCollide(KinematicCollision2D collision)
+    {
+        QueueFree();
     }
 }

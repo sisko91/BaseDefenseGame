@@ -19,11 +19,6 @@ public partial class Pistol : Weapon
         var bullet = bulletScene.Instantiate<Bullet>();
 
         bullet.Start(GlobalPosition, GlobalRotation);
-        var timer = GetTree().CreateTimer(bullet.LifetimeSeconds);
-        timer.Timeout += bullet.QueueFree;
-
-        // Register the new projectile with the world, and notify any other listeners.
-        this.GetGameWorld().AddChild(bullet);
     }
 
     public override void ReleaseFire()
