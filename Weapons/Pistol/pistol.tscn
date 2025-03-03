@@ -1,11 +1,17 @@
-[gd_scene load_steps=3 format=3 uid="uid://dqdhhyjyrp2ri"]
+[gd_scene load_steps=4 format=3 uid="uid://dqdhhyjyrp2ri"]
 
 [ext_resource type="Script" path="res://Weapons/Pistol/Pistol.cs" id="1_wm8q8"]
-[ext_resource type="Texture2D" uid="uid://doaffvj52e0h1" path="res://art/debug_texture_gradient.tres" id="2_k114b"]
+
+[sub_resource type="Gradient" id="Gradient_l3iqi"]
+colors = PackedColorArray(0.28, 0.28, 0.28, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_e4s1b"]
+gradient = SubResource("Gradient_l3iqi")
+width = 64
 
 [node name="DebugWeapon" type="Node2D"]
 script = ExtResource("1_wm8q8")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(1, 0.2)
-texture = ExtResource("2_k114b")
+scale = Vector2(1, 16)
+texture = SubResource("GradientTexture1D_e4s1b")
