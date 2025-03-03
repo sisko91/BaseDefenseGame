@@ -15,7 +15,6 @@ script = ExtResource("1_dia4h")
 RoundTemplate = ExtResource("2_mks8e")
 RoundsPerFire = 8
 MaxRoundSpreadDegrees = 16.0
-FireCooldownSeconds = 1.4
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(0.75, 24)
