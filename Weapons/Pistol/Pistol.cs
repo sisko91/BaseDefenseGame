@@ -13,7 +13,8 @@ public partial class Pistol : Weapon
     {
     }
 
-    protected override Node2D DoShoot() {
+    public override void PressFire()
+    {
         var bulletScene = GD.Load<PackedScene>("res://Weapons/Pistol/bullet.tscn");
         var bullet = bulletScene.Instantiate<Bullet>();
 
@@ -21,6 +22,11 @@ public partial class Pistol : Weapon
         var timer = GetTree().CreateTimer(bullet.LifetimeSeconds);
         timer.Timeout += bullet.QueueFree;
 
-        return bullet;
+        // Register the new projectile with the world, and notify any other listeners.
+        this.GetGameWorld().AddChild(bullet);
+    }
+
+    public override void ReleaseFire()
+    {
     }
 }

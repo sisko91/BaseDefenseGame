@@ -110,8 +110,13 @@ public partial class Player : CharacterBody2D
 
     private void HandleAction(double delta) {
         if (Input.IsActionJustPressed("shoot")) {
-            WeaponRing.EquippedWeapon.Shoot();
+            WeaponRing.EquippedWeapon.PressFire();
         }
+        else if(Input.IsActionJustReleased("shoot"))
+        {
+            WeaponRing.EquippedWeapon.ReleaseFire();
+        }
+
         if (Input.IsActionJustPressed("throw_grenade"))
         {
             //TODO: Make Throwables container

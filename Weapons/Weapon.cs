@@ -4,31 +4,15 @@ using System;
 
 public partial class Weapon : Node2D
 {
-    public delegate void ProjectileHandler(Node2D projectile);
-    public static ProjectileHandler ProjectileSpawner;
-
-    // Called when the node enters the scene tree for the first time.
-    public override void _Ready()
+    // Called when the weapon starts firing (i.e. in response to an input action being pressed).
+    public virtual void PressFire()
     {
+
     }
 
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta)
+    // Called when the weapon stops firing (i.e. in response to an input action being released).
+    public virtual void ReleaseFire()
     {
-    }
 
-    public void Shoot() {
-        var newProj = DoShoot();
-        if (newProj != null)
-        {
-            // Register the new projectile with the world, and notify any other listeners.
-            this.GetGameWorld().AddChild(newProj);
-            ProjectileSpawner?.Invoke(newProj);
-        }
-    }
-
-    protected virtual Node2D DoShoot()
-    {
-        return null;
     }
 }
