@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3 uid="uid://dkbkf106r6qu2"]
+
+[ext_resource type="Script" path="res://Weapons/Scattergun/Scattergun.cs" id="1_dia4h"]
+[ext_resource type="Texture2D" uid="uid://doaffvj52e0h1" path="res://art/debug_texture_gradient.tres" id="1_jd5ou"]
+[ext_resource type="PackedScene" uid="uid://bkhho87p3b2re" path="res://Weapons/Scattergun/scatter_proj.tscn" id="2_mks8e"]
+
+[node name="ScatterGun" type="Node2D"]
+script = ExtResource("1_dia4h")
+RoundTemplate = ExtResource("2_mks8e")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(1, 0.2)
+texture = ExtResource("1_jd5ou")

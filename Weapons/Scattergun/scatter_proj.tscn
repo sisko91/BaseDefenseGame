@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3 uid="uid://bkhho87p3b2re"]
+
+[ext_resource type="Script" path="res://Weapons/Projectile.cs" id="1_ncsta"]
+
+[sub_resource type="Gradient" id="Gradient_4msl2"]
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_ln6rk"]
+gradient = SubResource("Gradient_4msl2")
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_c6dxx"]
+size = Vector2(4, 10)
+
+[node name="ScatterProj" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1_ncsta")
+InitialSpeed = 1500.0
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, 5)
+rotation = 1.5708
+scale = Vector2(0.015625, 10)
+texture = SubResource("GradientTexture1D_ln6rk")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 5)
+rotation = 1.5708
+shape = SubResource("RectangleShape2D_c6dxx")

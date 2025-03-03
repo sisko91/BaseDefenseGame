@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://dy47gg8c687bv"]
 
 [ext_resource type="Script" path="res://Player/Player.cs" id="1_imx3i"]
-[ext_resource type="PackedScene" uid="uid://dqdhhyjyrp2ri" path="res://Weapons/Pistol/pistol.tscn" id="2_psqbx"]
+[ext_resource type="PackedScene" uid="uid://dkbkf106r6qu2" path="res://Weapons/Scattergun/scatter_gun.tscn" id="2_rscqp"]
 [ext_resource type="Texture2D" uid="uid://doaffvj52e0h1" path="res://art/debug_texture_gradient.tres" id="2_s5van"]
 [ext_resource type="Script" path="res://Player/PlayerCamera.cs" id="3_vrqgk"]
 [ext_resource type="Script" path="res://Player/WeaponRing.cs" id="4_q66cr"]
@@ -12,7 +12,7 @@ radius = 32.0
 [node name="Player" type="CharacterBody2D"]
 collision_mask = 7
 script = ExtResource("1_imx3i")
-StarterWeaponTemplate = ExtResource("2_psqbx")
+StarterWeaponTemplate = ExtResource("2_rscqp")
 metadata/_edit_group_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
