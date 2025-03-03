@@ -14,6 +14,13 @@ public partial class Scattergun : Weapon
     [Export]
     public float MaxRoundSpreadDegrees = 20.0f;
 
+    // How long the gun must wait between consecutive volleys.
+    [Export]
+    public float FireCooldownSeconds = 1.4f;
+
+    private double lastFireTime = -1;
+    private bool bFiring = false;
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
@@ -22,10 +29,23 @@ public partial class Scattergun : Weapon
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-	}
+        if(bFiring)
+        {
+            TryFire();
+        }
+    }
 
-    public override void PressFire()
+    protected void TryFire()
     {
+        var timeSeconds = Time.GetTicksUsec() / 1000000.0;
+        if (timeSeconds - FireCooldownSeconds < lastFireTime)
+        {
+            // Premature
+            return;
+        }
+
+        lastFireTime = timeSeconds;
+
         var roundSpreadRads = Mathf.DegToRad(Mathf.Abs(MaxRoundSpreadDegrees));
         for (int i = 0; i < RoundsPerFire; i++)
         {
@@ -38,8 +58,14 @@ public partial class Scattergun : Weapon
         }
     }
 
+    public override void PressFire()
+    {
+        bFiring = true;
+        TryFire();
+    }
+
     public override void ReleaseFire()
     {
-       
+        bFiring = false;
     }
 }
