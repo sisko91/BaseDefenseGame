@@ -78,6 +78,9 @@ public partial class NonPlayerCharacter : CharacterBody2D
             Velocity = Vector2.Zero;
         }
 
+        // Orient to face the direction the NPC is moving.
+        GlobalRotation = Velocity.Angle();
+
         var collision = MoveAndCollide(Velocity * (float)delta);
         if(collision != null)
         {

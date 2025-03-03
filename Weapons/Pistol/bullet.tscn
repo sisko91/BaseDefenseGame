@@ -2,12 +2,12 @@
 
 [ext_resource type="Script" path="res://Weapons/Pistol/Bullet.cs" id="1_jfrxl"]
 
-[sub_resource type="Gradient" id="Gradient_4pvop"]
+[sub_resource type="Gradient" id="Gradient_8usk2"]
 offsets = PackedFloat32Array(0.396104, 0.597403)
 colors = PackedColorArray(0, 0, 0, 1, 0, 0, 0, 0)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_t3qvy"]
-gradient = SubResource("Gradient_4pvop")
+gradient = SubResource("Gradient_8usk2")
 width = 20
 height = 20
 fill = 1
