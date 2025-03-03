@@ -31,7 +31,9 @@ public partial class Scattergun : Weapon
         {
             var round = RoundTemplate.Instantiate<Projectile>();
             var randNegativeOneToOne = (GD.Randf() - 0.5f) * 2;
-            float rotationOffset = roundSpreadRads * randNegativeOneToOne;
+            // Less randomness for the first rounds in the payload. This just makes the cone tighter toward the center with falloff.
+            float randInfluence = (float)(RoundsPerFire - i) / (float)RoundsPerFire;
+            float rotationOffset = roundSpreadRads * randNegativeOneToOne * randInfluence;
             round.Start(GlobalPosition, GlobalRotation + rotationOffset);
         }
     }
