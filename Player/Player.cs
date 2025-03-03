@@ -19,6 +19,9 @@ public partial class Player : CharacterBody2D
     // Cached weapon ring reference from the player.tscn.
     public WeaponRing WeaponRing { get; private set; }
 
+    // Whether the player is using a gamepad (when false, keyboard+mouse is assumed).
+    public bool bUsingGamepad { get; private set; } = false;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -47,6 +50,24 @@ public partial class Player : CharacterBody2D
         HandleAim(delta);
     }
 
+    public override void _Input(InputEvent @event)
+    {
+        switch(@event)
+        {
+            // KB+M
+            case InputEventKey:
+            case InputEventMouse:
+                bUsingGamepad = false;
+                break;
+            case InputEventJoypadButton:
+            case InputEventJoypadMotion:
+                bUsingGamepad = true;
+                break;
+            default:
+                break;
+        }
+    }
+
     private void HandleMovement(double delta)
     {
         // Below is based loosely on: https://docs.godotengine.org/en/stable/tutorials/physics/using_character_body_2d.html#platformer-movement
@@ -63,9 +84,22 @@ public partial class Player : CharacterBody2D
 
     private void HandleAim(double delta)
     {
-        float mouseAim = (GetGlobalMousePosition() - GlobalPosition).Angle();
-         
-        WeaponRing.AimAngle = mouseAim;
+        if(bUsingGamepad)
+        {
+            Vector2 aim = Input.GetVector("player_aim_left", "player_aim_right", "player_aim_up", "player_aim_down");
+            if(aim.IsZeroApprox())
+            {
+                // Just use the velocity instead when no aiming is provided.
+                // TODO: Lerp?
+                aim = Velocity;
+            }
+            WeaponRing.AimAngle = aim.Angle();
+        }
+        else
+        {
+            float mouseAim = (GetGlobalMousePosition() - GlobalPosition).Angle();
+            WeaponRing.AimAngle = mouseAim;
+        }
     }
 
     private void HandleCollision(KinematicCollision2D collision)
