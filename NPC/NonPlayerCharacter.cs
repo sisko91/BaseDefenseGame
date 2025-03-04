@@ -24,10 +24,13 @@ public partial class NonPlayerCharacter : CharacterBody2D
         set { NavAgent.TargetPosition = value; }
     }
 
-    private Node2D enemyTarget = null;
-
     // Cached reference to the collision shape defined on the .tscn
     public CollisionShape2D CollisionShape { get; private set; }
+
+    private Node2D enemyTarget = null;
+
+    private float HitAnimationSeconds = 0.1f;
+    private Timer HitAnimationTimer;
 
     public override void _Ready()
     {
@@ -37,6 +40,11 @@ public partial class NonPlayerCharacter : CharacterBody2D
 
         // SetupNavAgent awaits() a signal so we want to make sure we don't call it from _Ready().
         Callable.From(SetupNavAgent).CallDeferred();
+
+        HitAnimationTimer = new Timer();
+        HitAnimationTimer.OneShot = true;
+        HitAnimationTimer.Timeout += RemoveHitMaterial;
+        AddChild(HitAnimationTimer);
     }
 
     private async void SetupNavAgent()
@@ -96,6 +104,10 @@ public partial class NonPlayerCharacter : CharacterBody2D
     // Process an incoming impact from the sourceNode. The impact is calculated by the other collider, i.e. impact.Collider == this.
     public void ReceiveHit(KinematicCollision2D impact, Node2D sourceNode, float damage)
     {
+        //Repeated calls reset the timer
+        HitAnimationTimer.Start(HitAnimationSeconds);
+        SetHitMaterial();
+
         // TODO: Probably should have this on the bullet.
         CurrentHealth = Mathf.Max(CurrentHealth - damage, 0);
 
@@ -153,5 +165,15 @@ public partial class NonPlayerCharacter : CharacterBody2D
         {
             MovementTarget = enemyTarget.GlobalPosition;
         }
+    }
+
+    private void SetHitMaterial() {
+        ShaderMaterial hitMaterial = new ShaderMaterial();
+        hitMaterial.Shader = GD.Load<Shader>("res://Shaders/hit.gdshader");
+        Material = hitMaterial;
+    }
+
+    private void RemoveHitMaterial() {
+        Material = null;
     }
 }

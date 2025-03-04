@@ -35,6 +35,7 @@ MoveSpeed = 30.0
 shape = SubResource("CapsuleShape2D_4eeic")
 
 [node name="BodySprite" type="Sprite2D" parent="."]
+use_parent_material = true
 texture = SubResource("GradientTexture2D_8ey2m")
 
 [node name="RightEyeSprite" type="Sprite2D" parent="BodySprite"]
