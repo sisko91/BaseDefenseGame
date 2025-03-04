@@ -1,3 +1,4 @@
+using ExtensionMethods;
 using Godot;
 using System;
 
@@ -26,6 +27,13 @@ public partial class PlayerCamera : Camera2D
         }
 
         targetZoom = Zoom;
+
+        //Dont allow the camera to look outside of world bounds
+        LimitTop = -(int) this.GetGameWorld().RegionBounds.Y / 2;
+        LimitBottom = (int)this.GetGameWorld().RegionBounds.Y / 2;
+        LimitRight = (int)this.GetGameWorld().RegionBounds.X / 2;
+        LimitLeft = -(int)this.GetGameWorld().RegionBounds.X / 2;
+        LimitSmoothed = true;
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.

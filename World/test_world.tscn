@@ -30,7 +30,7 @@ outlines = Array[PackedVector2Array]([PackedVector2Array(-3056, -3076, 3053, -30
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_tr0n8")
-RegionBounds = Vector2(12288, 12288)
+RegionBounds = Vector2(6000, 6000)
 
 [node name="ParallaxBackground" type="Parallax2D" parent="."]
 scroll_scale = Vector2(0.9, 0.9)
