@@ -1,10 +1,11 @@
-[gd_scene load_steps=10 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=11 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
 [ext_resource type="Shader" path="res://Shaders/fog.gdshader" id="2_vxmty"]
 [ext_resource type="PackedScene" uid="uid://c0fcw0x8ku6c6" path="res://World/wall.tscn" id="3_jc71b"]
 [ext_resource type="PackedScene" uid="uid://2ctjrem32j1v" path="res://NPC/shambler.tscn" id="6_a6glu"]
+[ext_resource type="Script" path="res://World/RadialSpawner.cs" id="6_xi2eq"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_fn2eg"]
 frequency = 0.0075
@@ -84,20 +85,9 @@ position = Vector2(-263, 64)
 [node name="Wall5" parent="NavRegion" instance=ExtResource("3_jc71b")]
 position = Vector2(-62, 0)
 
-[node name="Shambler" parent="." instance=ExtResource("6_a6glu")]
-position = Vector2(457, -97)
-
-[node name="Shambler2" parent="." instance=ExtResource("6_a6glu")]
-position = Vector2(445, -213)
-
-[node name="Shambler3" parent="." instance=ExtResource("6_a6glu")]
-position = Vector2(466, 45)
-
-[node name="Shambler4" parent="." instance=ExtResource("6_a6glu")]
-position = Vector2(574, -161)
-
-[node name="Shambler5" parent="." instance=ExtResource("6_a6glu")]
-position = Vector2(584, -9)
-
-[node name="Shambler6" parent="." instance=ExtResource("6_a6glu")]
-position = Vector2(534, 161)
+[node name="ShamblerSpawnZone" type="Node2D" parent="."]
+script = ExtResource("6_xi2eq")
+SpawnTemplate = ExtResource("6_a6glu")
+InnerRadius = 550.0
+OuterRadius = 700.0
+InitialCount = 6
