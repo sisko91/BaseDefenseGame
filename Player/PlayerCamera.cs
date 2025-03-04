@@ -47,11 +47,11 @@ public partial class PlayerCamera : Camera2D
         // Apply a fraction of total zoom based on the frame time.
         float zoomIncrement = CameraZoomRate * (float)delta;
         var zoomIncrementVec = new Vector2(zoomIncrement, zoomIncrement);
-        if (Input.IsActionJustPressed("camera_zoom_in"))
+        if (Input.IsActionJustPressed("camera_zoom_in") && !Input.IsKeyPressed(Key.Ctrl))
         {
             targetZoom += zoomIncrementVec;
         }
-        else if (Input.IsActionJustPressed("camera_zoom_out"))
+        else if (Input.IsActionJustPressed("camera_zoom_out") && !Input.IsKeyPressed(Key.Ctrl))
         {
             targetZoom -= zoomIncrementVec;
         }
