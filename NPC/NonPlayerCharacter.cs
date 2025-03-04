@@ -53,6 +53,13 @@ public partial class NonPlayerCharacter : CharacterBody2D
 
         NavAgent = new NavigationAgent2D();
         NavAgent.AvoidanceEnabled = true;
+        // TODO: Probably derive the radius from the CollisionShape or something?
+        NavAgent.Radius = 50.0f;
+        NavAgent.NeighborDistance = NavAgent.Radius * 1.05f; // Not sure how to set this smarter.
+        // We tell the NavAgent what velocity we want to go and it computes a slightly different velocity ensuring we don't run into other NPCs while still getting where
+        // we want to go.
+        NavAgent.VelocityComputed += OnVelocityComputed;
+
         //NavAgent.DebugEnabled = true;
         NavAgent.PathDesiredDistance = 5.0f;
         NavAgent.TargetDesiredDistance = 5.0f;
@@ -74,23 +81,43 @@ public partial class NonPlayerCharacter : CharacterBody2D
 
     public override void _PhysicsProcess(double delta)
     {
+        // Stop moving by default, unless something below adds velocity.
+        var newVelocity = Vector2.Zero;
+
         if (enemyTarget != null)
         {
             Vector2 nextPathPosition = NavAgent.GetNextPathPosition();
             var direction = (nextPathPosition - GlobalPosition).Normalized();
-            Velocity = direction * MoveSpeed;
+            newVelocity = direction * MoveSpeed;
+            //Velocity = direction * MoveSpeed;
+        }
+
+        // Request a new velocity from the NavAgent. It will provide the same/adjusted velocity back to us for actual movement during OnNavAgentVelocityComputed().
+        if(NavAgent != null)
+        {
+            NavAgent.Velocity = newVelocity;
         }
         else
         {
-            // No targets, stop moving.
-            Velocity = Vector2.Zero;
+            OnVelocityComputed(newVelocity);
         }
 
-        // Orient to face the direction the NPC is moving.
-        GlobalRotation = Velocity.Angle();
+        
+    }
 
-        var collision = MoveAndCollide(Velocity * (float)delta);
-        if(collision != null)
+    // Called each frame (after _PhysicsProcess) after RVO avoidance adjusts our requested velocity to avoid other NPCs.
+    // Note: safeVelocity has *already* been multiplied by the frame delta-time, which is why that parameter isn't present.
+    private void OnVelocityComputed(Vector2 safeVelocity)
+    {
+        // The engine uses a fixed timestep for physics, so this is always a constant value at runtime.
+        float physicsTickDelta = 1.0f / Engine.PhysicsTicksPerSecond;
+
+        // Orient to face the direction the NPC is moving. Lerping by the physicsTickDelta smooths this out so the rotation doesn't change erratically,
+        // and multiplying by a constant speeds up the how fast they turn.
+        const int turnConstant = 4;
+        GlobalRotation = Mathf.LerpAngle(GlobalRotation, safeVelocity.Angle(), physicsTickDelta * turnConstant);
+        var collision = MoveAndCollide(safeVelocity * physicsTickDelta);
+        if (collision != null)
         {
             OnCollide(collision);
         }
