@@ -1,6 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://h6mtv0wbug0t"]
+[gd_scene load_steps=11 format=3 uid="uid://h6mtv0wbug0t"]
 
+[ext_resource type="Script" path="res://World/Structures/Building.cs" id="1_7ffef"]
 [ext_resource type="PackedScene" uid="uid://cw48c72a4tsvk" path="res://World/Structures/Testing/test_wall.tscn" id="1_e2nee"]
+[ext_resource type="Script" path="res://World/Structures/InteriorRegion.cs" id="1_edy31"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_k1td7"]
+size = Vector2(512, 256)
 
 [sub_resource type="Gradient" id="Gradient_7tuki"]
 colors = PackedColorArray(0.226707, 0.226707, 0.226707, 1, 0.344076, 0.344076, 0.344076, 1)
@@ -17,9 +22,29 @@ seamless = true
 color_ramp = SubResource("Gradient_7tuki")
 noise = SubResource("FastNoiseLite_6w4iu")
 
-[node name="TestBuilding" type="Node2D"]
+[sub_resource type="Gradient" id="Gradient_3x6xn"]
+colors = PackedColorArray(0.82606, 0.82606, 0.82606, 1, 1, 1, 1, 1)
 
-[node name="Floor0" type="Node2D" parent="."]
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_7rssq"]
+noise_type = 0
+frequency = 0.0198
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_g0nlw"]
+width = 256
+height = 256
+seamless = true
+color_ramp = SubResource("Gradient_3x6xn")
+noise = SubResource("FastNoiseLite_7rssq")
+
+[node name="TestBuilding" type="Node2D"]
+script = ExtResource("1_7ffef")
+
+[node name="Floor0" type="Area2D" parent="."]
+script = ExtResource("1_edy31")
+
+[node name="Boundary" type="CollisionShape2D" parent="Floor0"]
+position = Vector2(256, 128)
+shape = SubResource("RectangleShape2D_k1td7")
 
 [node name="Ground" type="Sprite2D" parent="Floor0"]
 texture_repeat = 2
@@ -48,3 +73,47 @@ scale = Vector2(0.75, 1)
 [node name="BottomWall1" parent="Floor0" instance=ExtResource("1_e2nee")]
 position = Vector2(320, 224)
 scale = Vector2(0.75, 1)
+
+[node name="Roof" type="Area2D" parent="."]
+script = ExtResource("1_edy31")
+ElevationLevel = 1
+
+[node name="Boundary" type="CollisionShape2D" parent="Roof"]
+position = Vector2(256, 128)
+shape = SubResource("RectangleShape2D_k1td7")
+
+[node name="Ground" type="Sprite2D" parent="Roof"]
+texture_repeat = 2
+texture = SubResource("NoiseTexture2D_g0nlw")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 512, 256)
+
+[node name="TopPerimeter" type="ColorRect" parent="Roof"]
+offset_right = 512.0
+offset_bottom = 10.0
+color = Color(0.352156, 0.261893, 0.161308, 1)
+
+[node name="LeftPerimeter" type="ColorRect" parent="Roof"]
+offset_right = 10.0
+offset_bottom = 256.0
+color = Color(0.352156, 0.261893, 0.161308, 1)
+
+[node name="RightPerimeter" type="ColorRect" parent="Roof"]
+offset_left = 502.0
+offset_right = 512.0
+offset_bottom = 256.0
+color = Color(0.352156, 0.261893, 0.161308, 1)
+
+[node name="BottomPerimeter" type="ColorRect" parent="Roof"]
+offset_top = 246.0
+offset_right = 512.0
+offset_bottom = 256.0
+color = Color(0.352156, 0.261893, 0.161308, 1)
+
+[node name="DoorOverhang" type="ColorRect" parent="Roof"]
+offset_left = 156.0
+offset_top = 246.0
+offset_right = 356.0
+offset_bottom = 256.0
+color = Color(0.16462, 0.115337, 0.0602966, 1)

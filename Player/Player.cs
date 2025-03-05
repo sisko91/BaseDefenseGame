@@ -12,6 +12,10 @@ public partial class Player : CharacterBody2D
     // Cached camera reference from the player.tscn.
     public PlayerCamera Camera { get; private set; }
 
+    // The player's current elevation in the world. Defaults to 0 which is ground level. This is updated by Buildings when
+    // players enter their InteriorRegions.
+    public int CurrentElevationLevel = 0;
+
     #region Weapons
 
     // The default / starter weapons that the player always spawns with. May be empty.
