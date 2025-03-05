@@ -21,7 +21,6 @@ public partial class NonPlayerCharacter : CharacterBody2D
     public float CurrentHealth { get; private set; }
 
     public NavigationAgent2D NavAgent { get; private set; } = null;
-
     public Vector2 MovementTarget
     {
         get { return NavAgent.TargetPosition; }
