@@ -45,7 +45,13 @@ public partial class RadialSpawner : Node2D
 
     public override void _Ready()
     {
-        for(uint i = 0; i < InitialCount; i++)
+        // If we're in the editor we don't want this doing any actual work, we just want the rendering calls to happen.
+        if (Engine.IsEditorHint())
+        {
+            return;
+        }
+
+        for (uint i = 0; i < InitialCount; i++)
         {
             SpawnRandom();
         }
@@ -54,7 +60,7 @@ public partial class RadialSpawner : Node2D
     // Spawns a new instance.
     public Node SpawnRandom()
     {
-        if(SpawnTemplate == null)
+        if (SpawnTemplate == null)
         {
             return null;
         }
