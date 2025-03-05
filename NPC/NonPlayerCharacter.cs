@@ -118,6 +118,7 @@ public partial class NonPlayerCharacter : CharacterBody2D
     // Note: safeVelocity has *already* been multiplied by the frame delta-time, which is why that parameter isn't present.
     private void OnVelocityComputed(Vector2 safeVelocity)
     {
+        Velocity = safeVelocity;
         // The engine uses a fixed timestep for physics, so this is always a constant value at runtime.
         float physicsTickDelta = 1.0f / Engine.PhysicsTicksPerSecond;
 
