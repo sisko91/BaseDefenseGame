@@ -1,0 +1,50 @@
+[gd_scene load_steps=5 format=3 uid="uid://h6mtv0wbug0t"]
+
+[ext_resource type="PackedScene" uid="uid://cw48c72a4tsvk" path="res://World/Structures/Testing/test_wall.tscn" id="1_e2nee"]
+
+[sub_resource type="Gradient" id="Gradient_7tuki"]
+colors = PackedColorArray(0.226707, 0.226707, 0.226707, 1, 0.344076, 0.344076, 0.344076, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_6w4iu"]
+fractal_octaves = 2
+fractal_lacunarity = 5.0
+fractal_gain = 0.25
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_31ywv"]
+width = 256
+height = 256
+seamless = true
+color_ramp = SubResource("Gradient_7tuki")
+noise = SubResource("FastNoiseLite_6w4iu")
+
+[node name="TestBuilding" type="Node2D"]
+
+[node name="Floor0" type="Node2D" parent="."]
+
+[node name="Ground" type="Sprite2D" parent="Floor0"]
+texture_repeat = 2
+texture = SubResource("NoiseTexture2D_31ywv")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 512, 256)
+
+[node name="TopWall0" parent="Floor0" instance=ExtResource("1_e2nee")]
+
+[node name="TopWall1" parent="Floor0" instance=ExtResource("1_e2nee")]
+position = Vector2(256, 0)
+
+[node name="LeftWall" parent="Floor0" instance=ExtResource("1_e2nee")]
+position = Vector2(32, 0)
+rotation = 1.5708
+
+[node name="RightWall" parent="Floor0" instance=ExtResource("1_e2nee")]
+position = Vector2(512, 0)
+rotation = 1.5708
+
+[node name="BottomWall0" parent="Floor0" instance=ExtResource("1_e2nee")]
+position = Vector2(0, 224)
+scale = Vector2(0.75, 1)
+
+[node name="BottomWall1" parent="Floor0" instance=ExtResource("1_e2nee")]
+position = Vector2(320, 224)
+scale = Vector2(0.75, 1)

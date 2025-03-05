@@ -62,6 +62,7 @@ public partial class NonPlayerCharacter : CharacterBody2D
         await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
 
         NavAgent = new NavigationAgent2D();
+        //NavAgent.DebugEnabled = true;
         NavAgent.AvoidanceEnabled = true;
         // TODO: Probably derive the radius from the CollisionShape or something?
         NavAgent.Radius = 50.0f;
