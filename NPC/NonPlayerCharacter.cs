@@ -1,10 +1,14 @@
 using ExtensionMethods;
 using Godot;
+using System;
 
 public partial class NonPlayerCharacter : CharacterBody2D
 {
     [Export]
     public float MoveSpeed = 100.0f;
+
+    [Export]
+    public float MoveAccel = 5f;
 
     [Export]
     public float MaxHealth = 100.0f;
@@ -35,6 +39,8 @@ public partial class NonPlayerCharacter : CharacterBody2D
 
     private float HitAnimationSeconds = 0.1f;
     private Timer HitAnimationTimer;
+
+    private Vector2 LastSeenDirection = Vector2.Zero;
 
     public override void _Ready()
     {
@@ -85,28 +91,27 @@ public partial class NonPlayerCharacter : CharacterBody2D
 
     public override void _PhysicsProcess(double delta)
     {
-        // Stop moving by default, unless something below adds velocity.
-        var newVelocity = Vector2.Zero;
-
-        if (enemyTarget != null)
-        {
-            Vector2 nextPathPosition = NavAgent.GetNextPathPosition();
-            var direction = (nextPathPosition - GlobalPosition).Normalized();
-            newVelocity = direction * MoveSpeed;
-            //Velocity = direction * MoveSpeed;
+        //If moving faster than allowed (e.g. from explosion), just slow down
+        if (Velocity.Length() < MoveSpeed + 0.1) { //Fudge factor since LimitLength() can return a vector with slightly higher length than specified (float precision)
+            if (enemyTarget != null) { //Why is this null many frames?
+                Vector2 nextPathPosition = NavAgent.GetNextPathPosition();
+                var direction = (nextPathPosition - GlobalPosition).Normalized();
+                Velocity = (Velocity + direction * MoveAccel).LimitLength(MoveSpeed);
+                LastSeenDirection = direction;
+            }
+        } else {
+            Velocity = (Velocity + -Velocity.Normalized() * MoveAccel);
         }
 
         // Request a new velocity from the NavAgent. It will provide the same/adjusted velocity back to us for actual movement during OnNavAgentVelocityComputed().
-        if(NavAgent != null)
+        if (NavAgent != null)
         {
-            NavAgent.Velocity = newVelocity;
+            NavAgent.Velocity = Velocity;
         }
         else
         {
-            OnVelocityComputed(newVelocity);
+            OnVelocityComputed(Velocity);
         }
-
-        
     }
 
     // Called each frame (after _PhysicsProcess) after RVO avoidance adjusts our requested velocity to avoid other NPCs.
@@ -119,7 +124,7 @@ public partial class NonPlayerCharacter : CharacterBody2D
         // Orient to face the direction the NPC is moving. Lerping by the physicsTickDelta smooths this out so the rotation doesn't change erratically,
         // and multiplying by a constant speeds up the how fast they turn.
         const int turnConstant = 4;
-        GlobalRotation = Mathf.LerpAngle(GlobalRotation, safeVelocity.Angle(), physicsTickDelta * turnConstant);
+        GlobalRotation = Mathf.LerpAngle(GlobalRotation, LastSeenDirection.Angle(), physicsTickDelta * turnConstant);
         var collision = MoveAndCollide(safeVelocity * physicsTickDelta);
         if (collision != null)
         {
@@ -129,7 +134,6 @@ public partial class NonPlayerCharacter : CharacterBody2D
 
     public void OnCollide(KinematicCollision2D collision)
     {
-        GD.Print($"{Name} walked into {collision.GetCollider()}");
     }
 
     // Process an incoming impact from the sourceNode. The impact is calculated by the other collider, i.e. impact.Collider == this.
@@ -151,18 +155,12 @@ public partial class NonPlayerCharacter : CharacterBody2D
             //var kbDirection = bullet.Velocity.Normalized();
             //var kbDirection = impact.GetAngle() - Mathf.Pi;
             var kbDirection = (GlobalPosition - sourceNode.GlobalPosition).Normalized();
-            // Just use the damage as the momentum transferred, essentially.
-            var kbVelocity = kbDirection * damage;
-
+            var kbVelocity = kbDirection * damage * 5;
             // Render the impact angle if debugging is enabled.
             //this.DrawDebugLine(GlobalPosition, GlobalPosition + kbVelocity, new Color(1, 0, 0), 2.0f);
-            //this.DrawDebugLine(GlobalPosition - bullet.Velocity, GlobalPosition, new Color(0, 1, 0), 2.0f);
 
-            var collision = MoveAndCollide(kbVelocity);
-            if(collision != null)
-            {
-                OnCollide(collision);
-            }
+            // Just use the damage as the momentum transferred, essentially.
+            Velocity += kbVelocity;
         }
         else
         {

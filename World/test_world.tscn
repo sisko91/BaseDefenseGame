@@ -91,3 +91,10 @@ SpawnTemplate = ExtResource("6_a6glu")
 InnerRadius = 550.0
 OuterRadius = 700.0
 InitialCount = 6
+
+[connection signal="HealthChanged" from="ShamblerSpawnZone/Shambler" to="ShamblerSpawnZone/Shambler/FloatingHealthBar" method="OnCharacterHealthChanged"]
+[connection signal="HealthChanged" from="ShamblerSpawnZone/@CharacterBody2D@17323" to="ShamblerSpawnZone/@CharacterBody2D@17323/FloatingHealthBar" method="OnCharacterHealthChanged"]
+[connection signal="HealthChanged" from="ShamblerSpawnZone/@CharacterBody2D@17324" to="ShamblerSpawnZone/@CharacterBody2D@17324/FloatingHealthBar" method="OnCharacterHealthChanged"]
+[connection signal="HealthChanged" from="ShamblerSpawnZone/@CharacterBody2D@17325" to="ShamblerSpawnZone/@CharacterBody2D@17325/FloatingHealthBar" method="OnCharacterHealthChanged"]
+[connection signal="HealthChanged" from="ShamblerSpawnZone/@CharacterBody2D@17326" to="ShamblerSpawnZone/@CharacterBody2D@17326/FloatingHealthBar" method="OnCharacterHealthChanged"]
+[connection signal="HealthChanged" from="ShamblerSpawnZone/@CharacterBody2D@17327" to="ShamblerSpawnZone/@CharacterBody2D@17327/FloatingHealthBar" method="OnCharacterHealthChanged"]
