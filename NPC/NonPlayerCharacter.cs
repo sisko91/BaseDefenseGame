@@ -27,6 +27,10 @@ public partial class NonPlayerCharacter : CharacterBody2D
     // Cached reference to the collision shape defined on the .tscn
     public CollisionShape2D CollisionShape { get; private set; }
 
+    // A Signal that other elements can (be) subscribe(d) to in order to hear about updates to character health.
+    [Signal]
+    public delegate void HealthChangedEventHandler(NonPlayerCharacter character, float newHealth, float oldHealth);
+
     private Node2D enemyTarget = null;
 
     private float HitAnimationSeconds = 0.1f;
@@ -135,8 +139,10 @@ public partial class NonPlayerCharacter : CharacterBody2D
         HitAnimationTimer.Start(HitAnimationSeconds);
         SetHitMaterial();
 
-        // TODO: Probably should have this on the bullet.
+        var oldHealth = CurrentHealth;
         CurrentHealth = Mathf.Max(CurrentHealth - damage, 0);
+        // Broadcast the damage received to anyone listening.
+        EmitSignal(SignalName.HealthChanged, this, CurrentHealth, oldHealth);
 
         if(CurrentHealth > 0)
         {

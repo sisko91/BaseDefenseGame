@@ -1,6 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://2ctjrem32j1v"]
+[gd_scene load_steps=9 format=3 uid="uid://2ctjrem32j1v"]
 
 [ext_resource type="Script" path="res://NPC/NonPlayerCharacter.cs" id="1_s50ym"]
+[ext_resource type="PackedScene" uid="uid://bjk4qjwt7h3d2" path="res://UI/floating_health_bar.tscn" id="2_l0ij1"]
+[ext_resource type="Script" path="res://UI/HealthBar.cs" id="3_2t8ll"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4eeic"]
 radius = 24.0
@@ -31,6 +33,11 @@ collision_mask = 13
 script = ExtResource("1_s50ym")
 MoveSpeed = 30.0
 
+[node name="FloatingHealthBar" parent="." instance=ExtResource("2_l0ij1")]
+position = Vector2(-20, -36)
+script = ExtResource("3_2t8ll")
+bInvisibleWhenFull = true
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_4eeic")
 
@@ -49,3 +56,5 @@ position = Vector2(15, -7)
 rotation = -1.5708
 scale = Vector2(0.694375, 0.296094)
 texture = SubResource("GradientTexture2D_mdfs5")
+
+[connection signal="HealthChanged" from="." to="FloatingHealthBar" method="OnCharacterHealthChanged"]

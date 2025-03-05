@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://bjk4qjwt7h3d2"]
+
+[node name="FloatingHealthBar" type="Node2D"]
+
+[node name="BarFiller" type="ColorRect" parent="."]
+offset_right = 40.0
+offset_bottom = 5.0
+color = Color(0.739789, 1.93726e-06, 9.62615e-07, 1)
