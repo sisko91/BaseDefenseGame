@@ -1,12 +1,15 @@
 using Godot;
-using System;
-using System.Collections.Generic;
 
 public partial class World : Node2D
 {
     // The extents / bounds of the world, in world-space units. X is the width, Y is the height. The world extends half of this distance in each direction from the World's location.
     [Export]
     public Vector2 RegionBounds { get; set; }
+
+    // When true, the world will define / override the first outline on the NavRegion to fit the size of the world completely.
+    // Disable this if you plan on defining a custom NavigationPolygon for some reason.
+    [Export]
+    public bool ExpandNavToFit = true;
 
     // All Player nodes currently in the scene.
     public Godot.Collections.Array<Node> Players
@@ -60,15 +63,22 @@ public partial class World : Node2D
     private void SetupNavMesh()
     {
         navRegion = GetNode<NavigationRegion2D>("NavRegion");
-        var polygon = new NavigationPolygon();
-        var boundingOutline = new Vector2[] {
-            new Vector2(-RegionBounds.X/2, -RegionBounds.Y/2),
-            new Vector2(-RegionBounds.X/2, RegionBounds.Y/2),
-            new Vector2(RegionBounds.X/2, RegionBounds.Y/2),
-            new Vector2(RegionBounds.X/2, -RegionBounds.Y/2),
-        };
-        polygon.AddOutline(boundingOutline);
-        navRegion.NavigationPolygon = polygon;
+        // Create the navigation mesh if it's not already.=
+        if(navRegion.NavigationPolygon == null)
+        {
+            navRegion.NavigationPolygon = new NavigationPolygon();
+        }
+
+        if(ExpandNavToFit)
+        {
+            var boundingOutline = new Vector2[] {
+                new Vector2(-RegionBounds.X/2, -RegionBounds.Y/2),
+                new Vector2(-RegionBounds.X/2, RegionBounds.Y/2),
+                new Vector2(RegionBounds.X/2, RegionBounds.Y/2),
+                new Vector2(RegionBounds.X/2, -RegionBounds.Y/2),
+            };
+            navRegion.NavigationPolygon.SetOutline(0, boundingOutline);
+        }
     }
 
     private void SetupWorldBarriers() {
@@ -83,7 +93,7 @@ public partial class World : Node2D
         var wallScene = GD.Load<PackedScene>("res://World/wall.tscn");
         var wall = wallScene.Instantiate<Node2D>();
         navRegion.AddChild(wall);
-        wall.Position = new Vector2(0, -150);
+        wall.Position = new Vector2(0, 250);
     }
 
     private void CreateWorldBoundary(float distance, Vector2 normal) {
