@@ -5,8 +5,8 @@
 [ext_resource type="Script" path="res://UI/HealthBar.cs" id="3_2t8ll"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4eeic"]
-radius = 20.0
-height = 40.0
+radius = 25.0
+height = 50.0
 
 [sub_resource type="Gradient" id="Gradient_4pvop"]
 offsets = PackedFloat32Array(0.396104, 0.597403)

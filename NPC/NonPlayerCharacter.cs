@@ -125,7 +125,8 @@ public partial class NonPlayerCharacter : CharacterBody2D
         // and multiplying by a constant speeds up the how fast they turn.
         const int turnConstant = 4;
         GlobalRotation = Mathf.LerpAngle(GlobalRotation, LastSeenDirection.Angle(), physicsTickDelta * turnConstant);
-        var collision = MoveAndCollide(safeVelocity * physicsTickDelta);
+        Velocity = Velocity.MoveToward(safeVelocity, 0.25f);
+        var collision = MoveAndCollide(Velocity * physicsTickDelta);
         if (collision != null)
         {
             OnCollide(collision);
