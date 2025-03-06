@@ -112,8 +112,8 @@ offset_bottom = 256.0
 color = Color(0.352156, 0.261893, 0.161308, 1)
 
 [node name="DoorOverhang" type="ColorRect" parent="Roof"]
-offset_left = 156.0
+offset_left = 192.0
 offset_top = 252.0
-offset_right = 356.0
+offset_right = 320.0
 offset_bottom = 262.0
 color = Color(0.16462, 0.115337, 0.0602966, 1)
