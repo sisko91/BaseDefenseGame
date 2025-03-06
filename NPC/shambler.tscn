@@ -1,8 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://2ctjrem32j1v"]
+[gd_scene load_steps=11 format=3 uid="uid://2ctjrem32j1v"]
 
 [ext_resource type="Script" path="res://NPC/NonPlayerCharacter.cs" id="1_s50ym"]
 [ext_resource type="PackedScene" uid="uid://bjk4qjwt7h3d2" path="res://UI/floating_health_bar.tscn" id="2_l0ij1"]
 [ext_resource type="Script" path="res://UI/HealthBar.cs" id="3_2t8ll"]
+[ext_resource type="Script" path="res://NPC/BodySensor.cs" id="4_h3xoj"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4eeic"]
 radius = 25.0
@@ -27,6 +28,9 @@ width = 32
 height = 32
 fill = 1
 fill_from = Vector2(0.5, 0.5)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_vtmmg"]
+radius = 128.0
 
 [node name="Shambler" type="CharacterBody2D"]
 collision_mask = 13
@@ -56,5 +60,11 @@ position = Vector2(15, -7)
 rotation = -1.5708
 scale = Vector2(0.694375, 0.296094)
 texture = SubResource("GradientTexture2D_mdfs5")
+
+[node name="BodySensor" type="Area2D" parent="."]
+script = ExtResource("4_h3xoj")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BodySensor"]
+shape = SubResource("CircleShape2D_vtmmg")
 
 [connection signal="HealthChanged" from="." to="FloatingHealthBar" method="OnCharacterHealthChanged"]

@@ -30,6 +30,9 @@ public partial class NonPlayerCharacter : CharacterBody2D
     // Cached reference to the collision shape defined on the .tscn
     public CollisionShape2D CollisionShape { get; private set; }
 
+    // Cached reference to the BodySensor defined on the .tscn
+    public BodySensor BodySensor { get; private set; }
+
     // A Signal that other elements can (be) subscribe(d) to in order to hear about updates to character health.
     [Signal]
     public delegate void HealthChangedEventHandler(NonPlayerCharacter character, float newHealth, float oldHealth);
@@ -46,6 +49,9 @@ public partial class NonPlayerCharacter : CharacterBody2D
         AddToGroup(Group, true);
         CollisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
         CurrentHealth = MaxHealth;
+        BodySensor = GetNode<BodySensor>("BodySensor");
+        BodySensor.PlayerSensed += OnPlayerSensed;
+        BodySensor.NpcSensed += OnNpcSensed;
 
         // SetupNavAgent awaits() a signal so we want to make sure we don't call it from _Ready().
         Callable.From(SetupNavAgent).CallDeferred();
@@ -207,5 +213,19 @@ public partial class NonPlayerCharacter : CharacterBody2D
 
     private void RemoveHitMaterial() {
         Material = null;
+    }
+
+    // This is currently just to test with.
+    private void OnNpcSensed(NonPlayerCharacter npc, bool bSensed)
+    {
+        Color senseColor = bSensed ? new Color(0, 1, 0) : new Color(1, 0, 0);
+        this.DrawDebugLine(npc.Position, Position, senseColor, 0.5);
+    }
+
+    // These is currently just to test with.
+    private void OnPlayerSensed(Player player, bool bSensed)
+    {
+        Color senseColor = bSensed ? new Color(0, 1, 0) : new Color(1, 0, 0);
+        this.DrawDebugLine(player.Position, Position, senseColor, 0.5);
     }
 }
