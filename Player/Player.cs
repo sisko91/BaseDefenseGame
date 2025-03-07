@@ -16,6 +16,9 @@ public partial class Player : CharacterBody2D
     // players enter their InteriorRegions.
     public int CurrentElevationLevel = 0;
 
+    // Cached reference to the NearbyBodySensor defined on the .tscn
+    public BodySensor NearbyBodySensor { get; private set; }
+
     #region Weapons
 
     // The default / starter weapons that the player always spawns with. May be empty.
@@ -78,6 +81,8 @@ public partial class Player : CharacterBody2D
                 WeaponRing.Equip(starterWeapon);
             }
         }
+
+        NearbyBodySensor = GetNode<BodySensor>("NearbyBodySensor");
     }
 
     // Called every tick of the physics thread.
@@ -185,6 +190,32 @@ public partial class Player : CharacterBody2D
         else if (Input.IsActionJustPressed("cycle_weapon_back"))
         {
             WeaponRing.Equip(PreviousWeapon);
+        }
+
+        if(Input.IsActionJustPressed("player_confirm"))
+        {
+            Interactable target = null;
+            foreach (var candidate in NearbyBodySensor?.Interactables)
+            {
+                if(target == null)
+                {
+                    target = candidate;
+                }
+                else
+                {
+                    var targetSq = target.GlobalPosition.DistanceSquaredTo(GlobalPosition);
+                    var candidateSq = candidate.GlobalPosition.DistanceSquaredTo(GlobalPosition);
+                    if (targetSq > candidateSq)
+                    {
+                        target = candidate;
+                    }
+                }
+            }
+
+            if(target != null)
+            {
+                target.Interact(this);
+            }
         }
     }
 }

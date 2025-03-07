@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=13 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://h6mtv0wbug0t" path="res://World/Structures/Testing/test_building.tscn" id="5_20vwc"]
 [ext_resource type="PackedScene" uid="uid://2ctjrem32j1v" path="res://NPC/shambler.tscn" id="6_a6glu"]
 [ext_resource type="Script" path="res://World/RadialSpawner.cs" id="6_xi2eq"]
+[ext_resource type="PackedScene" uid="uid://bjbenwcnvupcg" path="res://World/Structures/Testing/test_interactable.tscn" id="8_d6u3h"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_fn2eg"]
 frequency = 0.0075
@@ -96,3 +97,7 @@ SpawnTemplate = ExtResource("6_a6glu")
 InnerRadius = 550.0
 OuterRadius = 700.0
 InitialCount = 6
+
+[node name="TestInteractable" parent="." instance=ExtResource("8_d6u3h")]
+position = Vector2(348, 251)
+scale = Vector2(0.5, 0.5)
