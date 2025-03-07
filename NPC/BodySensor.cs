@@ -77,6 +77,19 @@ public partial class BodySensor : Area2D
                 break;
         }
 
+        // In addition to being one of the above, the body may also be the owner of one or more interactables.
+        if (body is PhysicsBody2D physBody)
+        {
+            // Iterate backwards so that removing elements doesn't shift indices
+            for (int i = Interactables.Count - 1; i >= 0; i--)
+            {
+                if (Interactables[i].GetParent() == physBody)
+                {
+                    Interactables.RemoveAt(i);
+                }
+            }
+        }
+
         //GD.Print($"{body.Name} exited {GetParent().Name}'s Sensor");
     }
 
