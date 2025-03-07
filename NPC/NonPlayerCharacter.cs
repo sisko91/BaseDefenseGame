@@ -50,6 +50,9 @@ public partial class NonPlayerCharacter : CharacterBody2D
     private List<float> Interest = new List<float>();
     private List<float> Danger = new List<float>();
 
+    //TODO: Make project level flags
+    private static bool DEBUG_STEERING = false;
+
     public override void _Ready()
     {
         AddToGroup(Group, true);
@@ -259,16 +262,18 @@ public partial class NonPlayerCharacter : CharacterBody2D
             Vector2 interestDirection = Vector2.Right.Rotated(angle).Rotated(Rotation);
             direction += interestDirection * Interest[i];
 
-            var color = Interest[i] <= 0 ? new Color(1, 0, 0) : new Color(0, 1, 0);
-            var line = (interestDirection * Math.Abs(Interest[i]));
-            if (Interest[i] == 0) {
-                color = new Color(1, 0, 0);
-                line = interestDirection.Normalized();
-                if (i >= Directions / 4 && i <= 3 * Directions / 4) {
-                    line *= 0.25f;
+            if (DEBUG_STEERING) {
+                var color = Interest[i] <= 0 ? new Color(1, 0, 0) : new Color(0, 1, 0);
+                var line = (interestDirection * Math.Abs(Interest[i]));
+                if (Interest[i] == 0) {
+                    color = new Color(1, 0, 0);
+                    line = interestDirection.Normalized();
+                    if (i >= Directions / 4 && i <= 3 * Directions / 4) {
+                        line *= 0.25f;
+                    }
                 }
+                this.DrawDebugLine(Position, Position + line * 100, color, 0.1, GetPath());
             }
-            //this.DrawDebugLine(Position, Position + line * 100, color, 0.1, GetPath());
 
             if (Interest[i] > maxInterest) {
                 maxInterest = Interest[i];
@@ -276,9 +281,12 @@ public partial class NonPlayerCharacter : CharacterBody2D
             }
         }
 
-        direction = highestInterestDirection;
+        //Uncomment to pick the highest interest path instead of cumulative interest. It gets caught on walls right now because those aren't detected by steering
+        //direction = highestInterestDirection;
 
-        //this.DrawDebugLine(Position, Position + direction.Normalized() * 150, new Color(1, 1, 0), 0.1, GetPath());
+        if (DEBUG_STEERING) {
+            this.DrawDebugLine(Position, Position + direction.Normalized() * 150, new Color(1, 1, 0), 0.1, GetPath());
+        }
 
         return direction.Normalized();
     }
