@@ -9,9 +9,9 @@ public partial class Interactable : Node2D
 
     public override void _EnterTree()
     {
-        if (Owner is not PhysicsBody2D)
+        if (GetParent() is not PhysicsBody2D)
         {
-            GD.PushError($"Interactable must be a child of a PhysicsBody2D! Removing from {Owner?.Name}.");
+            GD.PushError($"Interactable must be a child of a PhysicsBody2D, not {GetParent()?.GetType()}! Removing from {GetParent()?.Name}.");
             QueueFree();
         }
     }
