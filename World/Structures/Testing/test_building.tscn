@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://h6mtv0wbug0t"]
+[gd_scene load_steps=13 format=3 uid="uid://h6mtv0wbug0t"]
 
 [ext_resource type="Script" path="res://World/Structures/Building.cs" id="1_7ffef"]
 [ext_resource type="PackedScene" uid="uid://cw48c72a4tsvk" path="res://World/Structures/Testing/test_wall.tscn" id="1_e2nee"]
@@ -38,7 +38,6 @@ noise = SubResource("FastNoiseLite_7rssq")
 script = ExtResource("1_7ffef")
 
 [node name="Floor0" type="Area2D" parent="."]
-visible = false
 script = ExtResource("1_edy31")
 
 [node name="Boundary" type="CollisionShape2D" parent="Floor0"]
