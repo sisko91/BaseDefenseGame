@@ -32,13 +32,21 @@ namespace ExtensionMethods
 
         // Attempts to acquire the DebugLineRenderer under the conventional path /root/Main/Debug/LineRenderer, no-op if the line
         // renderer isn't defined.
-        public static void DrawDebugLine(this Node node, Vector2 origin, Vector2 endpoint, Color color, double lifeTime = -1)
+        public static void DrawDebugLine(this Node node, Vector2 origin, Vector2 endpoint, Color color, double lifeTime = -1, string group = "default")
         {
             var sceneTree = WorldNodeExtensions.GetSceneTree();
             if (sceneTree != null)
             {
                 var lineRenderer = sceneTree.Root.GetNode<DebugLineRenderer>("Main/Debug/LineRenderer");
-                lineRenderer?.PushLine(origin, endpoint, color, lifeTime);
+                lineRenderer?.PushLine(origin, endpoint, color, lifeTime, group);
+            }
+        }
+
+        public static void ClearLines(this Node node, string group) {
+            var sceneTree = WorldNodeExtensions.GetSceneTree();
+            if (sceneTree != null) {
+                var lineRenderer = sceneTree.Root.GetNode<DebugLineRenderer>("Main/Debug/LineRenderer");
+                lineRenderer?.Clear(group);
             }
         }
     }

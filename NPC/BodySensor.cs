@@ -41,7 +41,7 @@ public partial class BodySensor : Area2D
                 break;
         }
 
-        GD.Print($"{body.Name} entered {GetParent().Name}'s Sensor");
+        //GD.Print($"{body.Name} entered {GetParent().Name}'s Sensor");
     }
 
     private void OnBodyExited(Node2D body)
@@ -60,7 +60,7 @@ public partial class BodySensor : Area2D
                 break;
         }
 
-        GD.Print($"{body.Name} exited {GetParent().Name}'s Sensor");
+        //GD.Print($"{body.Name} exited {GetParent().Name}'s Sensor");
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.

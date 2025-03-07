@@ -12,11 +12,7 @@ public partial class DebugLineRenderer : Control
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
-        // Keep redrawing.
-        if (debugLines.Count > 0)
-        {
-            QueueRedraw();
-        }
+        QueueRedraw();
     }
 
     private struct DebugLineEntry
@@ -28,10 +24,16 @@ public partial class DebugLineRenderer : Control
         public double LifeTime;
     }
 
-    private List<DebugLineEntry> debugLines = new List<DebugLineEntry>();
+    private Dictionary<string, List<DebugLineEntry>> DebugLineGroups = new Dictionary<string, List<DebugLineEntry>>();
 
-    public void PushLine(Vector2 origin, Vector2 endpoint, Color color, double lifeTime = -1)
+    public void PushLine(Vector2 origin, Vector2 endpoint, Color color, double lifeTime = -1, string group = "default")
     {
+        if (!DebugLineGroups.ContainsKey(group)) {
+            DebugLineGroups[group] = new List<DebugLineEntry>();
+        }
+
+        var debugLines = DebugLineGroups[group];
+
         debugLines.Add(new DebugLineEntry
         {
             Origin = origin,
@@ -46,20 +48,25 @@ public partial class DebugLineRenderer : Control
     public override void _Draw()
     {
         var currentTime = Time.GetTicksMsec() / 1000.0;
-        // Iterate backwards so that removing elements doesn't shift indices
-        for (int i = debugLines.Count - 1; i >= 0; i--)
-        {
-            var lineEntry = debugLines[i];
-            if (lineEntry.LifeTime > 0)
-            {
-                if (currentTime - lineEntry.SpawnTime > lineEntry.LifeTime)
-                {
-                    debugLines.RemoveAt(i);
-                    continue;
+        foreach(KeyValuePair<string, List<DebugLineEntry>> entry in DebugLineGroups) {
+            var debugLines = entry.Value;
+            // Iterate backwards so that removing elements doesn't shift indices
+            for (int i = debugLines.Count - 1; i >= 0; i--) {
+                var lineEntry = debugLines[i];
+                if (lineEntry.LifeTime >= 0) {
+                    if (currentTime - lineEntry.SpawnTime > lineEntry.LifeTime) {
+                        debugLines.RemoveAt(i);
+                        continue;
+                    }
                 }
-            }
 
-            DrawLine(lineEntry.Origin, lineEntry.Endpoint, lineEntry.Color, 5.0f);
+                DrawLine(lineEntry.Origin, lineEntry.Endpoint, lineEntry.Color);
+            }
         }
+    }
+
+    public void Clear(string group) {
+        if (!DebugLineGroups.ContainsKey(group)) { return; }
+        DebugLineGroups[group].Clear();
     }
 }
