@@ -102,7 +102,6 @@ script = ExtResource("4_if2ce")
 shape = SubResource("RectangleShape2D_hnmhw")
 
 [node name="Roof" type="Area2D" parent="."]
-visible = false
 script = ExtResource("1_edy31")
 ElevationLevel = 1
 
