@@ -6,6 +6,7 @@ public partial class BodySensor : Area2D
 {
     public Godot.Collections.Array<Player> Players { get; private set; }
     public Godot.Collections.Array<NonPlayerCharacter> NPCs { get; private set; }
+    public Godot.Collections.Array<StaticBody2D> Walls { get; private set; }
     public Godot.Collections.Array<Interactable> Interactables { get; private set; }
 
     // A Signal that other elements can (be) subscribe(d) to in order to hear about Players newly entering or exiting the sensor.
@@ -26,6 +27,7 @@ public partial class BodySensor : Area2D
     {
         Players = new Godot.Collections.Array<Player>();
         NPCs = new Godot.Collections.Array<NonPlayerCharacter>();
+        Walls = new Godot.Collections.Array<StaticBody2D>();
         Interactables = new Godot.Collections.Array<Interactable>();
 
         BodyEntered += OnBodyEntered;
@@ -43,6 +45,9 @@ public partial class BodySensor : Area2D
             case NonPlayerCharacter npc:
                 NPCs.Add(npc);
                 EmitSignal(SignalName.NpcSensed, npc, true);
+                break;
+            case StaticBody2D staticBody:
+                Walls.Add(staticBody);
                 break;
             default:
                 break;
@@ -72,6 +77,9 @@ public partial class BodySensor : Area2D
             case NonPlayerCharacter npc:
                 NPCs.Remove(npc);
                 EmitSignal(SignalName.NpcSensed, npc, false);
+                break;
+            case StaticBody2D staticBody:
+                Walls.Remove(staticBody);
                 break;
             default:
                 break;

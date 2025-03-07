@@ -46,7 +46,7 @@ public partial class NonPlayerCharacter : CharacterBody2D
     private Vector2 LastSeenDirection = Vector2.Zero;
 
     //Context-based steering
-    private int Directions = 8;
+    private int Directions = 16;
     private List<float> Interest = new List<float>();
     private List<float> Danger = new List<float>();
 
@@ -74,6 +74,9 @@ public partial class NonPlayerCharacter : CharacterBody2D
             Interest.Add(0);
             Danger.Add(0);
         }
+
+        //Better for 2d top-down
+        MotionMode = MotionModeEnum.Floating;
     }
 
     private async void SetupNavAgent()
@@ -81,7 +84,7 @@ public partial class NonPlayerCharacter : CharacterBody2D
         await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
 
         NavAgent = new NavigationAgent2D();
-        //NavAgent.DebugEnabled = true;
+        NavAgent.DebugEnabled = false;
         NavAgent.AvoidanceEnabled = true;
         // TODO: Probably derive the radius from the CollisionShape or something?
         NavAgent.Radius = 75.0f;
@@ -115,12 +118,13 @@ public partial class NonPlayerCharacter : CharacterBody2D
         if (Velocity.Length() < MoveSpeed + 0.1) { //Fudge factor since LimitLength() can return a vector with slightly higher length than specified (float precision)
             if (enemyTarget != null) { //Why is this null many frames?
                 this.ClearLines(GetPath());
-                SetInterest(GlobalPosition.DirectionTo(NavAgent.GetNextPathPosition()));
+                var pathDirection = GlobalPosition.DirectionTo(NavAgent.GetNextPathPosition());
+                SetInterest(pathDirection);
                 SetDanger();
 
                 var direction = ChooseDirection();
                 Velocity = (Velocity + direction * MoveAccel).LimitLength(MoveSpeed);
-                LastSeenDirection = direction;
+                LastSeenDirection = pathDirection;
             }
         } else {
             Velocity = (Velocity + -Velocity.Normalized() * MoveAccel);
@@ -148,11 +152,19 @@ public partial class NonPlayerCharacter : CharacterBody2D
         // and multiplying by a constant speeds up the how fast they turn.
         const int turnConstant = 4;
         Velocity = Velocity.MoveToward(safeVelocity, 0.25f);
-        GlobalRotation = Mathf.LerpAngle(GlobalRotation, Velocity.Angle(), physicsTickDelta * turnConstant);
-        var collision = MoveAndCollide(Velocity * physicsTickDelta);
-        if (collision != null)
-        {
-            OnCollide(collision);
+        var lookAngle = Velocity.Angle();
+        //Look along the nav path if stuck
+        if (GetRealVelocity().Length() < 0.1f * MoveSpeed) {
+            lookAngle = LastSeenDirection.Angle();
+        //Look at the player if close
+        } else if (BodySensor.Players.Count > 0 && GlobalPosition.DistanceTo(BodySensor.Players[0].GlobalPosition) < 100f) {
+            lookAngle = GlobalPosition.DirectionTo(BodySensor.Players[0].GlobalPosition).Angle();
+        }
+
+        GlobalRotation = Mathf.LerpAngle(GlobalRotation, lookAngle, physicsTickDelta * turnConstant);
+        bool collided = MoveAndSlide();
+        if (collided) {
+            OnCollide(GetLastSlideCollision());
         }
     }
 
@@ -256,6 +268,7 @@ public partial class NonPlayerCharacter : CharacterBody2D
             //TODO: Can make this more complex than just canceling out. e.g. enemies further away subtract less interest
             if (Danger[i] > 0) {
                 Interest[i] = 0;
+                Interest[Mod(i + Directions / 2, Directions)] = 0.5f; //Give an interest boost to the opposite direction
             }
 
             float angle = i * 2 * (float) Math.PI / Directions;
@@ -282,7 +295,7 @@ public partial class NonPlayerCharacter : CharacterBody2D
         }
 
         //Uncomment to pick the highest interest path instead of cumulative interest. It gets caught on walls right now because those aren't detected by steering
-        //direction = highestInterestDirection;
+        direction = highestInterestDirection;
 
         if (DEBUG_STEERING) {
             this.DrawDebugLine(Position, Position + direction.Normalized() * 150, new Color(1, 1, 0), 0.1, GetPath());
@@ -301,19 +314,23 @@ public partial class NonPlayerCharacter : CharacterBody2D
     }
 
     private void SetDanger() {
-        //GD.Print(BodySensor.NPCs.Count);
         for (int i = 0; i < Directions; i++) {
             Danger[i] = 0;
         }
 
-        foreach (NonPlayerCharacter npc in BodySensor.NPCs) {
+        List<Node2D> potentialDangers = new List<Node2D>();
+        potentialDangers.AddRange(BodySensor.NPCs);
+        potentialDangers.AddRange(BodySensor.Walls);
+
+        foreach (Node2D potentialDanger in potentialDangers) {
             //TODO: Have body sensor exclude npc it's attached to
-            if (this == npc) {
+            if (this == potentialDanger) {
                 continue;
             }
 
-            var dirTo = Position.DirectionTo(npc.Position);
-            var bucketAngle = dirTo.Angle() - Rotation;
+            var distTo = GlobalPosition.DistanceTo(potentialDanger.GlobalPosition);
+            var dirTo = GlobalPosition.DirectionTo(potentialDanger.GlobalPosition);
+            var bucketAngle = dirTo.Angle() - GlobalRotation;
             //Shift angle up for easier bucketing. For instance, with 8 directions, the first bucket should be everything from -337.5 degress to 22.5 degrees. This would shift those values to 0 - 45 degrees
             bucketAngle += (float) (Math.PI / Directions);
             bucketAngle = GetBoundedAngle(bucketAngle);
@@ -323,7 +340,7 @@ public partial class NonPlayerCharacter : CharacterBody2D
                 var angle = i * 2 * Math.PI / Directions;
 
                 //50% overlap on grouping min, scale with distance
-                var distScale = 1 - Position.DistanceTo(npc.Position) / 128; //TODO: access sensor size
+                var distScale = 1 - distTo / 128; //TODO: access sensor size
                 var modifier = 1.5 + 3 * distScale;
                 //GD.Print(modifier);
                 if (Math.Abs(bucketAngle - angle) < (modifier * Math.PI / Directions)) {
@@ -345,5 +362,9 @@ public partial class NonPlayerCharacter : CharacterBody2D
         }
 
         return angle;
+    }
+    private int Mod(int x, int m) {
+        int r = x % m;
+        return r < 0 ? r + m : r;
     }
 }
