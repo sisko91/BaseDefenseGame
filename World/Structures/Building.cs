@@ -56,7 +56,7 @@ public partial class Building : Node2D
 
     private void OnBodyEnteredRegion(Node2D body, InteriorRegion region)
     {
-        // We only care about players entering.
+        body.ZIndex = 2;
         if (body is Player player)
         {
             // Regions may overlap each other at different elevations and we only want to look at events for the
@@ -68,6 +68,10 @@ public partial class Building : Node2D
                 foreach (var other in AllRegions)
                 {
                     other.Visible = other.ElevationLevel == region.ElevationLevel;
+                    if (other.Visible) {
+                        //Render above weather layer so we dont show clouds and stuff inside
+                        other.ZIndex = 2;
+                    }
                 }
             }
         }
@@ -75,7 +79,7 @@ public partial class Building : Node2D
 
     private void OnBodyExitedRegion(Node2D body, InteriorRegion region)
     {
-        // We only care about players exiting.
+        body.ZIndex = 0;
         if (body is Player player)
         {
             if(player.CurrentElevationLevel == region.ElevationLevel)
@@ -114,6 +118,7 @@ public partial class Building : Node2D
         foreach (var region in AllRegions)
         {
             region.Visible = true;
+            region.ZIndex = 0;
         }
     }
 
