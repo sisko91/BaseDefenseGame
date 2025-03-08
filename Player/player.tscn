@@ -18,6 +18,7 @@ radius = 120.0
 collision_mask = 15
 script = ExtResource("1_imx3i")
 StarterWeaponTemplates = Array[PackedScene]([ExtResource("2_psqbx"), ExtResource("2_rscqp")])
+CanDamageSelf = true
 metadata/_edit_group_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

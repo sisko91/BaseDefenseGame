@@ -18,7 +18,8 @@ public partial class Pistol : Weapon
         var bulletScene = GD.Load<PackedScene>("res://Weapons/Pistol/bullet.tscn");
         var bullet = bulletScene.Instantiate<Bullet>();
 
-        bullet.Start(GlobalPosition, GlobalRotation);
+        var instigator = this.FindCharacterAncestor();
+        bullet.Start(GlobalPosition, GlobalRotation, instigator);
     }
 
     public override void ReleaseFire()

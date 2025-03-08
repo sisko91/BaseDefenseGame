@@ -54,7 +54,8 @@ public partial class Scattergun : Weapon
             // Less randomness for the first rounds in the payload. This just makes the cone tighter toward the center with falloff.
             float randInfluence = (float)(RoundsPerFire - i) / (float)RoundsPerFire;
             float rotationOffset = roundSpreadRads * randNegativeOneToOne * randInfluence;
-            round.Start(GlobalPosition, GlobalRotation + rotationOffset);
+            var instigator = this.FindCharacterAncestor();
+            round.Start(GlobalPosition, GlobalRotation + rotationOffset, instigator);
             // Allow some rounds to fire up to 5% faster.
             round.Velocity *= 1.0f + GD.Randf() * 0.05f;
         }

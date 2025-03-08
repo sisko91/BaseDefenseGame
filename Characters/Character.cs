@@ -19,6 +19,9 @@ public partial class Character : CharacterBody2D
 
     #endregion
 
+    [Export]
+    public bool CanDamageSelf = false;
+
     // The character's current elevation in the world. Defaults to 0 which is ground level. This is updated by Buildings when
     // characters enter their InteriorRegions.
     public int CurrentElevationLevel = 0;
@@ -43,11 +46,23 @@ public partial class Character : CharacterBody2D
     }
 
     // Process an incoming impact from the sourceNode. The impact is calculated by the other collider, i.e. impact.Collider == this.
-    public void ReceiveHit(KinematicCollision2D impact, Node2D sourceNode, float damage)
+    public void ReceiveHit(KinematicCollision2D impact, float damage, Node2D source)
     {
+        // TODO: This is shitty but I haven't worked out the right way to bake this into a base "DamageSource" type that doesn't shoehorn every damage source into
+        // being the same thing (e.g. CharacterBody2D).
+        if(source is Projectile projectile)
+        {
+            if (!CanDamageSelf && (source.FindCharacterAncestor() == this || projectile.Instigator == this))
+            {
+                // Disallow damage from anything 
+                return;
+            }
+        }
+        
         //Repeated calls reset the timer
         HitAnimationTimer.Start(HitAnimationSeconds);
         SetHitMaterial();
+
 
         var oldHealth = CurrentHealth;
         CurrentHealth = Mathf.Max(CurrentHealth - damage, 0);
@@ -60,7 +75,7 @@ public partial class Character : CharacterBody2D
             // the incident angle from positions.
             //var kbDirection = bullet.Velocity.Normalized();
             //var kbDirection = impact.GetAngle() - Mathf.Pi;
-            var kbDirection = (GlobalPosition - sourceNode.GlobalPosition).Normalized();
+            var kbDirection = (GlobalPosition - source.GlobalPosition).Normalized();
             var kbVelocity = kbDirection * damage * 5;
             // Render the impact angle if debugging is enabled.
             //this.DrawDebugLine(GlobalPosition, GlobalPosition + kbVelocity, new Color(1, 0, 0), 2.0f);
@@ -85,5 +100,22 @@ public partial class Character : CharacterBody2D
     private void RemoveHitMaterial()
     {
         Material = null;
+    }
+}
+
+public static class CharacterNodeExtensions
+{
+    // Walks the node's local tree hierarchy until it finds the parent Character. May return null if no character exists.
+    public static Character FindCharacterAncestor(this Node node)
+    {
+        while(node != null)
+        {
+            if(node is Character character)
+            {
+                return character;
+            }
+            node = node.GetParent();
+        }
+        return null;
     }
 }

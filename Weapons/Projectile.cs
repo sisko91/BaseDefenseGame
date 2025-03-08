@@ -13,12 +13,17 @@ public partial class Projectile : CharacterBody2D
     [Export]
     public float Damage = 20.0f;
 
+    // The instigator is used for attribution. If a weapon fires a projectile, the Player holding that weapon would be the logical instigator.
+    // (This is an old concept stolen from Unreal Engine)
+    public Node Instigator = null;
+
     // Adds the projectile to the gameworld and initializes its position, velocity, etc.
-    public void Start(Vector2 worldPosition, float worldDirection)
+    public void Start(Vector2 worldPosition, float worldDirection, Node instigator)
     {
         GlobalRotation = worldDirection;
         GlobalPosition = worldPosition;
         Velocity = new Vector2(InitialSpeed, 0).Rotated(GlobalRotation);
+        Instigator = instigator;
 
         var timer = this.GetGameWorld().GetTree().CreateTimer(LifetimeSeconds);
         timer.Timeout += QueueFree;
@@ -33,7 +38,7 @@ public partial class Projectile : CharacterBody2D
         {
             if (collision.GetCollider() is Character character)
             {
-                character.ReceiveHit(collision, this, Damage);
+                character.ReceiveHit(collision, Damage, this);
             }
             OnCollide(collision);
         }
