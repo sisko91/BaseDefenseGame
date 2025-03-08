@@ -262,27 +262,42 @@ public partial class NonPlayerCharacter : Character
                 continue;
             }
 
-            var distTo = GlobalPosition.DistanceTo(potentialDanger.GlobalPosition);
-            var dirTo = GlobalPosition.DirectionTo(potentialDanger.GlobalPosition);
-            var bucketAngle = dirTo.Angle() - GlobalRotation;
-            //Shift angle up for easier bucketing. For instance, with 8 directions, the first bucket should be everything from -337.5 degress to 22.5 degrees. This would shift those values to 0 - 45 degrees
-            bucketAngle += (float) (Math.PI / Directions);
-            bucketAngle = GetBoundedAngle(bucketAngle);
-
-            //Put in multiple buckets depending on angle. Raycasting would see a close object at multiple angles, so simulating that
-            for (int i = 0; i < Directions; i++) {
-                var angle = i * 2 * Math.PI / Directions;
-
-                //50% overlap on grouping min, scale with distance
-                var distScale = 1 - distTo / 128; //TODO: access sensor size
-                var modifier = 1.5 + 3 * distScale;
-                //GD.Print(modifier);
-                if (Math.Abs(bucketAngle - angle) < (modifier * Math.PI / Directions)) {
-                    Vector2 interestDirection = Vector2.Right.Rotated((float)angle).Rotated(Rotation);
-
-                    //this.DrawDebugLine(Position, Position + interestDirection * 150, new Color(1, 0, 0), 0.1, GetPath());
-                    Danger[i] = 1; //TODO: Can make this more complex, e.g. scaling for distance
+            CheckAndAddDanger(potentialDanger.GlobalPosition);
+            //Include wall sides as points to avoid in addition to the center point
+            if (potentialDanger is StaticBody2D) {
+                var shape = ((StaticBody2D)potentialDanger).GetNode<CollisionShape2D>("CollisionShape2D").Shape;
+                if (shape is RectangleShape2D) {
+                    var rectShape = shape as RectangleShape2D;
+                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(rectShape.Size.X / 2, 0));
+                    CheckAndAddDanger(potentialDanger.GlobalPosition - new Vector2(rectShape.Size.X / 2, 0));
+                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(0, rectShape.Size.Y / 2));
+                    CheckAndAddDanger(potentialDanger.GlobalPosition - new Vector2(0, rectShape.Size.Y / 2));
                 }
+            }
+        }
+    }
+
+    private void CheckAndAddDanger(Vector2 dangerGlobalPosition) {
+        var distTo = GlobalPosition.DistanceTo(dangerGlobalPosition);
+        var dirTo = GlobalPosition.DirectionTo(dangerGlobalPosition);
+        var bucketAngle = dirTo.Angle() - GlobalRotation;
+        //Shift angle up for easier bucketing. For instance, with 8 directions, the first bucket should be everything from -337.5 degress to 22.5 degrees. This would shift those values to 0 - 45 degrees
+        bucketAngle += (float)(Math.PI / Directions);
+        bucketAngle = GetBoundedAngle(bucketAngle);
+
+        //Put in multiple buckets depending on angle. Raycasting would see a close object at multiple angles, so simulating that
+        for (int i = 0; i < Directions; i++) {
+            var angle = i * 2 * Math.PI / Directions;
+
+            //50% overlap on grouping min, scale with distance
+            var distScale = 1 - distTo / 128; //TODO: access sensor size
+            var modifier = 1.5 + 3 * distScale;
+            //GD.Print(modifier);
+            if (Math.Abs(bucketAngle - angle) < (modifier * Math.PI / Directions)) {
+                Vector2 interestDirection = Vector2.Right.Rotated((float)angle).Rotated(Rotation);
+
+                //this.DrawDebugLine(Position, Position + interestDirection * 150, new Color(1, 0, 0), 0.1, GetPath());
+                Danger[i] = 1; //TODO: Can make this more complex, e.g. scaling for distance
             }
         }
     }
