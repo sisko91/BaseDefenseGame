@@ -1,3 +1,4 @@
+using ExtensionMethods;
 using Godot;
 using System;
 
@@ -46,7 +47,9 @@ public partial class Door : Node2D
 			Visible = true;
 			blockage.CollisionLayer = originalCollisionLayers;
 		}
-	}
+
+		this.GetGameWorld().RebakeNavMesh();
+    }
 
 	// This callback is defined in case the door is connected to a signal from an interaction.
 	public void ToggleOnInteract(Interactable interactable, Player player)

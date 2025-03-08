@@ -1,10 +1,14 @@
+using ExtensionMethods;
 using Godot;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 // A building has at least one interior region.
 public partial class Building : Node2D
 {
+    private HashSet<Node2D> entitiesInside = new HashSet<Node2D>();
+
     private Godot.Collections.Array<InteriorRegion> _allRegions = null;
     public Godot.Collections.Array<InteriorRegion> AllRegions 
     { 
@@ -43,6 +47,12 @@ public partial class Building : Node2D
         // interior regions.
         visibilityResetTimer = new Timer();
         visibilityResetTimer.OneShot = true;
+        visibilityResetTimer.Timeout += () =>
+        {
+            if (!IsPlayerInBuilding()) {
+                ResetVisibility();
+            }
+        };
         AddChild(visibilityResetTimer);
 
         // Subscribe to events whenever a player enters a floor of this building.
@@ -56,60 +66,88 @@ public partial class Building : Node2D
 
     private void OnBodyEnteredRegion(Node2D body, InteriorRegion region)
     {
+        // Regions may overlap each other at different elevations and we only want to look at events for the
+        // body's current elevation.
+        if (GetBodyElevationLevel(body) != region.ElevationLevel) {
+            return;
+        }
+
+        entitiesInside.Add(body);
+
         body.ZIndex = 2;
+        //GD.Print($"{body.Name} entered {region.Name} (Elevation {region.ElevationLevel})");
         if (body is Player player)
         {
-            // Regions may overlap each other at different elevations and we only want to look at events for the
-            // player's current elevation.
-            if(player.CurrentElevationLevel == region.ElevationLevel)
+            // Set all regions on this elevation to be visible, and all above this elevation to be invisible.
+            foreach (var other in AllRegions)
             {
-                GD.Print($"{body.Name} entered {region.Name} (Elevation {region.ElevationLevel})");
-                // Set all regions on this elevation to be visible, and all above this elevation to be invisible.
-                foreach (var other in AllRegions)
-                {
-                    other.Visible = other.ElevationLevel == region.ElevationLevel;
-                    if (other.Visible) {
-                        //Render above weather layer so we dont show clouds and stuff inside
-                        other.ZIndex = 2;
-                    }
+                other.Visible = other.ElevationLevel == region.ElevationLevel;
+                if (other.Visible) {
+                    //Render above weather layer so we dont show clouds and stuff inside
+                    other.ZIndex = 2;
                 }
             }
+
+            UpdateAllNonPlayerBodies(true);
+        } else {
+            UpdateNonPlayerBody(body, region, true);
         }
     }
 
     private void OnBodyExitedRegion(Node2D body, InteriorRegion region)
     {
+        if (GetBodyElevationLevel(body) != region.ElevationLevel) {
+            return;
+        }
+
+        entitiesInside.Remove(body);
+
+        //GD.Print($"{body.Name} exited {region.Name} (Elevation {region.ElevationLevel})");
         body.ZIndex = 0;
         if (body is Player player)
         {
-            if(player.CurrentElevationLevel == region.ElevationLevel)
+            // If there's time left on the timer then we already (recently) scheduled an occupancy check to reset visibility.
+            if(visibilityResetTimer.TimeLeft <= 0)
             {
-                GD.Print($"{body.Name} exited {region.Name} (Elevation {region.ElevationLevel})");
+                visibilityResetTimer.Start(0.25f);
+            }
+            UpdateAllNonPlayerBodies(false);
+        } else {
+            UpdateNonPlayerBody(body, region, false);
+        }
+    }
 
-                // If there's time left on the timer then we already (recently) scheduled an occupancy check to reset visibility.
-                if(visibilityResetTimer.TimeLeft <= 0)
-                {
-                    visibilityResetTimer.Timeout += () =>
-                    {
-                        if (!PlayerIsInBuilding(player))
-                        {
-                            ResetVisibility();
-                        }
-                    };
-                    visibilityResetTimer.Start(0.25f);
-                }
+    private void UpdateNonPlayerBody(Node2D body, InteriorRegion region, bool entering) {
+        //Show/hide projectiles and enemies depending if the player is in the same floor or not
+        if (region.ZIndex == 2 && entering || region.ZIndex == 0 && !entering) {
+            body.Show();
+        } else {
+            body.Hide();
+        }
+    }
+
+    private void UpdateAllNonPlayerBodies(bool playerEntering) {
+        foreach (NonPlayerCharacter c in GetTree().GetNodesInGroup("Hostile")) {
+            if (IsInBuilding(c) && playerEntering || !IsInBuilding(c) && !playerEntering) {
+                c.Show();
+            } else {
+                c.Hide();
             }
         }
     }
 
-    private bool PlayerIsInBuilding(Player player)
-    {
-        bool bPlayerStillInBuilding = false;
-        foreach (var region in AllRegions)
-        {
-            bPlayerStillInBuilding |= region.OverlapsBody(player);
+    private bool IsPlayerInBuilding() {
+        foreach (Character c in entitiesInside) {
+            if (c is Player) {
+                return true;
+            }
         }
-        return bPlayerStillInBuilding;
+
+        return false;
+    }
+    private bool IsInBuilding(Character c)
+    {
+        return entitiesInside.Contains(c);
     }
 
     private void ResetVisibility()
@@ -120,6 +158,17 @@ public partial class Building : Node2D
             region.Visible = true;
             region.ZIndex = 0;
         }
+    }
+
+    private int GetBodyElevationLevel(Node2D body) {
+        int currentElevationLevel = 0;
+        if (body is Character character) {
+            currentElevationLevel = character.CurrentElevationLevel;
+        } else if (body is Projectile projectile) {
+            currentElevationLevel = projectile.CurrentElevationLevel;
+        }
+
+        return currentElevationLevel;
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.

@@ -49,6 +49,10 @@ public partial class World : Node2D
         navRegion.BakeNavigationPolygon();
     }
 
+    public void RebakeNavMesh() {
+        navRegion.BakeNavigationPolygon();
+    }
+
     private void SetupBackground()
     {
         backgroundSprite = GetNode<Sprite2D>("Background");

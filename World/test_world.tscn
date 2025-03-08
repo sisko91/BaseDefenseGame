@@ -29,6 +29,7 @@ shader_parameter/noise_texture = SubResource("NoiseTexture2D_xy6ls")
 vertices = PackedVector2Array(3043, 3035.03, -3057.98, 3056.96, -3046.02, -3066, 3043, -3066)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
 outlines = Array[PackedVector2Array]([PackedVector2Array(-3056, -3076, 3053, -3076, 3053, 3045, -3068, 3067)])
+parsed_collision_mask = 4294967055
 agent_radius = 25.0
 
 [node name="World" type="Node2D"]
@@ -79,7 +80,7 @@ position = Vector2(-99, -27)
 rotation = 1.5708
 
 [node name="Wall6" parent="NavRegion" instance=ExtResource("3_jc71b")]
-position = Vector2(-99, 91)
+position = Vector2(-138, 111)
 rotation = 1.5708
 
 [node name="Wall3" parent="NavRegion" instance=ExtResource("3_jc71b")]

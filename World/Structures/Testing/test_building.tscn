@@ -38,6 +38,7 @@ noise = SubResource("FastNoiseLite_7rssq")
 script = ExtResource("1_7ffef")
 
 [node name="Floor0" type="Area2D" parent="."]
+collision_mask = 3
 script = ExtResource("1_edy31")
 
 [node name="Boundary" type="CollisionShape2D" parent="Floor0"]
