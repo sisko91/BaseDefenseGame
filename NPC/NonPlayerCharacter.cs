@@ -3,11 +3,8 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public partial class NonPlayerCharacter : CharacterBody2D
+public partial class NonPlayerCharacter : Character
 {
-    [Export]
-    public float MoveSpeed = 100.0f;
-
     [Export]
     public float MoveAccel = 5f;
 
@@ -115,7 +112,7 @@ public partial class NonPlayerCharacter : CharacterBody2D
     public override void _PhysicsProcess(double delta)
     {
         //If moving faster than allowed (e.g. from explosion), just slow down
-        if (Velocity.Length() < MoveSpeed + 0.1) { //Fudge factor since LimitLength() can return a vector with slightly higher length than specified (float precision)
+        if (Velocity.Length() < MovementSpeed + 0.1) { //Fudge factor since LimitLength() can return a vector with slightly higher length than specified (float precision)
             if (enemyTarget != null) { //Why is this null many frames?
                 this.ClearLines(GetPath());
                 var pathDirection = GlobalPosition.DirectionTo(NavAgent.GetNextPathPosition());
@@ -123,7 +120,7 @@ public partial class NonPlayerCharacter : CharacterBody2D
                 SetDanger();
 
                 var direction = ChooseDirection();
-                Velocity = (Velocity + direction * MoveAccel).LimitLength(MoveSpeed);
+                Velocity = (Velocity + direction * MoveAccel).LimitLength(MovementSpeed);
                 LastSeenDirection = pathDirection;
             }
         } else {
@@ -154,7 +151,7 @@ public partial class NonPlayerCharacter : CharacterBody2D
         Velocity = Velocity.MoveToward(safeVelocity, 0.25f);
         var lookAngle = Velocity.Angle();
         //Look along the nav path if stuck
-        if (GetRealVelocity().Length() < 0.1f * MoveSpeed) {
+        if (GetRealVelocity().Length() < 0.1f * MovementSpeed) {
             lookAngle = LastSeenDirection.Angle();
         //Look at the player if close
         } else if (BodySensor.Players.Count > 0 && GlobalPosition.DistanceTo(BodySensor.Players[0].GlobalPosition) < 100f) {

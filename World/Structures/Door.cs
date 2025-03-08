@@ -3,7 +3,6 @@ using System;
 
 // A door is a subcomponent of a Building that typically connects adjacent InteriorRegions.
 // Doors place and remove a collision object to prohibit or enable passage.
-// Doors can be opened or closed.
 public partial class Door : Node2D
 {
 	private bool isOpen = false;

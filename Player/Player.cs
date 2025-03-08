@@ -1,20 +1,11 @@
 using ExtensionMethods;
 using Godot;
 using System;
-using static Godot.TextServer;
 
-public partial class Player : CharacterBody2D
+public partial class Player : Character
 {
-    // How fast the player can move in any direction.
-    [Export]
-    public float MovementSpeed = 400.0f;
-
     // Cached camera reference from the player.tscn.
     public PlayerCamera Camera { get; private set; }
-
-    // The player's current elevation in the world. Defaults to 0 which is ground level. This is updated by Buildings when
-    // players enter their InteriorRegions.
-    public int CurrentElevationLevel = 0;
 
     // Cached reference to the NearbyBodySensor defined on the .tscn
     public BodySensor NearbyBodySensor { get; private set; }
