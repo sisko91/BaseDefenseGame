@@ -8,15 +8,10 @@ public partial class NonPlayerCharacter : Character
     [Export]
     public float MoveAccel = 5f;
 
-    [Export]
-    public float MaxHealth = 100.0f;
-
     // Which logical grouping of characters in the scene this character is part of.
     // TODO: Should probably be an enum? Suggested values: [Hostile, Friendly, Player, Neutral].
     [Export]
     public string Group = "Hostile";
-
-    public float CurrentHealth { get; private set; }
 
     public NavigationAgent2D NavAgent { get; private set; } = null;
     public Vector2 MovementTarget
@@ -28,14 +23,7 @@ public partial class NonPlayerCharacter : Character
     // Cached reference to the collision shape defined on the .tscn
     public CollisionShape2D CollisionShape { get; private set; }
 
-    // A Signal that other elements can (be) subscribe(d) to in order to hear about updates to character health.
-    [Signal]
-    public delegate void HealthChangedEventHandler(NonPlayerCharacter character, float newHealth, float oldHealth);
-
     private Node2D enemyTarget = null;
-
-    private float HitAnimationSeconds = 0.1f;
-    private Timer HitAnimationTimer;
 
     private Vector2 LastSeenDirection = Vector2.Zero;
 
@@ -51,20 +39,13 @@ public partial class NonPlayerCharacter : Character
     {
         base._Ready();
 
-        AddToGroup(Group, true);
-        CollisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
-        CurrentHealth = MaxHealth;
+        AddToGroup(Group, true);        
 
         NearbyBodySensor.PlayerSensed += OnPlayerSensed;
         NearbyBodySensor.NpcSensed += OnNpcSensed;
 
         // SetupNavAgent awaits() a signal so we want to make sure we don't call it from _Ready().
         Callable.From(SetupNavAgent).CallDeferred();
-
-        HitAnimationTimer = new Timer();
-        HitAnimationTimer.OneShot = true;
-        HitAnimationTimer.Timeout += RemoveHitMaterial;
-        AddChild(HitAnimationTimer);
 
         for (int i = 0; i < Directions; i++) {
             Interest.Add(0);
@@ -168,39 +149,6 @@ public partial class NonPlayerCharacter : Character
     {
     }
 
-    // Process an incoming impact from the sourceNode. The impact is calculated by the other collider, i.e. impact.Collider == this.
-    public void ReceiveHit(KinematicCollision2D impact, Node2D sourceNode, float damage)
-    {
-        //Repeated calls reset the timer
-        HitAnimationTimer.Start(HitAnimationSeconds);
-        SetHitMaterial();
-
-        var oldHealth = CurrentHealth;
-        CurrentHealth = Mathf.Max(CurrentHealth - damage, 0);
-        // Broadcast the damage received to anyone listening.
-        EmitSignal(SignalName.HealthChanged, this, CurrentHealth, oldHealth);
-
-        if(CurrentHealth > 0)
-        {
-            // knockback - neither of the computations of kbDirection below actually give us what we want so we just calculate
-            // the incident angle from positions.
-            //var kbDirection = bullet.Velocity.Normalized();
-            //var kbDirection = impact.GetAngle() - Mathf.Pi;
-            var kbDirection = (GlobalPosition - sourceNode.GlobalPosition).Normalized();
-            var kbVelocity = kbDirection * damage * 5;
-            // Render the impact angle if debugging is enabled.
-            //this.DrawDebugLine(GlobalPosition, GlobalPosition + kbVelocity, new Color(1, 0, 0), 2.0f);
-
-            // Just use the damage as the momentum transferred, essentially.
-            Velocity += kbVelocity;
-        }
-        else
-        {
-            //die
-            QueueFree();
-        }
-    }
-
     private Node2D FindTarget()
     {
         foreach(var player in this.GetGameWorld().Players)
@@ -228,16 +176,6 @@ public partial class NonPlayerCharacter : Character
         {
             MovementTarget = enemyTarget.GlobalPosition;
         }
-    }
-
-    private void SetHitMaterial() {
-        ShaderMaterial hitMaterial = new ShaderMaterial();
-        hitMaterial.Shader = GD.Load<Shader>("res://Shaders/hit.gdshader");
-        Material = hitMaterial;
-    }
-
-    private void RemoveHitMaterial() {
-        Material = null;
     }
 
     // This is currently just to test with.
