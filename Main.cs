@@ -25,11 +25,22 @@ public partial class Main : Node
         player.Name = "Player";
         world.AddChild(player);
 
+        player.HealthChanged += OnPlayerHealthChanged;
+
         //Weapon.ProjectileSpawner += OnPlayerShoot;
 
         if(bEnableDebugRendering)
         {
             DebugNodeExtensions.EnableDebugRenderers();
+        }
+    }
+
+    private void OnPlayerHealthChanged(Character character, float newHealth, float oldHealth)
+    {
+        if(newHealth <= 0)
+        {
+            // ded
+            GetTree().Quit();
         }
     }
 

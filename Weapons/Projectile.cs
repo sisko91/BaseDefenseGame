@@ -31,9 +31,9 @@ public partial class Projectile : CharacterBody2D
         var collision = MoveAndCollide(Velocity * (float)delta);
         if (collision != null)
         {
-            if (collision.GetCollider() is NonPlayerCharacter npc)
+            if (collision.GetCollider() is Character character)
             {
-                npc.ReceiveHit(collision, this, Damage);
+                character.ReceiveHit(collision, this, Damage);
             }
             OnCollide(collision);
         }
