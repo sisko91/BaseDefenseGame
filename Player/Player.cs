@@ -7,9 +7,6 @@ public partial class Player : Character
     // Cached camera reference from the player.tscn.
     public PlayerCamera Camera { get; private set; }
 
-    // Cached reference to the NearbyBodySensor defined on the .tscn
-    public BodySensor NearbyBodySensor { get; private set; }
-
     #region Weapons
 
     // The default / starter weapons that the player always spawns with. May be empty.
@@ -56,6 +53,8 @@ public partial class Player : Character
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        base._Ready();
+
         AddToGroup("Player", true);
 
         Camera = GetNode<PlayerCamera>("Camera2D");
@@ -72,8 +71,6 @@ public partial class Player : Character
                 WeaponRing.Equip(starterWeapon);
             }
         }
-
-        NearbyBodySensor = GetNode<BodySensor>("NearbyBodySensor");
     }
 
     // Called every tick of the physics thread.

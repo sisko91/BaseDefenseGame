@@ -61,11 +61,11 @@ rotation = -1.5708
 scale = Vector2(0.694375, 0.296094)
 texture = SubResource("GradientTexture2D_mdfs5")
 
-[node name="BodySensor" type="Area2D" parent="."]
+[node name="NearbyBodySensor" type="Area2D" parent="."]
 collision_mask = 5
 script = ExtResource("4_h3xoj")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="BodySensor"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NearbyBodySensor"]
 shape = SubResource("CircleShape2D_vtmmg")
 
 [connection signal="HealthChanged" from="." to="FloatingHealthBar" method="OnCharacterHealthChanged"]

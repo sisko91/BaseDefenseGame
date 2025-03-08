@@ -28,9 +28,6 @@ public partial class NonPlayerCharacter : Character
     // Cached reference to the collision shape defined on the .tscn
     public CollisionShape2D CollisionShape { get; private set; }
 
-    // Cached reference to the BodySensor defined on the .tscn
-    public BodySensor BodySensor { get; private set; }
-
     // A Signal that other elements can (be) subscribe(d) to in order to hear about updates to character health.
     [Signal]
     public delegate void HealthChangedEventHandler(NonPlayerCharacter character, float newHealth, float oldHealth);
@@ -52,12 +49,14 @@ public partial class NonPlayerCharacter : Character
 
     public override void _Ready()
     {
+        base._Ready();
+
         AddToGroup(Group, true);
         CollisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
         CurrentHealth = MaxHealth;
-        BodySensor = GetNode<BodySensor>("BodySensor");
-        BodySensor.PlayerSensed += OnPlayerSensed;
-        BodySensor.NpcSensed += OnNpcSensed;
+
+        NearbyBodySensor.PlayerSensed += OnPlayerSensed;
+        NearbyBodySensor.NpcSensed += OnNpcSensed;
 
         // SetupNavAgent awaits() a signal so we want to make sure we don't call it from _Ready().
         Callable.From(SetupNavAgent).CallDeferred();
@@ -154,8 +153,8 @@ public partial class NonPlayerCharacter : Character
         if (GetRealVelocity().Length() < 0.1f * MovementSpeed) {
             lookAngle = LastSeenDirection.Angle();
         //Look at the player if close
-        } else if (BodySensor.Players.Count > 0 && GlobalPosition.DistanceTo(BodySensor.Players[0].GlobalPosition) < 100f) {
-            lookAngle = GlobalPosition.DirectionTo(BodySensor.Players[0].GlobalPosition).Angle();
+        } else if (NearbyBodySensor.Players.Count > 0 && GlobalPosition.DistanceTo(NearbyBodySensor.Players[0].GlobalPosition) < 100f) {
+            lookAngle = GlobalPosition.DirectionTo(NearbyBodySensor.Players[0].GlobalPosition).Angle();
         }
 
         GlobalRotation = Mathf.LerpAngle(GlobalRotation, lookAngle, physicsTickDelta * turnConstant);
@@ -316,8 +315,8 @@ public partial class NonPlayerCharacter : Character
         }
 
         List<Node2D> potentialDangers = new List<Node2D>();
-        potentialDangers.AddRange(BodySensor.NPCs);
-        potentialDangers.AddRange(BodySensor.Walls);
+        potentialDangers.AddRange(NearbyBodySensor.NPCs);
+        potentialDangers.AddRange(NearbyBodySensor.Walls);
 
         foreach (Node2D potentialDanger in potentialDangers) {
             //TODO: Have body sensor exclude npc it's attached to
