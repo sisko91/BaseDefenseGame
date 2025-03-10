@@ -174,6 +174,14 @@ public partial class NonPlayerCharacter : Character
 
         if (enemyTarget != null)
         {
+            if (enemyTarget is Player player) {
+                //If the player is on a different floor, path to the stairs
+                //For multiple houses/floors, this code needs to be updated detect what building a region is in and path through multiple sets of stairs, but this is proof of concept for the current demo
+                if (CurrentRegion != player.CurrentRegion) {
+                    MovementTarget = player.CurrentRegion.Stairs[0].TargetStairs.GlobalPosition;
+                    return;
+                }
+            }
             MovementTarget = enemyTarget.GlobalPosition;
         }
     }

@@ -9,6 +9,9 @@ public partial class InteriorRegion : Area2D
     [Export]
     public int ElevationLevel = 0;
 
+    [Export]
+    public Godot.Collections.Array<Stairs> Stairs;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {

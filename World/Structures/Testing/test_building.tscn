@@ -47,9 +47,10 @@ noise = SubResource("FastNoiseLite_7rssq")
 [node name="TestBuilding" type="Node2D"]
 script = ExtResource("1_7ffef")
 
-[node name="Floor0" type="Area2D" parent="."]
+[node name="Floor0" type="Area2D" parent="." node_paths=PackedStringArray("Stairs")]
 collision_mask = 3
 script = ExtResource("1_edy31")
+Stairs = [NodePath("StairsFloor0")]
 
 [node name="Boundary" type="CollisionShape2D" parent="Floor0"]
 position = Vector2(256, 128)
@@ -92,9 +93,9 @@ offset_right = 320.0
 offset_bottom = 262.0
 color = Color(0.16462, 0.115337, 0.0602966, 1)
 
-[node name="StairsFloor0" parent="Floor0" node_paths=PackedStringArray("targetStairs") instance=ExtResource("6_k5khk")]
+[node name="StairsFloor0" parent="Floor0" node_paths=PackedStringArray("TargetStairs") instance=ExtResource("6_k5khk")]
 position = Vector2(445, 190)
-targetStairs = NodePath("../../Floor1/StairsFloor1")
+TargetStairs = NodePath("../../Floor1/StairsFloor1")
 goingUp = true
 
 [node name="Door" type="Node2D" parent="Floor0"]
@@ -117,11 +118,12 @@ script = ExtResource("4_if2ce")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Floor0/Door/InteractionPoint"]
 shape = SubResource("RectangleShape2D_hnmhw")
 
-[node name="Floor1" type="Area2D" parent="."]
+[node name="Floor1" type="Area2D" parent="." node_paths=PackedStringArray("Stairs")]
 collision_layer = 16
 collision_mask = 48
 script = ExtResource("1_edy31")
 ElevationLevel = 1
+Stairs = [NodePath("StairsFloor1")]
 
 [node name="Boundary" type="CollisionShape2D" parent="Floor1"]
 position = Vector2(256, 128)
@@ -167,17 +169,18 @@ position = Vector2(256, 224)
 collision_layer = 64
 collision_mask = 112
 
-[node name="StairsFloor1" parent="Floor1" node_paths=PackedStringArray("targetStairs") instance=ExtResource("6_k5khk")]
+[node name="StairsFloor1" parent="Floor1" node_paths=PackedStringArray("TargetStairs") instance=ExtResource("6_k5khk")]
 position = Vector2(445, 190)
 collision_layer = 128
 collision_mask = 16
-targetStairs = NodePath("../../Floor0/StairsFloor0")
+TargetStairs = NodePath("../../Floor0/StairsFloor0")
 
-[node name="Roof" type="Area2D" parent="."]
+[node name="Roof" type="Area2D" parent="." node_paths=PackedStringArray("Stairs")]
 collision_layer = 256
 collision_mask = 12288
 script = ExtResource("1_edy31")
 ElevationLevel = 2
+Stairs = []
 
 [node name="Boundary" type="CollisionShape2D" parent="Roof"]
 position = Vector2(256, 128)

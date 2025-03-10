@@ -78,6 +78,7 @@ public partial class Building : Node2D
         //GD.Print($"{body.Name} entered {region.Name} (Elevation {region.ElevationLevel})");
         if (body is Player player)
         {
+            player.CurrentRegion = region;
             // Set all regions on this elevation to be visible, and all above this elevation to be invisible.
             foreach (var other in AllRegions)
             {
@@ -90,6 +91,9 @@ public partial class Building : Node2D
 
             UpdateAllNonPlayerBodies();
         } else {
+            if (body is Character c) {
+                c.CurrentRegion = region;
+            }
             UpdateNonPlayerBody(body);
         }
     }
@@ -106,13 +110,20 @@ public partial class Building : Node2D
         body.ZIndex = 0;
         if (body is Player player)
         {
+            if (!region.OverlapsBody(player)) {
+                player.CurrentRegion = null;
+            }
+
             // If there's time left on the timer then we already (recently) scheduled an occupancy check to reset visibility.
-            if(visibilityResetTimer.TimeLeft <= 0)
+            if (visibilityResetTimer.TimeLeft <= 0)
             {
                 visibilityResetTimer.Start(0.25f);
             }
             UpdateAllNonPlayerBodies();
         } else {
+            if (body is Character c && !region.OverlapsBody(c)) {
+                c.CurrentRegion = null;
+            }
             UpdateNonPlayerBody(body);
         }
     }

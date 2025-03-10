@@ -5,7 +5,7 @@ using System;
 // Stairs teleport entities up or down a floor when walked over
 public partial class Stairs : Area2D {
     [Export]
-    Stairs targetStairs;
+    public Stairs TargetStairs;
 
     [Export]
     bool goingUp;
@@ -24,8 +24,8 @@ public partial class Stairs : Area2D {
         }
 
         if (body is Character character) {
-            targetStairs.ignoreNextInteraction = true;
-            body.Position = targetStairs.GlobalPosition;
+            TargetStairs.ignoreNextInteraction = true;
+            body.Position = TargetStairs.GlobalPosition;
 
             character.ChangeFloor(goingUp);
         }
