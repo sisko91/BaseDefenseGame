@@ -101,6 +101,18 @@ public partial class Character : CharacterBody2D
     {
         Material = null;
     }
+
+    public void ChangeFloor(bool goingUp) {
+        if (goingUp) {
+            CollisionLayer = CollisionLayer << 4;
+            CollisionMask = CollisionMask << 4;
+            CurrentElevationLevel += 1;
+        } else {
+            CollisionLayer = CollisionLayer >> 4;
+            CollisionMask = CollisionMask >> 4;
+            CurrentElevationLevel -= 1;
+        }
+    }
 }
 
 public static class CharacterNodeExtensions

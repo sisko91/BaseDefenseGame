@@ -33,7 +33,7 @@ fill_from = Vector2(0.5, 0.5)
 radius = 128.0
 
 [node name="Shambler" type="CharacterBody2D"]
-collision_mask = 13
+collision_mask = 2147483653
 script = ExtResource("1_s50ym")
 MovementSpeed = 30.0
 

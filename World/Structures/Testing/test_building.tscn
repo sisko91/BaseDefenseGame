@@ -1,10 +1,11 @@
-[gd_scene load_steps=13 format=3 uid="uid://h6mtv0wbug0t"]
+[gd_scene load_steps=16 format=3 uid="uid://h6mtv0wbug0t"]
 
 [ext_resource type="Script" path="res://World/Structures/Building.cs" id="1_7ffef"]
 [ext_resource type="PackedScene" uid="uid://cw48c72a4tsvk" path="res://World/Structures/Testing/test_wall.tscn" id="1_e2nee"]
 [ext_resource type="Script" path="res://World/Structures/InteriorRegion.cs" id="1_edy31"]
 [ext_resource type="Script" path="res://World/Structures/Door.cs" id="4_ddwue"]
 [ext_resource type="Script" path="res://Gameplay/Interactable.cs" id="4_if2ce"]
+[ext_resource type="PackedScene" path="res://World/Structures/Testing/test_stairs.tscn" id="6_k5khk"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k1td7"]
 size = Vector2(492, 236)
@@ -19,6 +20,15 @@ fill_to = Vector2(0, 0)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hnmhw"]
 size = Vector2(128, 64)
+
+[sub_resource type="Gradient" id="Gradient_bacaw"]
+offsets = PackedFloat32Array(0.233766, 0.88961)
+colors = PackedColorArray(0.646717, 0.273671, 0.364432, 1, 0.604293, 0.371097, 0.396354, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_r8dof"]
+gradient = SubResource("Gradient_bacaw")
+fill = 2
+fill_from = Vector2(0.5, 0.5)
 
 [sub_resource type="Gradient" id="Gradient_3x6xn"]
 colors = PackedColorArray(0.82606, 0.82606, 0.82606, 1, 1, 1, 1, 1)
@@ -82,6 +92,11 @@ offset_right = 320.0
 offset_bottom = 262.0
 color = Color(0.16462, 0.115337, 0.0602966, 1)
 
+[node name="StairsFloor0" parent="Floor0" node_paths=PackedStringArray("targetStairs") instance=ExtResource("6_k5khk")]
+position = Vector2(445, 190)
+targetStairs = NodePath("../../Floor1/StairsFloor1")
+goingUp = true
+
 [node name="Door" type="Node2D" parent="Floor0"]
 position = Vector2(192, 242)
 script = ExtResource("4_ddwue")
@@ -91,7 +106,7 @@ scale = Vector2(0.5, 0.667)
 
 [node name="InteractionPoint" type="StaticBody2D" parent="Floor0/Door"]
 position = Vector2(64, 0)
-collision_layer = 16
+collision_layer = 8
 collision_mask = 0
 
 [node name="OpenCloseInteract" type="Node2D" parent="Floor0/Door/InteractionPoint"]
@@ -102,9 +117,67 @@ script = ExtResource("4_if2ce")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Floor0/Door/InteractionPoint"]
 shape = SubResource("RectangleShape2D_hnmhw")
 
-[node name="Roof" type="Area2D" parent="."]
+[node name="Floor1" type="Area2D" parent="."]
+collision_layer = 16
+collision_mask = 48
 script = ExtResource("1_edy31")
 ElevationLevel = 1
+
+[node name="Boundary" type="CollisionShape2D" parent="Floor1"]
+position = Vector2(256, 128)
+shape = SubResource("RectangleShape2D_k1td7")
+
+[node name="Ground" type="Sprite2D" parent="Floor1"]
+texture_repeat = 2
+position = Vector2(9, 10)
+scale = Vector2(0.964844, 0.929688)
+texture = SubResource("GradientTexture2D_r8dof")
+centered = false
+region_enabled = true
+region_rect = Rect2(0, 0, 512, 256)
+
+[node name="TopWall0" parent="Floor1" instance=ExtResource("1_e2nee")]
+collision_layer = 64
+collision_mask = 112
+
+[node name="TopWall1" parent="Floor1" instance=ExtResource("1_e2nee")]
+position = Vector2(256, 0)
+collision_layer = 64
+collision_mask = 112
+
+[node name="LeftWall" parent="Floor1" instance=ExtResource("1_e2nee")]
+position = Vector2(32, 0)
+rotation = 1.5708
+collision_layer = 64
+collision_mask = 112
+
+[node name="RightWall" parent="Floor1" instance=ExtResource("1_e2nee")]
+position = Vector2(512, 0)
+rotation = 1.5708
+collision_layer = 64
+collision_mask = 112
+
+[node name="BottomWall0" parent="Floor1" instance=ExtResource("1_e2nee")]
+position = Vector2(0, 224)
+collision_layer = 64
+collision_mask = 112
+
+[node name="BottomWall1" parent="Floor1" instance=ExtResource("1_e2nee")]
+position = Vector2(256, 224)
+collision_layer = 64
+collision_mask = 112
+
+[node name="StairsFloor1" parent="Floor1" node_paths=PackedStringArray("targetStairs") instance=ExtResource("6_k5khk")]
+position = Vector2(445, 190)
+collision_layer = 128
+collision_mask = 16
+targetStairs = NodePath("../../Floor0/StairsFloor0")
+
+[node name="Roof" type="Area2D" parent="."]
+collision_layer = 256
+collision_mask = 12288
+script = ExtResource("1_edy31")
+ElevationLevel = 2
 
 [node name="Boundary" type="CollisionShape2D" parent="Roof"]
 position = Vector2(256, 128)

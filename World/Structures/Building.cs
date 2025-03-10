@@ -88,7 +88,7 @@ public partial class Building : Node2D
                 }
             }
 
-            UpdateAllNonPlayerBodies(true);
+            UpdateAllNonPlayerBodies();
         } else {
             UpdateNonPlayerBody(body, region, true);
         }
@@ -111,7 +111,7 @@ public partial class Building : Node2D
             {
                 visibilityResetTimer.Start(0.25f);
             }
-            UpdateAllNonPlayerBodies(false);
+            UpdateAllNonPlayerBodies();
         } else {
             UpdateNonPlayerBody(body, region, false);
         }
@@ -126,28 +126,48 @@ public partial class Building : Node2D
         }
     }
 
-    private void UpdateAllNonPlayerBodies(bool playerEntering) {
-        foreach (NonPlayerCharacter c in GetTree().GetNodesInGroup("Hostile")) {
-            if (IsInBuilding(c) && playerEntering || !IsInBuilding(c) && !playerEntering) {
-                c.Show();
+    private void UpdateAllNonPlayerBodies() {
+        var playerNodes = GetTree().GetNodesInGroup("Player").Cast<Player>().ToArray();
+        if (playerNodes.Length < 1) {
+            return;
+        }
+
+        Player player = playerNodes[0];
+
+        var nodes = GetTree().GetNodesInGroup("Projectiles");
+        nodes.AddRange(GetTree().GetNodesInGroup("Hostile"));
+
+        foreach (Node2D node in nodes) {
+            bool bothInBuilding = entitiesInside.Contains(node) && entitiesInside.Contains(player);
+            bool bothOutside = !entitiesInside.Contains(node) && !entitiesInside.Contains(player);
+
+            var elevationLevel = 0;
+            switch (node) {
+                case Character c:
+                    elevationLevel = c.CurrentElevationLevel;
+                    break;
+                case Projectile p:
+                    elevationLevel = p.CurrentElevationLevel;
+                    break;
+            }
+            bool atSameElevation = elevationLevel == player.CurrentElevationLevel;
+
+            if (bothInBuilding && atSameElevation || bothOutside && atSameElevation) {
+                node.Show();
             } else {
-                c.Hide();
+                node.Hide();
             }
         }
     }
 
     private bool IsPlayerInBuilding() {
-        foreach (Character c in entitiesInside) {
-            if (c is Player) {
+        foreach (Node2D node in entitiesInside) {
+            if (node is Player) {
                 return true;
             }
         }
 
         return false;
-    }
-    private bool IsInBuilding(Character c)
-    {
-        return entitiesInside.Contains(c);
     }
 
     private void ResetVisibility()

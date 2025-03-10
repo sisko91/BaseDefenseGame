@@ -13,12 +13,18 @@ public partial class Projectile : CharacterBody2D
     [Export]
     public float Damage = 20.0f;
 
-    //Similarly to characters, projectiles can exist at different elevations (shooting on different floors)
+    //Projectiles can exist at different elevations
     public int CurrentElevationLevel = 0;
 
     // The instigator is used for attribution. If a weapon fires a projectile, the Player holding that weapon would be the logical instigator.
     // (This is an old concept stolen from Unreal Engine)
     public Node Instigator = null;
+
+    public string AllProjectilesGroup = "Projectiles";
+
+    public override void _Ready() {
+        AddToGroup(AllProjectilesGroup, true);
+    }
 
     // Adds the projectile to the gameworld and initializes its position, velocity, etc.
     public void Start(Vector2 worldPosition, float worldDirection, Node instigator)
@@ -27,6 +33,12 @@ public partial class Projectile : CharacterBody2D
         GlobalPosition = worldPosition;
         Velocity = new Vector2(InitialSpeed, 0).Rotated(GlobalRotation);
         Instigator = instigator;
+
+        if (Instigator is Character c) {
+            CurrentElevationLevel = c.CurrentElevationLevel;
+            CollisionLayer  = CollisionLayer << c.CurrentElevationLevel * 4;
+            CollisionMask = CollisionMask << c.CurrentElevationLevel * 4;
+        }
 
         var timer = this.GetGameWorld().GetTree().CreateTimer(LifetimeSeconds);
         timer.Timeout += QueueFree;

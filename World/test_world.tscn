@@ -29,7 +29,7 @@ shader_parameter/noise_texture = SubResource("NoiseTexture2D_xy6ls")
 vertices = PackedVector2Array(3043, 3035.03, -3057.98, 3056.96, -3046.02, -3066, 3043, -3066)
 polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
 outlines = Array[PackedVector2Array]([PackedVector2Array(-3056, -3076, 3053, -3076, 3053, 3045, -3068, 3067)])
-parsed_collision_mask = 4294967055
+parsed_collision_mask = 2147483652
 agent_radius = 25.0
 
 [node name="World" type="Node2D"]
@@ -97,7 +97,7 @@ script = ExtResource("6_xi2eq")
 SpawnTemplate = ExtResource("6_a6glu")
 InnerRadius = 550.0
 OuterRadius = 700.0
-InitialCount = 6
+InitialCount = 2
 
 [node name="TestInteractable" parent="." instance=ExtResource("8_d6u3h")]
 position = Vector2(348, 251)
