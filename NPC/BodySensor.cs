@@ -7,7 +7,6 @@ public partial class BodySensor : Area2D
     public Godot.Collections.Array<Player> Players { get; private set; }
     public Godot.Collections.Array<NonPlayerCharacter> NPCs { get; private set; }
     public Godot.Collections.Array<StaticBody2D> Walls { get; private set; }
-    public Godot.Collections.Array<Interactable> Interactables { get; private set; }
 
     // A Signal that other elements can (be) subscribe(d) to in order to hear about Players newly entering or exiting the sensor.
     [Signal]
@@ -17,10 +16,6 @@ public partial class BodySensor : Area2D
     [Signal]
     public delegate void NpcSensedEventHandler(NonPlayerCharacter npc, bool bSensed);
 
-    // A Signal that other elements can (be) subscribe(d) to in order to hear about Interactables newly entering or exiting the sensor.
-    [Signal]
-    public delegate void InteractableSensedEventHandler(Interactable interactable, bool bSensed);
-
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -28,7 +23,6 @@ public partial class BodySensor : Area2D
         Players = new Godot.Collections.Array<Player>();
         NPCs = new Godot.Collections.Array<NonPlayerCharacter>();
         Walls = new Godot.Collections.Array<StaticBody2D>();
-        Interactables = new Godot.Collections.Array<Interactable>();
 
         BodyEntered += OnBodyEntered;
         BodyExited += OnBodyExited;
@@ -53,16 +47,6 @@ public partial class BodySensor : Area2D
                 break;
         }
 
-        // In addition to being one of the above, the body may also be the owner of one or more interactables.
-        if (body is PhysicsBody2D physBody)
-        {
-            var interactables = physBody.GetInteractables();
-            foreach(var interactable in interactables)
-            {
-                Interactables.Add(interactable);
-            }
-        }
-
         //GD.Print($"{body.Name} entered {GetParent().Name}'s Sensor");
     }
 
@@ -83,19 +67,6 @@ public partial class BodySensor : Area2D
                 break;
             default:
                 break;
-        }
-
-        // In addition to being one of the above, the body may also be the owner of one or more interactables.
-        if (body is PhysicsBody2D physBody)
-        {
-            // Iterate backwards so that removing elements doesn't shift indices
-            for (int i = Interactables.Count - 1; i >= 0; i--)
-            {
-                if (Interactables[i].GetParent() == physBody)
-                {
-                    Interactables.RemoveAt(i);
-                }
-            }
         }
 
         //GD.Print($"{body.Name} exited {GetParent().Name}'s Sensor");
