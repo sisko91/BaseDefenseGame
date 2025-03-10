@@ -11,6 +11,10 @@ public partial class InteractionArea : Area2D
     [Signal]
     public delegate void InteractedEventHandler(InteractionArea area, Character character);
 
+    // Configure this to point to a Control subnode that should be presented when a player character is in range.
+    [Export]
+    public Control InteractionPrompt = null;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -30,6 +34,13 @@ public partial class InteractionArea : Area2D
         {
             character.NearbyInteractions.Remove(this);
             EmitSignal(SignalName.CharacterExited, this, character);
+            if (character is Player player)
+            {
+                if (InteractionPrompt != null)
+                {
+                    InteractionPrompt.Visible = false;
+                }
+            }
         }
     }
 
@@ -39,6 +50,13 @@ public partial class InteractionArea : Area2D
         {
             character.NearbyInteractions.Add(this);
             EmitSignal(SignalName.CharacterEntered, this, character);
+            if(character is Player player)
+            {
+                if(InteractionPrompt != null)
+                {
+                    InteractionPrompt.Visible = true;
+                }
+            }
         }
     }
 

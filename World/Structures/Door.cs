@@ -38,13 +38,13 @@ public partial class Door : Node2D
         if(isOpen)
         {
             // Disable rendering.
-            Visible = false;
+            blockage.Visible = false;
             // Disable physics.
             blockage.CollisionLayer = 0;
         }
         else
         {
-            Visible = true;
+            blockage.Visible = true;
             blockage.CollisionLayer = originalCollisionLayers;
         }
 
