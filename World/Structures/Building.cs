@@ -90,7 +90,7 @@ public partial class Building : Node2D
 
             UpdateAllNonPlayerBodies();
         } else {
-            UpdateNonPlayerBody(body, region, true);
+            UpdateNonPlayerBody(body);
         }
     }
 
@@ -113,13 +113,32 @@ public partial class Building : Node2D
             }
             UpdateAllNonPlayerBodies();
         } else {
-            UpdateNonPlayerBody(body, region, false);
+            UpdateNonPlayerBody(body);
         }
     }
 
-    private void UpdateNonPlayerBody(Node2D body, InteriorRegion region, bool entering) {
-        //Show/hide projectiles and enemies depending if the player is in the same floor or not
-        if (region.ZIndex == 2 && entering || region.ZIndex == 0 && !entering) {
+    private void UpdateNonPlayerBody(Node2D body) {
+        var playerNodes = GetTree().GetNodesInGroup("Player").Cast<Player>().ToArray();
+        if (playerNodes.Length < 1) {
+            return;
+        }
+
+        Player player = playerNodes[0];
+        bool bothInBuilding = entitiesInside.Contains(body) && entitiesInside.Contains(player);
+        bool bothOutside = !entitiesInside.Contains(body) && !entitiesInside.Contains(player);
+
+        var elevationLevel = 0;
+        switch (body) {
+            case Character c:
+                elevationLevel = c.CurrentElevationLevel;
+                break;
+            case Projectile p:
+                elevationLevel = p.CurrentElevationLevel;
+                break;
+        }
+        bool atSameElevation = elevationLevel == player.CurrentElevationLevel;
+
+        if (bothInBuilding && atSameElevation || bothOutside && atSameElevation) {
             body.Show();
         } else {
             body.Hide();
@@ -127,36 +146,11 @@ public partial class Building : Node2D
     }
 
     private void UpdateAllNonPlayerBodies() {
-        var playerNodes = GetTree().GetNodesInGroup("Player").Cast<Player>().ToArray();
-        if (playerNodes.Length < 1) {
-            return;
-        }
-
-        Player player = playerNodes[0];
-
         var nodes = GetTree().GetNodesInGroup("Projectiles");
         nodes.AddRange(GetTree().GetNodesInGroup("Hostile"));
 
         foreach (Node2D node in nodes) {
-            bool bothInBuilding = entitiesInside.Contains(node) && entitiesInside.Contains(player);
-            bool bothOutside = !entitiesInside.Contains(node) && !entitiesInside.Contains(player);
-
-            var elevationLevel = 0;
-            switch (node) {
-                case Character c:
-                    elevationLevel = c.CurrentElevationLevel;
-                    break;
-                case Projectile p:
-                    elevationLevel = p.CurrentElevationLevel;
-                    break;
-            }
-            bool atSameElevation = elevationLevel == player.CurrentElevationLevel;
-
-            if (bothInBuilding && atSameElevation || bothOutside && atSameElevation) {
-                node.Show();
-            } else {
-                node.Hide();
-            }
+            UpdateNonPlayerBody(node);
         }
     }
 
