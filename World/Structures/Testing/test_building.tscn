@@ -1,10 +1,9 @@
-[gd_scene load_steps=16 format=3 uid="uid://h6mtv0wbug0t"]
+[gd_scene load_steps=14 format=3 uid="uid://h6mtv0wbug0t"]
 
 [ext_resource type="Script" path="res://World/Structures/Building.cs" id="1_7ffef"]
 [ext_resource type="PackedScene" uid="uid://cw48c72a4tsvk" path="res://World/Structures/Testing/test_wall.tscn" id="1_e2nee"]
 [ext_resource type="Script" path="res://World/Structures/InteriorRegion.cs" id="1_edy31"]
-[ext_resource type="Script" path="res://World/Structures/Door.cs" id="4_ddwue"]
-[ext_resource type="Script" path="res://Gameplay/Interactable.cs" id="4_if2ce"]
+[ext_resource type="PackedScene" uid="uid://ct4updyrot811" path="res://World/Structures/Testing/test_door.tscn" id="5_e5hgi"]
 [ext_resource type="PackedScene" uid="uid://1jg6xpd3wot3" path="res://World/Structures/Testing/test_stairs.tscn" id="6_k5khk"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k1td7"]
@@ -17,9 +16,6 @@ colors = PackedColorArray(0.188235, 0.133333, 0, 1, 0, 0, 0, 1)
 gradient = SubResource("Gradient_wah7p")
 fill = 2
 fill_to = Vector2(0, 0)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_hnmhw"]
-size = Vector2(128, 64)
 
 [sub_resource type="Gradient" id="Gradient_bacaw"]
 offsets = PackedFloat32Array(0.233766, 0.88961)
@@ -98,27 +94,11 @@ position = Vector2(445, 190)
 TargetStairs = NodePath("../../Floor1/StairsFloor1")
 goingUp = true
 
-[node name="Door" type="Node2D" parent="Floor0"]
-position = Vector2(192, 242)
-script = ExtResource("4_ddwue")
-
-[node name="Blockage" parent="Floor0/Door" instance=ExtResource("1_e2nee")]
-scale = Vector2(0.5, 0.667)
-
-[node name="InteractionPoint" type="StaticBody2D" parent="Floor0/Door"]
-position = Vector2(64, 0)
-collision_layer = 8
-collision_mask = 0
-
-[node name="OpenCloseInteract" type="Node2D" parent="Floor0/Door/InteractionPoint"]
-position = Vector2(-64, 0)
-scale = Vector2(0.5, 0.667)
-script = ExtResource("4_if2ce")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor0/Door/InteractionPoint"]
-shape = SubResource("RectangleShape2D_hnmhw")
+[node name="FrontDoor" parent="Floor0" instance=ExtResource("5_e5hgi")]
+position = Vector2(192, 232)
 
 [node name="Floor1" type="Area2D" parent="." node_paths=PackedStringArray("Stairs")]
+visible = false
 collision_layer = 16
 collision_mask = 48
 script = ExtResource("1_edy31")
@@ -176,6 +156,7 @@ collision_mask = 16
 TargetStairs = NodePath("../../Floor0/StairsFloor0")
 
 [node name="Roof" type="Area2D" parent="." node_paths=PackedStringArray("Stairs")]
+visible = false
 collision_layer = 256
 collision_mask = 12288
 script = ExtResource("1_edy31")
@@ -214,5 +195,3 @@ offset_top = 246.0
 offset_right = 512.0
 offset_bottom = 256.0
 color = Color(0.352156, 0.261893, 0.161308, 1)
-
-[connection signal="Interaction" from="Floor0/Door/InteractionPoint/OpenCloseInteract" to="Floor0/Door" method="ToggleOnInteract"]

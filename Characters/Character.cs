@@ -30,6 +30,9 @@ public partial class Character : CharacterBody2D
     // Cached reference to the NearbyBodySensor defined on the .tscn
     public BodySensor NearbyBodySensor { get; protected set; }
 
+    // Nearby interaction areas that have announced themselves to this character. Interaction areas do this automatically for characters detected in their proximity.
+    public Godot.Collections.Array<InteractionArea> NearbyInteractions;
+
     protected float HitAnimationSeconds = 0.1f;
     protected Timer HitAnimationTimer;
 
@@ -39,6 +42,7 @@ public partial class Character : CharacterBody2D
         CurrentHealth = MaxHealth;
 
         NearbyBodySensor = GetNode<BodySensor>("NearbyBodySensor");
+        NearbyInteractions = new Godot.Collections.Array<InteractionArea>();
 
         HitAnimationTimer = new Timer();
         HitAnimationTimer.OneShot = true;

@@ -182,8 +182,8 @@ public partial class Player : Character
 
         if(Input.IsActionJustPressed("player_confirm"))
         {
-            Interactable target = null;
-            foreach (var candidate in NearbyBodySensor?.Interactables)
+            InteractionArea target = null;
+            foreach (var candidate in NearbyInteractions)
             {
                 if(target == null)
                 {
