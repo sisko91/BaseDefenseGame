@@ -105,12 +105,12 @@ public partial class Character : CharacterBody2D
 
     public void ChangeFloor(bool goingUp) {
         if (goingUp) {
-            CollisionLayer = CollisionLayer << 4;
-            CollisionMask = CollisionMask << 4;
+            CollisionLayer = CollisionLayer << CollisionConfig.LAYERS_PER_FLOOR;
+            CollisionMask = CollisionMask << CollisionConfig.LAYERS_PER_FLOOR;
             CurrentElevationLevel += 1;
         } else {
-            CollisionLayer = CollisionLayer >> 4;
-            CollisionMask = CollisionMask >> 4;
+            CollisionLayer = CollisionLayer >> CollisionConfig.LAYERS_PER_FLOOR;
+            CollisionMask = CollisionMask >> CollisionConfig.LAYERS_PER_FLOOR;
             CurrentElevationLevel -= 1;
         }
     }
