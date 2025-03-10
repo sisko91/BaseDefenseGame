@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://World/Structures/Building.cs" id="1_7ffef"]
 [ext_resource type="PackedScene" uid="uid://cw48c72a4tsvk" path="res://World/Structures/Testing/test_wall.tscn" id="1_e2nee"]
 [ext_resource type="Script" path="res://World/Structures/InteriorRegion.cs" id="1_edy31"]
-[ext_resource type="PackedScene" uid="uid://ct4updyrot811" path="res://World/Structures/Testing/test_door.tscn" id="5_e5hgi"]
+[ext_resource type="PackedScene" uid="uid://chpuk4qnqqxm4" path="res://World/Structures/Testing/test_door.tscn" id="5_e5hgi"]
 [ext_resource type="PackedScene" uid="uid://1jg6xpd3wot3" path="res://World/Structures/Testing/test_stairs.tscn" id="6_k5khk"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k1td7"]
@@ -156,7 +156,6 @@ collision_mask = 16
 TargetStairs = NodePath("../../Floor0/StairsFloor0")
 
 [node name="Roof" type="Area2D" parent="." node_paths=PackedStringArray("Stairs")]
-visible = false
 collision_layer = 256
 collision_mask = 12288
 script = ExtResource("1_edy31")

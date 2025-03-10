@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://ct4updyrot811"]
+[gd_scene load_steps=5 format=3 uid="uid://chpuk4qnqqxm4"]
 
 [ext_resource type="Script" path="res://Gameplay/InteractionArea.cs" id="1_1smnp"]
 [ext_resource type="Script" path="res://World/Structures/Door.cs" id="1_42k6d"]
@@ -19,7 +19,7 @@ color = Color(0.621831, 0.150751, 0.829184, 1)
 
 [node name="InteractionArea" type="Area2D" parent="."]
 collision_layer = 8
-collision_mask = 17
+collision_mask = 9
 script = ExtResource("1_1smnp")
 
 [node name="InteractionShape" type="CollisionShape2D" parent="InteractionArea"]

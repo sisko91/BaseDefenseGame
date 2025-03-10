@@ -273,6 +273,9 @@ public partial class NonPlayerCharacter : Character
             CheckAndAddDanger(potentialDanger.GlobalPosition);
             //Include wall sides as points to avoid in addition to the center point
             if (potentialDanger is StaticBody2D) {
+                if (!((StaticBody2D)potentialDanger).HasNode("CollisionShape2D")) {
+                    continue;
+                }
                 var shape = ((StaticBody2D)potentialDanger).GetNode<CollisionShape2D>("CollisionShape2D").Shape;
                 if (shape is RectangleShape2D) {
                     var rectShape = shape as RectangleShape2D;
