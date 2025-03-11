@@ -15,7 +15,8 @@ public partial class NonPlayerCharacter : Character
     // Cached reference to the collision shape defined on the .tscn
     public CollisionShape2D CollisionShape { get; private set; }
 
-    private Brain Brain = null;
+    [Export]
+    public Brain Brain { get; protected set; }
 
     // RotationGoal is where the NPC should be looking / rotated towards. The character will rotate gradually towards their rotation goal.
     // TODO: Expose RotationSpeed as configureable? 
@@ -36,8 +37,10 @@ public partial class NonPlayerCharacter : Character
         //Better for 2d top-down
         MotionMode = MotionModeEnum.Floating;
 
-        Brain = new Brain();
-        Brain.Initialize(this);
+        if(Brain != null)
+        {
+            Brain.Initialize(this);
+        }
 
         RotationGoal = GlobalRotation;
     }

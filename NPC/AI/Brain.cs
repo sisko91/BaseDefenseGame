@@ -4,7 +4,8 @@ using System;
 using System.Collections.Generic;
 
 // The brain belongs to an NPC and is responsible for deciding what the NPC does on both _Process() and _PhysicsProcess().
-public partial class Brain : GodotObject
+[GlobalClass]
+public partial class Brain : Resource
 {
     public NonPlayerCharacter Owner { get; private set; }
 
@@ -17,6 +18,12 @@ public partial class Brain : GodotObject
     private List<float> Danger;
 
     private Vector2 lastNavPathDirection = Vector2.Zero;
+
+    public Brain() : base()
+    {
+        // The Brain should always be local to the scene because otherwise every instance of an NPC will have the same brain (it doesn't work well).
+        ResourceLocalToScene = true;
+    }
 
     public void Initialize(NonPlayerCharacter owner)
     {

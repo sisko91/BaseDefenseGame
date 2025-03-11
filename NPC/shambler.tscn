@@ -1,9 +1,13 @@
-[gd_scene load_steps=11 format=3 uid="uid://2ctjrem32j1v"]
+[gd_scene load_steps=13 format=3 uid="uid://2ctjrem32j1v"]
 
 [ext_resource type="Script" path="res://NPC/NonPlayerCharacter.cs" id="1_s50ym"]
+[ext_resource type="Script" path="res://NPC/AI/Brain.cs" id="2_i25h3"]
 [ext_resource type="PackedScene" uid="uid://bjk4qjwt7h3d2" path="res://UI/floating_health_bar.tscn" id="2_l0ij1"]
 [ext_resource type="Script" path="res://UI/HealthBar.cs" id="3_2t8ll"]
 [ext_resource type="Script" path="res://NPC/BodySensor.cs" id="4_h3xoj"]
+
+[sub_resource type="Resource" id="Resource_qedxc"]
+script = ExtResource("2_i25h3")
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4eeic"]
 radius = 25.0
@@ -35,6 +39,7 @@ radius = 128.0
 [node name="Shambler" type="CharacterBody2D"]
 collision_mask = 2147483653
 script = ExtResource("1_s50ym")
+Brain = SubResource("Resource_qedxc")
 MovementSpeed = 30.0
 
 [node name="FloatingHealthBar" parent="." instance=ExtResource("2_l0ij1")]
