@@ -21,7 +21,6 @@ public partial class NonPlayerCharacter : Character
     // RotationGoal is where the NPC should be looking / rotated towards. The character will rotate gradually towards their rotation goal.
     // TODO: Expose RotationSpeed as configureable? 
     public float RotationGoal = 0;
-
     public override void _Ready()
     {
         base._Ready();
@@ -33,9 +32,6 @@ public partial class NonPlayerCharacter : Character
 
         // SetupNavAgent awaits() a signal so we want to make sure we don't call it from _Ready().
         Callable.From(SetupNavAgent).CallDeferred();
-
-        //Better for 2d top-down
-        MotionMode = MotionModeEnum.Floating;
 
         if(Brain != null)
         {

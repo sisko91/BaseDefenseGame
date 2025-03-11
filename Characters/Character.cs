@@ -36,6 +36,11 @@ public partial class Character : CharacterBody2D
     protected float HitAnimationSeconds = 0.1f;
     protected Timer HitAnimationTimer;
 
+    public Character() : base()
+    {
+        //Better for 2d top-down
+        MotionMode = MotionModeEnum.Floating;
+    }
 
     public override void _Ready()
     {

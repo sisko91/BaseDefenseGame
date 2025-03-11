@@ -16,6 +16,7 @@ radius = 120.0
 
 [node name="Player" type="CharacterBody2D"]
 collision_mask = 2147483655
+motion_mode = 1
 script = ExtResource("1_imx3i")
 StarterWeaponTemplates = Array[PackedScene]([ExtResource("2_psqbx"), ExtResource("2_rscqp")])
 CanDamageSelf = true
