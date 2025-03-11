@@ -111,10 +111,14 @@ public partial class Character : CharacterBody2D
         if (goingUp) {
             CollisionLayer = CollisionLayer << CollisionConfig.LAYERS_PER_FLOOR;
             CollisionMask = CollisionMask << CollisionConfig.LAYERS_PER_FLOOR;
+            NearbyBodySensor.CollisionLayer  = NearbyBodySensor.CollisionLayer << CollisionConfig.LAYERS_PER_FLOOR;
+            NearbyBodySensor.CollisionMask = NearbyBodySensor.CollisionMask << CollisionConfig.LAYERS_PER_FLOOR;
             CurrentElevationLevel += 1;
         } else {
             CollisionLayer = CollisionLayer >> CollisionConfig.LAYERS_PER_FLOOR;
             CollisionMask = CollisionMask >> CollisionConfig.LAYERS_PER_FLOOR;
+            NearbyBodySensor.CollisionLayer = NearbyBodySensor.CollisionLayer >> CollisionConfig.LAYERS_PER_FLOOR;
+            NearbyBodySensor.CollisionMask = NearbyBodySensor.CollisionMask >> CollisionConfig.LAYERS_PER_FLOOR;
             CurrentElevationLevel -= 1;
         }
     }
