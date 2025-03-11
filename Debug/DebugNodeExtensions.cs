@@ -13,8 +13,9 @@ namespace ExtensionMethods
                 if(mainSceneNode != null)
                 {
                     // Set up a Debug node that all renderers can live under.
-                    var debugRootNode = new Node();
+                    var debugRootNode = new Node2D();
                     debugRootNode.Name = "Debug";
+                    debugRootNode.ZIndex = (int) RenderingServer.CanvasItemZMax; //draw above everything
                     mainSceneNode.AddChild(debugRootNode);
 
                     // Configure & Add our debug LineRenderer.

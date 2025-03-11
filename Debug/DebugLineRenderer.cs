@@ -60,7 +60,11 @@ public partial class DebugLineRenderer : Control
                     }
                 }
 
-                DrawLine(lineEntry.Origin, lineEntry.Endpoint, lineEntry.Color);
+                if (lineEntry.Endpoint != lineEntry.Origin) {
+                    DrawLine(lineEntry.Origin, lineEntry.Endpoint, lineEntry.Color);
+                } else {
+                    DrawCircle(lineEntry.Origin, 1, lineEntry.Color);
+                }
             }
         }
     }

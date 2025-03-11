@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://cw48c72a4tsvk" path="res://World/Structures/Testing/test_wall.tscn" id="1_e2nee"]
 [ext_resource type="Script" path="res://World/Structures/InteriorRegion.cs" id="1_edy31"]
 [ext_resource type="PackedScene" uid="uid://chpuk4qnqqxm4" path="res://World/Structures/Testing/test_door.tscn" id="5_e5hgi"]
-[ext_resource type="PackedScene" uid="uid://1jg6xpd3wot3" path="res://World/Structures/Testing/test_stairs.tscn" id="6_k5khk"]
+[ext_resource type="PackedScene" path="res://World/Structures/Testing/test_stairs.tscn" id="6_k5khk"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k1td7"]
 size = Vector2(492, 236)
@@ -62,6 +62,7 @@ region_enabled = true
 region_rect = Rect2(0, 0, 512, 256)
 
 [node name="TopWall0" parent="Floor0" instance=ExtResource("1_e2nee")]
+position = Vector2(0, 0)
 
 [node name="TopWall1" parent="Floor0" instance=ExtResource("1_e2nee")]
 position = Vector2(256, 0)
@@ -98,7 +99,6 @@ goingUp = true
 position = Vector2(192, 232)
 
 [node name="Floor1" type="Area2D" parent="." node_paths=PackedStringArray("Stairs")]
-visible = false
 collision_layer = 16
 collision_mask = 48
 script = ExtResource("1_edy31")
@@ -119,6 +119,7 @@ region_enabled = true
 region_rect = Rect2(0, 0, 512, 256)
 
 [node name="TopWall0" parent="Floor1" instance=ExtResource("1_e2nee")]
+position = Vector2(0, 0)
 collision_layer = 64
 collision_mask = 112
 

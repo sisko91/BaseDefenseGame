@@ -62,7 +62,7 @@ public partial class NonPlayerCharacter : Character
 
         NavAgent = new NavigationAgent2D();
         NavAgent.DebugEnabled = false;
-        NavAgent.AvoidanceEnabled = true;
+        //NavAgent.AvoidanceEnabled = true;
         // TODO: Probably derive the radius from the CollisionShape or something?
         NavAgent.Radius = 75.0f;
         NavAgent.NeighborDistance = NavAgent.Radius * 1.5f; // Not sure how to set this smarter.
@@ -110,12 +110,9 @@ public partial class NonPlayerCharacter : Character
         // Request a new velocity from the NavAgent. It will provide the same/adjusted velocity back to us for actual movement during OnNavAgentVelocityComputed().
         if (NavAgent != null)
         {
-            NavAgent.Velocity = Velocity;
+            //NavAgent.Velocity = Velocity;
         }
-        else
-        {
-            OnVelocityComputed(Velocity);
-        }
+        OnVelocityComputed(Velocity);
     }
 
     // Called each frame (after _PhysicsProcess) after RVO avoidance adjusts our requested velocity to avoid other NPCs.
@@ -210,7 +207,6 @@ public partial class NonPlayerCharacter : Character
             //TODO: Can make this more complex than just canceling out. e.g. enemies further away subtract less interest
             if (Danger[i] > 0) {
                 Interest[i] = 0;
-                Interest[Mod(i + Directions / 2, Directions)] = 0.5f; //Give an interest boost to the opposite direction
             }
 
             float angle = i * 2 * (float) Math.PI / Directions;
@@ -236,8 +232,10 @@ public partial class NonPlayerCharacter : Character
             }
         }
 
-        //Uncomment to pick the highest interest path instead of cumulative interest. It gets caught on walls right now because those aren't detected by steering
-        direction = highestInterestDirection;
+        //If the average direction of interest is towards a danger, go in the direction of highest interest instead
+        if (IsDangerInDirection(direction)) {
+            direction = highestInterestDirection;
+        }
 
         if (DEBUG_STEERING) {
             this.DrawDebugLine(Position, Position + direction.Normalized() * 150, new Color(1, 1, 0), 0.1, GetPath());
@@ -270,25 +268,34 @@ public partial class NonPlayerCharacter : Character
                 continue;
             }
 
-            CheckAndAddDanger(potentialDanger.GlobalPosition);
             //Include wall sides as points to avoid in addition to the center point
-            if (potentialDanger is StaticBody2D) {
-                if (!((StaticBody2D)potentialDanger).HasNode("CollisionShape2D")) {
+            if (potentialDanger is StaticBody2D wallDanger) {
+                if (!wallDanger.HasNode("CollisionShape2D")) {
                     continue;
                 }
-                var shape = ((StaticBody2D)potentialDanger).GetNode<CollisionShape2D>("CollisionShape2D").Shape;
+                var shape = wallDanger.GetNode<CollisionShape2D>("CollisionShape2D").Shape;
                 if (shape is RectangleShape2D) {
                     var rectShape = shape as RectangleShape2D;
-                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(rectShape.Size.X / 2, 0));
-                    CheckAndAddDanger(potentialDanger.GlobalPosition - new Vector2(rectShape.Size.X / 2, 0));
-                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(0, rectShape.Size.Y / 2));
-                    CheckAndAddDanger(potentialDanger.GlobalPosition - new Vector2(0, rectShape.Size.Y / 2));
+
+                    //Center position - StaticBody2D.Position gives the top left point
+                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(rectShape.Size.X / 2 * wallDanger.Scale.X, rectShape.Size.Y / 2 * wallDanger.Scale.Y).Rotated(wallDanger.Rotation));
+                    //Add the extents
+                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(rectShape.Size.X / 2 * wallDanger.Scale.X, 0).Rotated(wallDanger.Rotation));
+                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(rectShape.Size.X / 2 * wallDanger.Scale.X, rectShape.Size.Y * wallDanger.Scale.Y).Rotated(wallDanger.Rotation));
+                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(0, rectShape.Size.Y / 2 * wallDanger.Scale.Y).Rotated(wallDanger.Rotation));
+                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(rectShape.Size.X * wallDanger.Scale.X, rectShape.Size.Y / 2 * wallDanger.Scale.Y).Rotated(wallDanger.Rotation));
                 }
+            } else {
+                CheckAndAddDanger(potentialDanger.GlobalPosition);
             }
         }
     }
 
     private void CheckAndAddDanger(Vector2 dangerGlobalPosition) {
+        if (DEBUG_STEERING) {
+            this.DrawDebugLine(dangerGlobalPosition, dangerGlobalPosition, new Color(1, 1, 1), 0.1, GetPath());
+        }
+
         var distTo = GlobalPosition.DistanceTo(dangerGlobalPosition);
         var dirTo = GlobalPosition.DirectionTo(dangerGlobalPosition);
         var bucketAngle = dirTo.Angle() - GlobalRotation;
@@ -297,20 +304,36 @@ public partial class NonPlayerCharacter : Character
         bucketAngle = GetBoundedAngle(bucketAngle);
 
         //Put in multiple buckets depending on angle. Raycasting would see a close object at multiple angles, so simulating that
+        //50% overlap on grouping min, scale with distance
+        var distScale = 1 - distTo / 128; //TODO: access sensor size
+        var modifier = 1.5 + 3 * distScale;
+
         for (int i = 0; i < Directions; i++) {
             var angle = i * 2 * Math.PI / Directions;
 
-            //50% overlap on grouping min, scale with distance
-            var distScale = 1 - distTo / 128; //TODO: access sensor size
-            var modifier = 1.5 + 3 * distScale;
-            //GD.Print(modifier);
             if (Math.Abs(bucketAngle - angle) < (modifier * Math.PI / Directions)) {
-                Vector2 interestDirection = Vector2.Right.Rotated((float)angle).Rotated(Rotation);
-
-                //this.DrawDebugLine(Position, Position + interestDirection * 150, new Color(1, 0, 0), 0.1, GetPath());
                 Danger[i] = 1; //TODO: Can make this more complex, e.g. scaling for distance
+                Interest[Mod(i + Directions / 2, Directions)] = 0.5f; //Give an interest boost to the opposite direction
             }
         }
+    }
+
+    private bool IsDangerInDirection(Vector2 direction) {
+        return Danger[GetDangerBucket(direction.Angle())] > 0;
+    }
+
+    //Modifier increases the search range
+    private int GetDangerBucket(float bucketAngle) {
+        for (int i = 0; i < Directions; i++) {
+            var angle = i * 2 * Math.PI / Directions;
+
+            if (Math.Abs(bucketAngle - angle) < (Math.PI / Directions)) {
+                return i;
+            }
+        }
+
+        //Should never return
+        return 0;
     }
 
     private float GetBoundedAngle(float angle) {

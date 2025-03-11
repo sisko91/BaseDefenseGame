@@ -67,4 +67,4 @@ script = ExtResource("6_xi2eq")
 SpawnTemplate = ExtResource("6_a6glu")
 InnerRadius = 550.0
 OuterRadius = 700.0
-InitialCount = 2
+InitialCount = 6
