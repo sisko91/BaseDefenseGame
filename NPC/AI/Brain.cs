@@ -19,6 +19,12 @@ public partial class Brain : Resource
 
     private Vector2 lastNavPathDirection = Vector2.Zero;
 
+    // All actions this Brain has to select from.
+    private Godot.Collections.Array<AI.Action> actions;
+
+    // The currently-selected AI action this brain is executing.
+    private AI.Action currentAction;
+
     public Brain() : base()
     {
         // The Brain should always be local to the scene because otherwise every instance of an NPC will have the same brain (it doesn't work well).
@@ -38,7 +44,11 @@ public partial class Brain : Resource
             Danger.Add(0);
         }
 
-        // Reset other state.
+        // Redefine AI action set.
+        actions = new Godot.Collections.Array<AI.Action>();
+        var moveAction = new AI.Actions.MoveToTargetAction();
+        moveAction.Initialize(this);
+        actions.Add(moveAction);
     }
 
     // Think() mirrors the intent of _Process() for Godot nodes. NPCs will delegate much of their processing to this function.
@@ -49,14 +59,44 @@ public partial class Brain : Resource
             return;
         }
 
+        // Refresh the enemy target before any AI actions evaluate.
         if(EnemyTarget == null)
         {
             EnemyTarget = FindTarget();
         }
 
-        if (Owner.NavAgent != null)
+        // Pick a new action if necessary
+        if(currentAction == null || !currentAction.IsActive)
         {
-            UpdateNavigation();
+            // Find the highest-scoring action.
+            float currentActionScore = currentAction == null ? 0 : currentAction.CalculateScore();
+            foreach (var candidate in actions)
+            {
+                if(currentAction == candidate)
+                {
+                    continue; // don't pick the same action twice in a row if possible.
+                }
+
+                float candidateScore = candidate.CalculateScore();
+                if (candidateScore > currentActionScore)
+                {
+                    currentAction = candidate;
+                    currentActionScore = candidateScore;
+                }
+            }
+        }
+
+        // Either tick the current action or Activate the new one.
+        if (currentAction != null)
+        {
+            if(currentAction.IsActive)
+            {
+                currentAction.Update(deltaTime);
+            }
+            else
+            {
+                currentAction.Activate();
+            }
         }
     }
 
@@ -75,24 +115,6 @@ public partial class Brain : Resource
         return null;
     }
 
-    private void UpdateNavigation()
-    {
-        if (EnemyTarget != null)
-        {
-            if (EnemyTarget is Player player)
-            {
-                //If the player is on a different floor, path to the stairs
-                //For multiple houses/floors, this code needs to be updated detect what building a region is in and path through multiple sets of stairs, but this is proof of concept for the current demo
-                if (Owner.CurrentRegion != player.CurrentRegion && player.CurrentRegion != null)
-                {
-                    Owner.NavAgent.TargetPosition = player.CurrentRegion.Stairs[0].TargetStairs.GlobalPosition;
-                    return;
-                }
-            }
-            Owner.NavAgent.TargetPosition = EnemyTarget.GlobalPosition;
-        }
-    }
-
     // ThinkPhysics() mirrors the intent of _PhysicsProcess() for Godot nodes. NPCs will delegate some of their physics-related processing to this function.
     public virtual void ThinkPhysics(double deltaTime)
     {
@@ -101,24 +123,24 @@ public partial class Brain : Resource
             return;
         }
 
-        //If moving faster than allowed (e.g. from explosion), just slow down
-        if (Owner.Velocity.Length() < Owner.MovementSpeed + 0.1)
-        { //Fudge factor since LimitLength() can return a vector with slightly higher length than specified (float precision)
-            if (EnemyTarget != null)
-            { 
-                Owner.ClearLines(Owner.GetPath());
-                lastNavPathDirection = Owner.GlobalPosition.DirectionTo(Owner.NavAgent.GetNextPathPosition());
-
-                SetInterest(lastNavPathDirection);
-                SetDanger();
-
-                var direction = ChooseDirection();
-                Owner.Velocity = (Owner.Velocity + direction * Owner.MoveAccel).LimitLength(Owner.MovementSpeed);
-            }
+        // Always update interests and dangers.
+        Owner.ClearLines(Owner.GetPath());
+        if(Owner.NavAgent != null)
+        {
+            lastNavPathDirection = Owner.GlobalPosition.DirectionTo(Owner.NavAgent.GetNextPathPosition());
+            SetInterest(lastNavPathDirection);
         }
-        else
+        SetDanger();
+
+        // If moving faster than allowed (e.g. from explosion), just pause AI and slow down
+        if (Owner.Velocity.Length() > Owner.MovementSpeed + 0.1)
         {
             Owner.Velocity = (Owner.Velocity + -Owner.Velocity.Normalized() * Owner.MoveAccel);
+        }
+        else {
+            // Otherwise continue navigating 
+            var direction = ChooseDirection();
+            Owner.Velocity = (Owner.Velocity + direction * Owner.MoveAccel).LimitLength(Owner.MovementSpeed);
         }
 
         // Orient to face the direction the NPC is moving by default.

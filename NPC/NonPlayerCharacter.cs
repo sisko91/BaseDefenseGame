@@ -51,7 +51,9 @@ public partial class NonPlayerCharacter : Character
         NavAgent.Radius = 75.0f;
         NavAgent.NeighborDistance = NavAgent.Radius * 1.5f; // Not sure how to set this smarter.
         NavAgent.PathDesiredDistance = 5.0f;
-        NavAgent.TargetDesiredDistance = 5.0f;
+        NavAgent.TargetDesiredDistance = NavAgent.Radius * 1.2f;
+        // Set NavAgent to our current position so we have no default movement.
+        NavAgent.TargetPosition = GlobalPosition;
         AddChild(NavAgent);
     }
 
