@@ -133,11 +133,12 @@ public partial class Brain : Resource
         SetDanger();
 
         // If moving faster than allowed (e.g. from explosion), just pause AI and slow down
-        if (Owner.Velocity.Length() > Owner.MovementSpeed + 0.1)
-        {
+        if (Owner.Velocity.Length() > Owner.MovementSpeed + 0.1) {
             Owner.Velocity = (Owner.Velocity + -Owner.Velocity.Normalized() * Owner.MoveAccel);
-        }
-        else {
+        // If close to the target and not moving fast, stop moving
+        } else if (EnemyTarget != null && Owner.GlobalPosition.DistanceTo(EnemyTarget.GlobalPosition) < 100) {
+            Owner.Velocity = new Vector2(0, 0);
+        } else {
             // Otherwise continue navigating 
             var direction = ChooseDirection();
             Owner.Velocity = (Owner.Velocity + direction * Owner.MoveAccel).LimitLength(Owner.MovementSpeed);
@@ -254,30 +255,35 @@ public partial class Brain : Resource
                 {
                     var rectShape = shape as RectangleShape2D;
 
-                    //Center position - StaticBody2D.Position gives the top left point
-                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(rectShape.Size.X / 2 * wallDanger.Scale.X, rectShape.Size.Y / 2 * wallDanger.Scale.Y).Rotated(wallDanger.Rotation));
-                    //Add the extents
-                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(rectShape.Size.X / 2 * wallDanger.Scale.X, 0).Rotated(wallDanger.Rotation));
-                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(rectShape.Size.X / 2 * wallDanger.Scale.X, rectShape.Size.Y * wallDanger.Scale.Y).Rotated(wallDanger.Rotation));
-                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(0, rectShape.Size.Y / 2 * wallDanger.Scale.Y).Rotated(wallDanger.Rotation));
-                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(rectShape.Size.X * wallDanger.Scale.X, rectShape.Size.Y / 2 * wallDanger.Scale.Y).Rotated(wallDanger.Rotation));
+                    var wallDangerRange = 15;
+                    //Add the extents. The global position is the top left corner
+                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(rectShape.Size.X / 2 * wallDanger.Scale.X, 0).Rotated(wallDanger.Rotation), wallDangerRange);
+                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(rectShape.Size.X / 2 * wallDanger.Scale.X, rectShape.Size.Y * wallDanger.Scale.Y).Rotated(wallDanger.Rotation), wallDangerRange);
+                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(0, rectShape.Size.Y / 2 * wallDanger.Scale.Y).Rotated(wallDanger.Rotation), wallDangerRange);
+                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(rectShape.Size.X * wallDanger.Scale.X, rectShape.Size.Y / 2 * wallDanger.Scale.Y).Rotated(wallDanger.Rotation), wallDangerRange);
                 }
             }
             else
             {
-                CheckAndAddDanger(potentialDanger.GlobalPosition);
+                var enemyDangerRange = 100;
+                CheckAndAddDanger(potentialDanger.GlobalPosition, enemyDangerRange);
             }
         }
     }
 
-    private void CheckAndAddDanger(Vector2 dangerGlobalPosition)
+    private void CheckAndAddDanger(Vector2 dangerGlobalPosition, float dangerMinRange)
     {
         if (DebugConfig.DRAW_STEERING)
         {
             Owner.DrawDebugLine(dangerGlobalPosition, dangerGlobalPosition, new Color(1, 1, 1), 0.1, Owner.GetPath());
         }
 
+        var myRadius = 25; //TODO: Get programatically or in config
         var distTo = Owner.GlobalPosition.DistanceTo(dangerGlobalPosition);
+        if (distTo > myRadius + dangerMinRange) {
+            return;
+        }
+
         var dirTo = Owner.GlobalPosition.DirectionTo(dangerGlobalPosition);
         var bucketAngle = dirTo.Angle() - Owner.GlobalRotation;
         //Shift angle up for easier bucketing. For instance, with 8 directions, the first bucket should be everything from -337.5 degress to 22.5 degrees. This would shift those values to 0 - 45 degrees
@@ -286,7 +292,7 @@ public partial class Brain : Resource
 
         //Put in multiple buckets depending on angle. Raycasting would see a close object at multiple angles, so simulating that
         //50% overlap on grouping min, scale with distance
-        var distScale = 1 - distTo / 128; //TODO: access sensor size
+        var distScale = 1 - distTo / 128; //TODO: This not good math. Figure out a better way to approximate raycast behavior as a scale of distance
         var modifier = 1.5 + 3 * distScale;
 
         for (int i = 0; i < Directions; i++)
