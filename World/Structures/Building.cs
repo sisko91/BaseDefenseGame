@@ -21,6 +21,7 @@ public partial class Building : Node2D
                 {
                     if(child is InteriorRegion region)
                     {
+                        region.AddToGroup($"{NavigationConfig.FLOOR_GROUP_PREFIX}{region.ElevationLevel}");
                         _allRegions.Add(region);
                         // Record the highest elevation in the building.
                         if(region.ElevationLevel > HighestElevation)

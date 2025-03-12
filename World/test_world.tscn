@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=10 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
@@ -22,13 +22,6 @@ shader = ExtResource("2_vxmty")
 shader_parameter/density = 0.25
 shader_parameter/speed = Vector2(0.02, 0.01)
 shader_parameter/noise_texture = SubResource("NoiseTexture2D_xy6ls")
-
-[sub_resource type="NavigationPolygon" id="NavigationPolygon_nopiq"]
-vertices = PackedVector2Array(3043, 3035.03, -3057.98, 3056.96, -3046.02, -3066, 3043, -3066)
-polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
-outlines = Array[PackedVector2Array]([PackedVector2Array(-3056, -3076, 3053, -3076, 3053, 3045, -3068, 3067)])
-parsed_collision_mask = 2147483652
-agent_radius = 25.0
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_tr0n8")
@@ -56,10 +49,7 @@ region_enabled = true
 region_rect = Rect2(0, 0, 6144, 6144)
 region_filter_clip_enabled = true
 
-[node name="NavRegion" type="NavigationRegion2D" parent="."]
-navigation_polygon = SubResource("NavigationPolygon_nopiq")
-
-[node name="TestBuilding" parent="NavRegion" instance=ExtResource("5_20vwc")]
+[node name="TestBuilding" parent="." instance=ExtResource("5_20vwc")]
 position = Vector2(-275, -416)
 
 [node name="ShamblerSpawnZone" type="Node2D" parent="."]

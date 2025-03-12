@@ -1,15 +1,12 @@
 using Godot;
+using System;
+using System.Collections.Generic;
 
 public partial class World : Node2D
 {
     // The extents / bounds of the world, in world-space units. X is the width, Y is the height. The world extends half of this distance in each direction from the World's location.
     [Export]
     public Vector2 RegionBounds { get; set; }
-
-    // When true, the world will define / override the first outline on the NavRegion to fit the size of the world completely.
-    // Disable this if you plan on defining a custom NavigationPolygon for some reason.
-    [Export]
-    public bool ExpandNavToFit = true;
 
     // All Player nodes currently in the scene.
     public Godot.Collections.Array<Node> Players
@@ -32,8 +29,9 @@ public partial class World : Node2D
     // Cached reference to the background sprite defined by the .tscn.
     private Sprite2D backgroundSprite;
 
-    // Cached reference to the navigation region defined by the .tscn
-    private NavigationRegion2D navRegion;
+    // A map/region for each floor
+    public List<Rid> NavMaps;
+    private List<NavigationRegion2D> NavRegions;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -43,12 +41,13 @@ public partial class World : Node2D
         SetupNavMesh();
 
         SetupWorldBarriers();
-
-        navRegion.BakeNavigationPolygon();
     }
 
+    //TODO: Only rebake floors we need to
     public void RebakeNavMesh() {
-        navRegion.BakeNavigationPolygon();
+        foreach (NavigationRegion2D navRegion in NavRegions) {
+            navRegion.BakeNavigationPolygon();
+        }
     }
 
     private void SetupBackground()
@@ -64,23 +63,37 @@ public partial class World : Node2D
 
     private void SetupNavMesh()
     {
-        navRegion = GetNode<NavigationRegion2D>("NavRegion");
-        // Create the navigation mesh if it's not already.=
-        if(navRegion.NavigationPolygon == null)
-        {
-            navRegion.NavigationPolygon = new NavigationPolygon();
+        NavMaps = new List<Rid>();
+        NavRegions = new List<NavigationRegion2D>();
+        var boundingOutline = new Vector2[] {
+            new Vector2(-RegionBounds.X / 2, -RegionBounds.Y / 2),
+            new Vector2(-RegionBounds.X / 2, RegionBounds.Y / 2),
+            new Vector2(RegionBounds.X / 2, RegionBounds.Y / 2),
+            new Vector2(RegionBounds.X / 2, -RegionBounds.Y / 2),
+        };
+
+        for (int i = 0; i < GetMaxFloorsInScene(); i++) {
+            var navRegion = new NavigationRegion2D();
+            NavigationPolygon navPolygon = new NavigationPolygon();
+            navPolygon.SourceGeometryMode = NavigationPolygon.SourceGeometryModeEnum.GroupsWithChildren;
+            navPolygon.SourceGeometryGroupName = NavigationConfig.FLOOR_GROUP_PREFIX + i;
+            navPolygon.AgentRadius = NavigationConfig.NAV_POLYGON_AGENT_RADIUS;
+            navPolygon.ParsedCollisionMask = (uint)Math.Pow(2, i * CollisionConfig.LAYERS_PER_FLOOR + CollisionConfig.ENVIRONMENT_LAYER - 1) | (uint)Math.Pow(2, CollisionConfig.WORLD_BOUNDS_LAYER - 1);
+            navPolygon.AddOutline(boundingOutline);
+
+            navRegion.NavigationPolygon = navPolygon;
+
+            Rid map = NavigationServer2D.MapCreate();
+            NavigationServer2D.MapSetCellSize(map, 1);
+            NavigationServer2D.MapSetActive(map, true);
+            NavMaps.Add(map);
+
+            navRegion.SetNavigationMap(map);
+            NavRegions.Add(navRegion);
+            AddChild(navRegion);
         }
 
-        if(ExpandNavToFit)
-        {
-            var boundingOutline = new Vector2[] {
-                new Vector2(-RegionBounds.X/2, -RegionBounds.Y/2),
-                new Vector2(-RegionBounds.X/2, RegionBounds.Y/2),
-                new Vector2(RegionBounds.X/2, RegionBounds.Y/2),
-                new Vector2(RegionBounds.X/2, -RegionBounds.Y/2),
-            };
-            navRegion.NavigationPolygon.SetOutline(0, boundingOutline);
-        }
+        RebakeNavMesh();
     }
 
     private void SetupWorldBarriers() {
@@ -102,5 +115,10 @@ public partial class World : Node2D
         collisionShape.Shape = boundShape;
         bound.AddChild(collisionShape);
         AddChild(bound);
+    }
+
+    private int GetMaxFloorsInScene() {
+        //TODO: Implement. Increment below number in the meantime if you want to test > 3 floors
+        return 3;
     }
 }

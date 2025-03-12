@@ -1,3 +1,4 @@
+using ExtensionMethods;
 using Godot;
 
 public partial class NonPlayerCharacter : Character
@@ -47,12 +48,11 @@ public partial class NonPlayerCharacter : Character
 
         NavAgent = new NavigationAgent2D();
         NavAgent.DebugEnabled = DebugConfig.DRAW_NAVIGATION;
-        // TODO: Probably derive the radius from the CollisionShape or something?
-        NavAgent.Radius = 75.0f;
-        NavAgent.NeighborDistance = NavAgent.Radius * 1.5f; // Not sure how to set this smarter.
-        NavAgent.PathDesiredDistance = 5.0f;
-        NavAgent.TargetDesiredDistance = NavAgent.Radius * 1.2f;
-        // Set NavAgent to our current position so we have no default movement.
+        NavAgent.PathDesiredDistance = NavigationConfig.PATH_DESIRED_DISTANCE;
+        NavAgent.TargetDesiredDistance = NavigationConfig.TARGET_DESIRED_DISTANCE;
+
+        //Default to the first floor nav map. NPCs spawned in upstairs regions should automatically switch to the right map on game load
+        NavAgent.SetNavigationMap(this.GetGameWorld().NavMaps[0]);
         NavAgent.TargetPosition = GlobalPosition;
         AddChild(NavAgent);
     }
@@ -105,5 +105,11 @@ public partial class NonPlayerCharacter : Character
     {
         //Color senseColor = bSensed ? new Color(0, 1, 0) : new Color(1, 0, 0);
         //this.DrawDebugLine(player.Position, Position, senseColor, 0.5);
+    }
+
+    public override void ChangeFloor(bool goingUp) {
+        base.ChangeFloor(goingUp);
+
+        NavAgent.SetNavigationMap(this.GetGameWorld().NavMaps[CurrentElevationLevel]);
     }
 }

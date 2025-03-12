@@ -112,7 +112,7 @@ public partial class Character : CharacterBody2D
         Material = null;
     }
 
-    public void ChangeFloor(bool goingUp) {
+    public virtual void ChangeFloor(bool goingUp) {
         if (goingUp) {
             CollisionLayer = CollisionLayer << CollisionConfig.LAYERS_PER_FLOOR;
             CollisionMask = CollisionMask << CollisionConfig.LAYERS_PER_FLOOR;
