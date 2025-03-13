@@ -35,14 +35,16 @@ namespace AI
 
             protected override void OnActivate()
             {
-                //GD.Print($"{Owner?.Name}->{GetType().Name} activated :D");
-
+                GD.Print($"{Owner?.Name}->Navigating to enemy ({Brain.EnemyTarget.Name})");
                 Owner.NavAgent.TargetPosition = Brain.EnemyTarget.GlobalPosition;
+                // The NavAgent will never get closer than the combined radii of the NPC and its target enemy.
+                Owner.NavAgent.TargetDesiredDistance = (Owner.NavAgent.Radius + Brain.EnemyTarget.GetCollisionBodyRadius());
             }
 
             protected override void OnDeactivate()
             {
                 //GD.Print($"{Owner?.Name}->{GetType().Name} deactivated :c");
+                Brain.ClearNavigationTarget();
             }
 
             public override void Update(double deltaTime)

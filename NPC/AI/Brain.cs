@@ -13,7 +13,7 @@ public partial class Brain : Resource
     public NonPlayerCharacter Owner { get; private set; }
 
     // What target - if any - the brain is currently focused on.
-    public Character EnemyTarget = null;
+    public Character EnemyTarget { get; set; }
 
     //Context-based steering
     private int Directions = 16;
@@ -134,12 +134,12 @@ public partial class Brain : Resource
         SetDanger();
 
         // If moving faster than allowed (e.g. from explosion), just pause AI and slow down
-        if (Owner.Velocity.Length() > Owner.MovementSpeed + 0.1) {
+        if (Owner.Velocity.Length() > Owner.MovementSpeed + 0.1)
+        {
             Owner.Velocity = (Owner.Velocity + -Owner.Velocity.Normalized() * Owner.MoveAccel);
-        // If close to the target and not moving fast, stop moving
-        } else if (EnemyTarget != null && Owner.GlobalPosition.DistanceTo(EnemyTarget.GlobalPosition) < 100 && Owner.CurrentElevationLevel == EnemyTarget.CurrentElevationLevel) {
-            Owner.Velocity = new Vector2(0, 0);
-        } else {
+        }
+        else
+        {
             // Otherwise continue navigating 
             var direction = ChooseDirection();
             Owner.Velocity = (Owner.Velocity + direction * Owner.MoveAccel).LimitLength(Owner.MovementSpeed);
@@ -160,6 +160,12 @@ public partial class Brain : Resource
 
         // Set the NPC to rotate towards the look angle we just decided.
         Owner.RotationGoal = lookAngle;
+    }
+
+    public void ClearNavigationTarget()
+    {
+        Owner.NavAgent.TargetPosition = Owner.GlobalPosition;
+        Owner.NavAgent.TargetDesiredDistance = NavigationConfig.DEFAULT_TARGET_DESIRED_DISTANCE;
     }
 
     private Vector2 ChooseDirection()
