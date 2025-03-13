@@ -50,6 +50,7 @@ public partial class NonPlayerCharacter : Character
         NavAgent.DebugEnabled = DebugConfig.DRAW_NAVIGATION;
         NavAgent.PathDesiredDistance = NavigationConfig.PATH_DESIRED_DISTANCE;
         NavAgent.TargetDesiredDistance = NavigationConfig.TARGET_DESIRED_DISTANCE;
+        NavAgent.Radius = GetCollisionBodyRadius();
 
         //Default to the first floor nav map. NPCs spawned in upstairs regions should automatically switch to the right map on game load
         NavAgent.SetNavigationMap(this.GetGameWorld().NavMaps[0]);
@@ -110,5 +111,12 @@ public partial class NonPlayerCharacter : Character
     public override void ChangeFloor(int targetFloor) {
         base.ChangeFloor(targetFloor);
         NavAgent.SetNavigationMap(this.GetGameWorld().NavMaps[CurrentElevationLevel]);
+    }
+
+    private float GetCollisionBodyRadius()
+    {
+        var boundingRect = CollisionShape.Shape.GetRect();
+        var collisionDiameter = Mathf.Max(boundingRect.Size.X, boundingRect.Size.Y);
+        return collisionDiameter / 2;
     }
 }
