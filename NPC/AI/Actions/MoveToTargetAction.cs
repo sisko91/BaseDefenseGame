@@ -82,8 +82,8 @@ namespace AI
                         return;
                     }
                     
-                    //If the player is outside and there's a door, path outside the door
-                    if (isPlayerOutside && isOwnerOnGroundFloor) {
+                    //If the player is not in this building and there's a door, path outside the door
+                    if (isOwnerOnGroundFloor && (isPlayerOutside || isPlayerInDifferentBuilding)) {
                         var door = Owner.CurrentRegion.OwningBuilding.Exits[0];
                         var doorOffset = new Vector2(0, 30).Rotated(door.Rotation);
                         if (InInteractRange(Owner.GlobalPosition, door.GlobalPosition - doorOffset) && !door.Open && Brain.CanOpenDoors) {
@@ -109,7 +109,7 @@ namespace AI
 
                     //Player is outside or in another building, try to path to an exit
                     Stairs stairsToPathTo = null;
-                    if (isPlayerOutside || isPlayerInDifferentBuilding && !isOwnerOnGroundFloor)
+                    if (isPlayerOutside || isPlayerInDifferentBuilding)
                     {
                         List<Stairs> path = GetStairsPath(Owner.CurrentRegion);
                         foreach (Stairs stairs in path) {
