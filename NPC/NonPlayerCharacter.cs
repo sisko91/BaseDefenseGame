@@ -13,9 +13,6 @@ public partial class NonPlayerCharacter : Character
 
     public NavigationAgent2D NavAgent { get; private set; } = null;
 
-    // Cached reference to the collision shape defined on the .tscn
-    public CollisionShape2D CollisionShape { get; private set; }
-
     [Export]
     public Brain Brain { get; protected set; }
 
@@ -49,7 +46,7 @@ public partial class NonPlayerCharacter : Character
         NavAgent = new NavigationAgent2D();
         NavAgent.DebugEnabled = DebugConfig.DRAW_NAVIGATION;
         NavAgent.PathDesiredDistance = NavigationConfig.PATH_DESIRED_DISTANCE;
-        NavAgent.TargetDesiredDistance = NavigationConfig.TARGET_DESIRED_DISTANCE;
+        NavAgent.TargetDesiredDistance = NavigationConfig.DEFAULT_TARGET_DESIRED_DISTANCE; // Updated by the AI depending on what the target is.
         NavAgent.Radius = GetCollisionBodyRadius();
 
         //Default to the first floor nav map. NPCs spawned in upstairs regions should automatically switch to the right map on game load
@@ -111,12 +108,5 @@ public partial class NonPlayerCharacter : Character
     public override void ChangeFloor(int targetFloor) {
         base.ChangeFloor(targetFloor);
         NavAgent.SetNavigationMap(this.GetGameWorld().NavMaps[CurrentElevationLevel]);
-    }
-
-    private float GetCollisionBodyRadius()
-    {
-        var boundingRect = CollisionShape.Shape.GetRect();
-        var collisionDiameter = Mathf.Max(boundingRect.Size.X, boundingRect.Size.Y);
-        return collisionDiameter / 2;
     }
 }

@@ -25,6 +25,9 @@ public partial class Character : Moveable
     // Cached reference to the NearbyBodySensor defined on the .tscn
     public BodySensor NearbyBodySensor { get; protected set; }
 
+    // Cached reference to the collision shape defined on the .tscn
+    public CollisionShape2D CollisionShape { get; private set; }
+
     // Nearby interaction areas that have announced themselves to this character. Interaction areas do this automatically for characters detected in their proximity.
     public Godot.Collections.Array<InteractionArea> NearbyInteractions;
 
@@ -35,6 +38,7 @@ public partial class Character : Moveable
     {
         CurrentHealth = MaxHealth;
 
+        CollisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
         NearbyBodySensor = GetNode<BodySensor>("NearbyBodySensor");
         NearbyInteractions = new Godot.Collections.Array<InteractionArea>();
 
@@ -136,6 +140,13 @@ public partial class Character : Moveable
     private void RemoveHitMaterial()
     {
         Material = null;
+    }
+
+    public float GetCollisionBodyRadius()
+    {
+        var boundingRect = CollisionShape.Shape.GetRect();
+        var collisionDiameter = Mathf.Max(boundingRect.Size.X, boundingRect.Size.Y);
+        return collisionDiameter / 2;
     }
 }
 
