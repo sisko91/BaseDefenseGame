@@ -7,6 +7,9 @@ using System.Collections.Generic;
 [GlobalClass]
 public partial class Brain : Resource
 {
+    [Export]
+    public bool CanOpenDoors = false;
+
     public NonPlayerCharacter Owner { get; private set; }
 
     // What target - if any - the brain is currently focused on.
@@ -118,25 +121,23 @@ public partial class Brain : Resource
     // ThinkPhysics() mirrors the intent of _PhysicsProcess() for Godot nodes. NPCs will delegate some of their physics-related processing to this function.
     public virtual void ThinkPhysics(double deltaTime)
     {
-        if(Owner == null)
+        if(Owner == null || Owner.NavAgent == null)
         {
             return;
         }
 
-        // Always update interests and dangers.
         Owner.ClearLines(Owner.GetPath());
-        if(Owner.NavAgent != null)
-        {
-            lastNavPathDirection = Owner.GlobalPosition.DirectionTo(Owner.NavAgent.GetNextPathPosition());
-            SetInterest(lastNavPathDirection);
-        }
+        lastNavPathDirection = Owner.GlobalPosition.DirectionTo(Owner.NavAgent.GetNextPathPosition());
+
+        // Always update interests and dangers.
+        SetInterest(lastNavPathDirection);
         SetDanger();
 
         // If moving faster than allowed (e.g. from explosion), just pause AI and slow down
         if (Owner.Velocity.Length() > Owner.MovementSpeed + 0.1) {
             Owner.Velocity = (Owner.Velocity + -Owner.Velocity.Normalized() * Owner.MoveAccel);
         // If close to the target and not moving fast, stop moving
-        } else if (EnemyTarget != null && Owner.GlobalPosition.DistanceTo(EnemyTarget.GlobalPosition) < 100) {
+        } else if (EnemyTarget != null && Owner.GlobalPosition.DistanceTo(EnemyTarget.GlobalPosition) < 100 && Owner.CurrentElevationLevel == EnemyTarget.CurrentElevationLevel) {
             Owner.Velocity = new Vector2(0, 0);
         } else {
             // Otherwise continue navigating 
@@ -189,7 +190,7 @@ public partial class Brain : Resource
                     color = new Color(1, 0, 0);
                     line = interestDirection.Normalized();
                 }
-                Owner.DrawDebugLine(Owner.Position, Owner.Position + line * 100, color, 0.1, Owner.GetPath());
+                Owner.DrawDebugLine(Owner.GlobalPosition, Owner.GlobalPosition + line * 100, color, 0.1, Owner.GetPath());
             }
 
             if (Interest[i] > maxInterest)
@@ -207,7 +208,7 @@ public partial class Brain : Resource
 
         if (DebugConfig.DRAW_STEERING)
         {
-            Owner.DrawDebugLine(Owner.Position, Owner.Position + direction.Normalized() * 150, new Color(1, 1, 0), 0.1, Owner.GetPath());
+            Owner.DrawDebugLine(Owner.GlobalPosition, Owner.GlobalPosition + direction.Normalized() * 150, new Color(1, 1, 0), 0.1, Owner.GetPath());
         }
 
         return direction.Normalized();
@@ -220,7 +221,7 @@ public partial class Brain : Resource
             var angle = i * 2 * Math.PI / Directions;
             Vector2 interestDirection = Vector2.Right.Rotated((float)angle).Rotated(Owner.Rotation);
             Interest[i] = Math.Max(0.1f, interestDirection.Dot(pathDirection));
-            //this.DrawDebugLine(Position, Position + interestDirection * Interest[i] * 100, new Color(0, 1, 0), 0.1, GetPath());
+            //this.DrawDebugLine(GlobalPosition, Position + interestDirection * Interest[i] * 100, new Color(0, 1, 0), 0.1, GetPath());
         }
     }
 
@@ -256,11 +257,11 @@ public partial class Brain : Resource
                     var rectShape = shape as RectangleShape2D;
 
                     var wallDangerRange = 15;
-                    //Add the extents. The global position is the top left corner
+                    //Add the extents
                     CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(rectShape.Size.X / 2 * wallDanger.Scale.X, 0).Rotated(wallDanger.Rotation), wallDangerRange);
-                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(rectShape.Size.X / 2 * wallDanger.Scale.X, rectShape.Size.Y * wallDanger.Scale.Y).Rotated(wallDanger.Rotation), wallDangerRange);
+                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(-rectShape.Size.X / 2 * wallDanger.Scale.X, 0).Rotated(wallDanger.Rotation), wallDangerRange);
                     CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(0, rectShape.Size.Y / 2 * wallDanger.Scale.Y).Rotated(wallDanger.Rotation), wallDangerRange);
-                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(rectShape.Size.X * wallDanger.Scale.X, rectShape.Size.Y / 2 * wallDanger.Scale.Y).Rotated(wallDanger.Rotation), wallDangerRange);
+                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(0, -rectShape.Size.Y / 2 * wallDanger.Scale.Y).Rotated(wallDanger.Rotation), wallDangerRange);
                 }
             }
             else

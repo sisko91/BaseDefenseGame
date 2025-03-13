@@ -19,7 +19,7 @@ namespace AI
 
         public bool IsActive { get; private set; }
 
-        public void Initialize(Brain brain)
+        public virtual void Initialize(Brain brain)
         {
             Brain = brain;
         }

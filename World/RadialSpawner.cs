@@ -69,7 +69,7 @@ public partial class RadialSpawner : Node2D
 
         var randomAngle = GD.Randf() * Mathf.Pi * 2;
         var randomDistance = InnerRadius + GD.Randf() * (OuterRadius - InnerRadius);
-        instance.Position = Vector2.FromAngle(randomAngle) * randomDistance;
+        instance.Position = Position + Vector2.FromAngle(randomAngle) * randomDistance;
 
         if (GroupName != null && GroupName != "") {
             instance.AddToGroup(GroupName);

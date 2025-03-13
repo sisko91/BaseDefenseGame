@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://1jg6xpd3wot3"]
+[gd_scene load_steps=5 format=3 uid="uid://boifro8bbs3lu"]
 
 [ext_resource type="Script" path="res://World/Structures/Stairs.cs" id="1_1feta"]
 
@@ -16,7 +16,7 @@ fill_to = Vector2(0, 0)
 size = Vector2(64, 64)
 
 [node name="TestStairs" type="Area2D"]
-collision_layer = 16
+collision_layer = 8
 script = ExtResource("1_1feta")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

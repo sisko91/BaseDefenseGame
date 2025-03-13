@@ -182,28 +182,7 @@ public partial class Player : Character
 
         if(Input.IsActionJustPressed("player_confirm"))
         {
-            InteractionArea target = null;
-            foreach (var candidate in NearbyInteractions)
-            {
-                if(target == null)
-                {
-                    target = candidate;
-                }
-                else
-                {
-                    var targetSq = target.GlobalPosition.DistanceSquaredTo(GlobalPosition);
-                    var candidateSq = candidate.GlobalPosition.DistanceSquaredTo(GlobalPosition);
-                    if (targetSq > candidateSq)
-                    {
-                        target = candidate;
-                    }
-                }
-            }
-
-            if(target != null)
-            {
-                target.Interact(this);
-            }
+            InteractWithNearestObject();
         }
     }
 }

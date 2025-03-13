@@ -8,6 +8,7 @@
 
 [sub_resource type="Resource" id="Resource_qedxc"]
 script = ExtResource("2_i25h3")
+CanOpenDoors = false
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4eeic"]
 radius = 25.0

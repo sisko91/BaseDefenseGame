@@ -25,7 +25,7 @@ public partial class Character : CharacterBody2D
     // The character's current elevation in the world. Defaults to 0 which is ground level. This is updated by Buildings when
     // characters enter their InteriorRegions.
     public int CurrentElevationLevel = 0;
-    public InteriorRegion CurrentRegion { get; set; }
+    public BuildingRegion CurrentRegion { get; set; }
 
     // Cached reference to the NearbyBodySensor defined on the .tscn
     public BodySensor NearbyBodySensor { get; protected set; }
@@ -100,6 +100,45 @@ public partial class Character : CharacterBody2D
         }
     }
 
+    public void InteractWithNearestObject() {
+        InteractionArea target = null;
+        foreach (var candidate in NearbyInteractions) {
+            if (target == null) {
+                target = candidate;
+            } else {
+                var targetSq = target.GlobalPosition.DistanceSquaredTo(GlobalPosition);
+                var candidateSq = candidate.GlobalPosition.DistanceSquaredTo(GlobalPosition);
+                if (targetSq > candidateSq) {
+                    target = candidate;
+                }
+            }
+        }
+
+        if (target != null) {
+            target.Interact(this);
+        }
+    }
+
+    public virtual void ChangeFloor(int targetFloor) {
+        //GD.Print($"Moving to floor {targetFloor}");
+        int shift = targetFloor - CurrentElevationLevel;
+        CurrentElevationLevel = targetFloor;
+
+        if (shift > 0) {
+            NearbyInteractions.Clear();
+            CollisionLayer = CollisionLayer << shift * CollisionConfig.LAYERS_PER_FLOOR;
+            CollisionMask = CollisionMask << shift * CollisionConfig.LAYERS_PER_FLOOR;
+            NearbyBodySensor.CollisionLayer = NearbyBodySensor.CollisionLayer << shift * CollisionConfig.LAYERS_PER_FLOOR;
+            NearbyBodySensor.CollisionMask = NearbyBodySensor.CollisionMask << shift * CollisionConfig.LAYERS_PER_FLOOR;
+        } else if (shift < 0) {
+            NearbyInteractions.Clear();
+            CollisionLayer = CollisionLayer >> -shift * CollisionConfig.LAYERS_PER_FLOOR;
+            CollisionMask = CollisionMask >> -shift * CollisionConfig.LAYERS_PER_FLOOR;
+            NearbyBodySensor.CollisionLayer = NearbyBodySensor.CollisionLayer >> -shift * CollisionConfig.LAYERS_PER_FLOOR;
+            NearbyBodySensor.CollisionMask = NearbyBodySensor.CollisionMask >> -shift * CollisionConfig.LAYERS_PER_FLOOR;
+        }
+    }
+
     private void SetHitMaterial()
     {
         ShaderMaterial hitMaterial = new ShaderMaterial();
@@ -110,22 +149,6 @@ public partial class Character : CharacterBody2D
     private void RemoveHitMaterial()
     {
         Material = null;
-    }
-
-    public virtual void ChangeFloor(bool goingUp) {
-        if (goingUp) {
-            CollisionLayer = CollisionLayer << CollisionConfig.LAYERS_PER_FLOOR;
-            CollisionMask = CollisionMask << CollisionConfig.LAYERS_PER_FLOOR;
-            NearbyBodySensor.CollisionLayer  = NearbyBodySensor.CollisionLayer << CollisionConfig.LAYERS_PER_FLOOR;
-            NearbyBodySensor.CollisionMask = NearbyBodySensor.CollisionMask << CollisionConfig.LAYERS_PER_FLOOR;
-            CurrentElevationLevel += 1;
-        } else {
-            CollisionLayer = CollisionLayer >> CollisionConfig.LAYERS_PER_FLOOR;
-            CollisionMask = CollisionMask >> CollisionConfig.LAYERS_PER_FLOOR;
-            NearbyBodySensor.CollisionLayer = NearbyBodySensor.CollisionLayer >> CollisionConfig.LAYERS_PER_FLOOR;
-            NearbyBodySensor.CollisionMask = NearbyBodySensor.CollisionMask >> CollisionConfig.LAYERS_PER_FLOOR;
-            CurrentElevationLevel -= 1;
-        }
     }
 }
 

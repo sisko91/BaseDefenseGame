@@ -9,18 +9,21 @@ public partial class Building : Node2D
 {
     private HashSet<Node2D> entitiesInside = new HashSet<Node2D>();
 
-    private Godot.Collections.Array<InteriorRegion> _allRegions = null;
-    public Godot.Collections.Array<InteriorRegion> AllRegions 
+    private Godot.Collections.Array<BuildingRegion> _allRegions = null;
+
+    public List<Door> Exits;
+    public Godot.Collections.Array<BuildingRegion> AllRegions 
     { 
         get
         {
             if(_allRegions == null)
             {
-                _allRegions = new Godot.Collections.Array<InteriorRegion>();
+                _allRegions = new Godot.Collections.Array<BuildingRegion>();
                 foreach(var child in GetChildren())
                 {
-                    if(child is InteriorRegion region)
+                    if(child is BuildingRegion region)
                     {
+                        region.OwningBuilding = this;
                         region.AddToGroup($"{NavigationConfig.FLOOR_GROUP_PREFIX}{region.ElevationLevel}");
                         _allRegions.Add(region);
                         // Record the highest elevation in the building.
@@ -44,6 +47,8 @@ public partial class Building : Node2D
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        Exits = new List<Door>();
+
         // Configure our visibility reset timer, this is not started by default but gets (re)scheduled when players leave the building's
         // interior regions.
         visibilityResetTimer = new Timer();
@@ -62,10 +67,12 @@ public partial class Building : Node2D
             // Subscribe to each region's BodyEntered event, but also supply the region as well since the callback drops it.
             region.BodyEntered += (Node2D body) => OnBodyEnteredRegion(body, region);
             region.BodyExited += (Node2D body) => OnBodyExitedRegion(body, region);
+
+            Exits.AddRange(region.GetExits());
         }
     }
 
-    private void OnBodyEnteredRegion(Node2D body, InteriorRegion region)
+    private void OnBodyEnteredRegion(Node2D body, BuildingRegion region)
     {
         // Regions may overlap each other at different elevations and we only want to look at events for the
         // body's current elevation.
@@ -99,22 +106,24 @@ public partial class Building : Node2D
         }
     }
 
-    private void OnBodyExitedRegion(Node2D body, InteriorRegion region)
+    private void OnBodyExitedRegion(Node2D body, BuildingRegion region)
     {
         if (GetBodyElevationLevel(body) != region.ElevationLevel) {
             return;
         }
 
         entitiesInside.Remove(body);
+        //GD.Print($"Exiting floor {region.ElevationLevel}");
 
         //GD.Print($"{body.Name} exited {region.Name} (Elevation {region.ElevationLevel})");
         body.ZIndex = 0;
+        if (body is Character c && !region.OverlapsBody(c)) {
+            c.CurrentRegion = null;
+            c.ChangeFloor(0);
+        }
+
         if (body is Player player)
         {
-            if (!region.OverlapsBody(player)) {
-                player.CurrentRegion = null;
-            }
-
             // If there's time left on the timer then we already (recently) scheduled an occupancy check to reset visibility.
             if (visibilityResetTimer.TimeLeft <= 0)
             {
@@ -122,9 +131,6 @@ public partial class Building : Node2D
             }
             UpdateAllNonPlayerBodies();
         } else {
-            if (body is Character c && !region.OverlapsBody(c)) {
-                c.CurrentRegion = null;
-            }
             UpdateNonPlayerBody(body);
         }
     }

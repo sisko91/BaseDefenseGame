@@ -2,9 +2,9 @@
 
 [ext_resource type="Script" path="res://World/Structures/Building.cs" id="1_7ffef"]
 [ext_resource type="PackedScene" uid="uid://cw48c72a4tsvk" path="res://World/Structures/Testing/test_wall.tscn" id="1_e2nee"]
-[ext_resource type="Script" path="res://World/Structures/InteriorRegion.cs" id="1_edy31"]
+[ext_resource type="Script" path="res://World/Structures/BuildingRegion.cs" id="1_edy31"]
 [ext_resource type="PackedScene" uid="uid://chpuk4qnqqxm4" path="res://World/Structures/Testing/test_door.tscn" id="5_e5hgi"]
-[ext_resource type="PackedScene" path="res://World/Structures/Testing/test_stairs.tscn" id="6_k5khk"]
+[ext_resource type="PackedScene" uid="uid://boifro8bbs3lu" path="res://World/Structures/Testing/test_stairs.tscn" id="6_k5khk"]
 [ext_resource type="PackedScene" uid="uid://dgkvalqk6hieg" path="res://World/wall.tscn" id="6_mexbq"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k1td7"]
@@ -44,10 +44,9 @@ noise = SubResource("FastNoiseLite_7rssq")
 [node name="TestBuilding" type="Node2D"]
 script = ExtResource("1_7ffef")
 
-[node name="Floor0" type="Area2D" parent="." node_paths=PackedStringArray("Stairs")]
+[node name="Floor0" type="Area2D" parent="."]
 collision_mask = 3
 script = ExtResource("1_edy31")
-Stairs = [NodePath("StairsFloor0")]
 
 [node name="Boundary" type="CollisionShape2D" parent="Floor0"]
 position = Vector2(256, 128)
@@ -63,25 +62,25 @@ region_enabled = true
 region_rect = Rect2(0, 0, 512, 256)
 
 [node name="TopWall0" parent="Floor0" instance=ExtResource("1_e2nee")]
-position = Vector2(0, 0)
+position = Vector2(128, 16)
 
 [node name="TopWall1" parent="Floor0" instance=ExtResource("1_e2nee")]
-position = Vector2(256, 0)
+position = Vector2(384, 16)
 
 [node name="LeftWall" parent="Floor0" instance=ExtResource("1_e2nee")]
-position = Vector2(32, 0)
+position = Vector2(16, 128)
 rotation = 1.5708
 
 [node name="RightWall" parent="Floor0" instance=ExtResource("1_e2nee")]
-position = Vector2(512, 0)
+position = Vector2(496, 128)
 rotation = 1.5708
 
 [node name="BottomWall0" parent="Floor0" instance=ExtResource("1_e2nee")]
-position = Vector2(0, 224)
+position = Vector2(96, 240)
 scale = Vector2(0.75, 1)
 
 [node name="BottomWall1" parent="Floor0" instance=ExtResource("1_e2nee")]
-position = Vector2(320, 224)
+position = Vector2(416, 240)
 scale = Vector2(0.75, 1)
 
 [node name="Wall" parent="Floor0" instance=ExtResource("6_mexbq")]
@@ -97,18 +96,17 @@ color = Color(0.16462, 0.115337, 0.0602966, 1)
 
 [node name="StairsFloor0" parent="Floor0" node_paths=PackedStringArray("TargetStairs") instance=ExtResource("6_k5khk")]
 position = Vector2(445, 190)
-TargetStairs = NodePath("../../Floor1/StairsFloor1")
-goingUp = true
+TargetStairs = NodePath("../../Floor1/StairsFloor1Down")
 
 [node name="FrontDoor" parent="Floor0" instance=ExtResource("5_e5hgi")]
-position = Vector2(192, 232)
+position = Vector2(256, 240)
+IsExit = true
 
-[node name="Floor1" type="Area2D" parent="." node_paths=PackedStringArray("Stairs")]
+[node name="Floor1" type="Area2D" parent="."]
 collision_layer = 16
 collision_mask = 48
 script = ExtResource("1_edy31")
 ElevationLevel = 1
-Stairs = [NodePath("StairsFloor1")]
 
 [node name="Boundary" type="CollisionShape2D" parent="Floor1"]
 position = Vector2(256, 128)
@@ -124,54 +122,60 @@ region_enabled = true
 region_rect = Rect2(0, 0, 512, 256)
 
 [node name="TopWall0" parent="Floor1" instance=ExtResource("1_e2nee")]
-position = Vector2(0, 0)
+position = Vector2(128, 16)
 collision_layer = 64
 collision_mask = 112
 
 [node name="TopWall1" parent="Floor1" instance=ExtResource("1_e2nee")]
-position = Vector2(256, 0)
+position = Vector2(384, 16)
 collision_layer = 64
 collision_mask = 112
 
 [node name="LeftWall" parent="Floor1" instance=ExtResource("1_e2nee")]
-position = Vector2(32, 0)
+position = Vector2(16, 128)
 rotation = 1.5708
 collision_layer = 64
 collision_mask = 112
 
 [node name="RightWall" parent="Floor1" instance=ExtResource("1_e2nee")]
-position = Vector2(512, 0)
+position = Vector2(496, 128)
 rotation = 1.5708
 collision_layer = 64
 collision_mask = 112
 
 [node name="BottomWall0" parent="Floor1" instance=ExtResource("1_e2nee")]
-position = Vector2(0, 224)
+position = Vector2(128, 240)
 collision_layer = 64
 collision_mask = 112
 
 [node name="BottomWall1" parent="Floor1" instance=ExtResource("1_e2nee")]
-position = Vector2(256, 224)
+position = Vector2(384, 240)
 collision_layer = 64
 collision_mask = 112
 
 [node name="Wall" parent="Floor1" instance=ExtResource("6_mexbq")]
-position = Vector2(258, 130)
+position = Vector2(257, 190)
 collision_layer = 64
 collision_mask = 112
 
-[node name="StairsFloor1" parent="Floor1" node_paths=PackedStringArray("TargetStairs") instance=ExtResource("6_k5khk")]
-position = Vector2(445, 190)
+[node name="StairsFloor1Down" parent="Floor1" node_paths=PackedStringArray("TargetStairs") instance=ExtResource("6_k5khk")]
+position = Vector2(448, 191)
 collision_layer = 128
 collision_mask = 16
 TargetStairs = NodePath("../../Floor0/StairsFloor0")
 
-[node name="Roof" type="Area2D" parent="." node_paths=PackedStringArray("Stairs")]
+[node name="StairsFloor1Up" parent="Floor1" node_paths=PackedStringArray("TargetStairs") instance=ExtResource("6_k5khk")]
+position = Vector2(64, 192)
+collision_layer = 128
+collision_mask = 16
+TargetStairs = NodePath("../../Roof/StairsRoof")
+
+[node name="Roof" type="Area2D" parent="."]
 collision_layer = 256
-collision_mask = 12288
+collision_mask = 768
 script = ExtResource("1_edy31")
 ElevationLevel = 2
-Stairs = []
+InteriorRegion = false
 
 [node name="Boundary" type="CollisionShape2D" parent="Roof"]
 position = Vector2(256, 128)
@@ -183,6 +187,12 @@ texture = SubResource("NoiseTexture2D_g0nlw")
 centered = false
 region_enabled = true
 region_rect = Rect2(0, 0, 512, 256)
+
+[node name="StairsRoof" parent="Roof" node_paths=PackedStringArray("TargetStairs") instance=ExtResource("6_k5khk")]
+position = Vector2(66, 194)
+collision_layer = 2048
+collision_mask = 256
+TargetStairs = NodePath("../../Floor1/StairsFloor1Up")
 
 [node name="TopPerimeter" type="ColorRect" parent="Roof"]
 offset_right = 512.0

@@ -6,6 +6,9 @@ using System;
 // Doors place and remove a collision object to prohibit or enable passage.
 public partial class Door : Node2D
 {
+    [Export]
+    public bool IsExit = false;
+
     private bool isOpen = false;
     public bool Open
     {
@@ -57,7 +60,7 @@ public partial class Door : Node2D
     {
         if (character is Player)
         {
-            GD.Print($"{character.Name} may now interact with {GetParent()?.Name}::{Name}");
+            //GD.Print($"{character.Name} may now interact with {GetParent()?.Name}::{Name}");
         }
     }
 
@@ -66,13 +69,13 @@ public partial class Door : Node2D
     {
         if (character is Player)
         {
-            GD.Print($"{character.Name} can no longer interact with {GetParent()?.Name}::{Name}");
+            //GD.Print($"{character.Name} can no longer interact with {GetParent()?.Name}::{Name}");
         }
     }
     // This callback is defined in case the door is connected to a signal from an interaction area.
     public void OnToggleInteract(InteractionArea area, Character character)
     {
         Open = !Open;
-        GD.Print($"{character.Name} {(Open ? "opened" : "closed")} {GetParent()?.Name}::{Name}");
+        //GD.Print($"{character.Name} {(Open ? "opened" : "closed")} {GetParent()?.Name}::{Name}");
     }
 }

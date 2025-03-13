@@ -45,6 +45,9 @@ public partial class World : Node2D
 
     //TODO: Only rebake floors we need to
     public void RebakeNavMesh() {
+        if (NavRegions == null) {
+            return;
+        }
         foreach (NavigationRegion2D navRegion in NavRegions) {
             navRegion.BakeNavigationPolygon();
         }

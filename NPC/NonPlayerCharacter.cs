@@ -107,8 +107,8 @@ public partial class NonPlayerCharacter : Character
         //this.DrawDebugLine(player.Position, Position, senseColor, 0.5);
     }
 
-    public override void ChangeFloor(bool goingUp) {
-        base.ChangeFloor(goingUp);
+    public override void ChangeFloor(int targetFloor) {
+        base.ChangeFloor(targetFloor);
 
         NavAgent.SetNavigationMap(this.GetGameWorld().NavMaps[CurrentElevationLevel]);
     }

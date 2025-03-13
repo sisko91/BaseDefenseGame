@@ -130,3 +130,8 @@ player_confirm={
 2d_physics/layer_7="Floor1_Environment"
 2d_physics/layer_8="Floor1_Interactions"
 2d_physics/layer_32="WorldBound"
+
+[navigation]
+
+3d/default_cell_size=1.0
+3d/default_cell_height=1.0

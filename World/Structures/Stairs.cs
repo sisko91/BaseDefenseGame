@@ -2,19 +2,23 @@
 using Godot;
 using System;
 
-// Stairs teleport entities up or down a floor when walked over
-public partial class Stairs : Area2D {
+// Stairs teleport entities to a specified point and elevation when walked over
+public partial class Stairs : InteractionArea {
     [Export]
     public Stairs TargetStairs;
 
-    [Export]
-    bool goingUp;
-
     bool ignoreNextInteraction = false;
 
+    public BuildingRegion OwningRegion { get; set; }
+
     public override void _Ready() {
+        base._Ready();
+        if (TargetStairs == null) {
+            GD.PushError("Missing target stairs");
+            return;
+        }
+
         BodyEntered += OnBodyEntered;
-        BodyExited += OnBodyExited;
     }
 
     private void OnBodyEntered(Node2D body) {
@@ -24,14 +28,19 @@ public partial class Stairs : Area2D {
         }
 
         if (body is Character character) {
-            TargetStairs.ignoreNextInteraction = true;
-            body.Position = TargetStairs.GlobalPosition;
-
-            character.ChangeFloor(goingUp);
+            TakeStairs(character);
         }
     }
 
-    private void OnBodyExited(Node2D body) {
+    protected override void OnInteract(Character character) {
+        TakeStairs(character);
+    }
 
+    private void TakeStairs(Character character) {
+        TargetStairs.ignoreNextInteraction = true;
+        character.GlobalPosition = TargetStairs.GlobalPosition;
+
+        //If the target stairs are not in a building, assume they are on the bottom floor
+        character.ChangeFloor(TargetStairs.OwningRegion == null ? 0 : TargetStairs.OwningRegion.ElevationLevel);
     }
 }

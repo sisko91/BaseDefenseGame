@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
 [ext_resource type="Shader" path="res://Shaders/fog.gdshader" id="2_vxmty"]
-[ext_resource type="PackedScene" uid="uid://h6mtv0wbug0t" path="res://World/Structures/Testing/test_building.tscn" id="5_20vwc"]
 [ext_resource type="PackedScene" uid="uid://2ctjrem32j1v" path="res://NPC/shambler.tscn" id="6_a6glu"]
+[ext_resource type="PackedScene" uid="uid://h6mtv0wbug0t" path="res://World/Structures/Testing/test_building.tscn" id="6_lhns8"]
 [ext_resource type="Script" path="res://World/RadialSpawner.cs" id="6_xi2eq"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_fn2eg"]
@@ -49,12 +49,16 @@ region_enabled = true
 region_rect = Rect2(0, 0, 6144, 6144)
 region_filter_clip_enabled = true
 
-[node name="TestBuilding" parent="." instance=ExtResource("5_20vwc")]
-position = Vector2(-275, -416)
+[node name="TestBuilding" parent="." instance=ExtResource("6_lhns8")]
+position = Vector2(-253, -386)
+
+[node name="TestBuilding2" parent="." instance=ExtResource("6_lhns8")]
+position = Vector2(371, -386)
 
 [node name="ShamblerSpawnZone" type="Node2D" parent="."]
+position = Vector2(320, -220)
 script = ExtResource("6_xi2eq")
 SpawnTemplate = ExtResource("6_a6glu")
-InnerRadius = 550.0
-OuterRadius = 700.0
+InnerRadius = 400.0
+OuterRadius = 500.0
 InitialCount = 2
