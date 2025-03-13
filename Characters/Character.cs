@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class Character : CharacterBody2D
+public partial class Character : Moveable
 {
     #region Stats
 
@@ -22,11 +22,6 @@ public partial class Character : CharacterBody2D
     [Export]
     public bool CanDamageSelf = false;
 
-    // The character's current elevation in the world. Defaults to 0 which is ground level. This is updated by Buildings when
-    // characters enter their InteriorRegions.
-    public int CurrentElevationLevel = 0;
-    public BuildingRegion CurrentRegion { get; set; }
-
     // Cached reference to the NearbyBodySensor defined on the .tscn
     public BodySensor NearbyBodySensor { get; protected set; }
 
@@ -35,12 +30,6 @@ public partial class Character : CharacterBody2D
 
     protected float HitAnimationSeconds = 0.1f;
     protected Timer HitAnimationTimer;
-
-    public Character() : base()
-    {
-        //Better for 2d top-down
-        MotionMode = MotionModeEnum.Floating;
-    }
 
     public override void _Ready()
     {
@@ -120,20 +109,18 @@ public partial class Character : CharacterBody2D
     }
 
     public virtual void ChangeFloor(int targetFloor) {
-        //GD.Print($"Moving to floor {targetFloor}");
-        int shift = targetFloor - CurrentElevationLevel;
-        CurrentElevationLevel = targetFloor;
+        if (targetFloor == CurrentElevationLevel) {
+            return;
+        }
 
+        NearbyInteractions.Clear();
+        base.ChangeFloor(targetFloor);
+
+        int shift = targetFloor - CurrentElevationLevel;
         if (shift > 0) {
-            NearbyInteractions.Clear();
-            CollisionLayer = CollisionLayer << shift * CollisionConfig.LAYERS_PER_FLOOR;
-            CollisionMask = CollisionMask << shift * CollisionConfig.LAYERS_PER_FLOOR;
             NearbyBodySensor.CollisionLayer = NearbyBodySensor.CollisionLayer << shift * CollisionConfig.LAYERS_PER_FLOOR;
             NearbyBodySensor.CollisionMask = NearbyBodySensor.CollisionMask << shift * CollisionConfig.LAYERS_PER_FLOOR;
         } else if (shift < 0) {
-            NearbyInteractions.Clear();
-            CollisionLayer = CollisionLayer >> -shift * CollisionConfig.LAYERS_PER_FLOOR;
-            CollisionMask = CollisionMask >> -shift * CollisionConfig.LAYERS_PER_FLOOR;
             NearbyBodySensor.CollisionLayer = NearbyBodySensor.CollisionLayer >> -shift * CollisionConfig.LAYERS_PER_FLOOR;
             NearbyBodySensor.CollisionMask = NearbyBodySensor.CollisionMask >> -shift * CollisionConfig.LAYERS_PER_FLOOR;
         }

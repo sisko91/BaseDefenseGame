@@ -109,7 +109,6 @@ public partial class NonPlayerCharacter : Character
 
     public override void ChangeFloor(int targetFloor) {
         base.ChangeFloor(targetFloor);
-
         NavAgent.SetNavigationMap(this.GetGameWorld().NavMaps[CurrentElevationLevel]);
     }
 }

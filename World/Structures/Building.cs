@@ -74,16 +74,18 @@ public partial class Building : Node2D
 
     private void OnBodyEnteredRegion(Node2D body, BuildingRegion region)
     {
-        // Regions may overlap each other at different elevations and we only want to look at events for the
-        // body's current elevation.
-        if (GetBodyElevationLevel(body) != region.ElevationLevel) {
+        Moveable m = body as Moveable;
+        if (m == null) {
+            return;
+        }
+
+        // We only want to look at events for the body's current elevation
+        if (m.CurrentElevationLevel != region.ElevationLevel) {
             return;
         }
 
         entitiesInside.Add(body);
-
         body.ZIndex = 2;
-        //GD.Print($"{body.Name} entered {region.Name} (Elevation {region.ElevationLevel})");
         if (body is Player player)
         {
             player.CurrentRegion = region;
@@ -98,28 +100,31 @@ public partial class Building : Node2D
             }
 
             UpdateAllNonPlayerBodies();
-        } else {
-            if (body is Character c) {
-                c.CurrentRegion = region;
-            }
-            UpdateNonPlayerBody(body);
+        }
+        else
+        {
+            m.CurrentRegion = region;
+            UpdateNonPlayerBody(m);
         }
     }
 
     private void OnBodyExitedRegion(Node2D body, BuildingRegion region)
     {
-        if (GetBodyElevationLevel(body) != region.ElevationLevel) {
+        Moveable m = body as Moveable;
+        if (m == null) {
+            return;
+        }
+
+        // We only want to look at events for the body's current elevation
+        if (m.CurrentElevationLevel != region.ElevationLevel) {
             return;
         }
 
         entitiesInside.Remove(body);
-        //GD.Print($"Exiting floor {region.ElevationLevel}");
-
-        //GD.Print($"{body.Name} exited {region.Name} (Elevation {region.ElevationLevel})");
         body.ZIndex = 0;
-        if (body is Character c && !region.OverlapsBody(c)) {
-            c.CurrentRegion = null;
-            c.ChangeFloor(0);
+        if (!region.OverlapsBody(m)) {
+            m.CurrentRegion = null;
+            m.ChangeFloor(0);
         }
 
         if (body is Player player)
@@ -131,32 +136,21 @@ public partial class Building : Node2D
             }
             UpdateAllNonPlayerBodies();
         } else {
-            UpdateNonPlayerBody(body);
+            UpdateNonPlayerBody(m);
         }
     }
 
-    private void UpdateNonPlayerBody(Node2D body) {
+    private void UpdateNonPlayerBody(Moveable body) {
         var playerNodes = GetTree().GetNodesInGroup("Player").Cast<Player>().ToArray();
         if (playerNodes.Length < 1) {
             return;
         }
 
         Player player = playerNodes[0];
-        bool bothInBuilding = entitiesInside.Contains(body) && entitiesInside.Contains(player);
-        bool bothOutside = !entitiesInside.Contains(body) && !entitiesInside.Contains(player);
+        bool playerOutside = player.CurrentRegion == null || !player.CurrentRegion.InteriorRegion;
+        bool bodyOutside = body.CurrentRegion == null || !body.CurrentRegion.InteriorRegion;
 
-        var elevationLevel = 0;
-        switch (body) {
-            case Character c:
-                elevationLevel = c.CurrentElevationLevel;
-                break;
-            case Projectile p:
-                elevationLevel = p.CurrentElevationLevel;
-                break;
-        }
-        bool atSameElevation = elevationLevel == player.CurrentElevationLevel;
-
-        if (bothInBuilding && atSameElevation || bothOutside && atSameElevation) {
+        if (body.CurrentRegion == player.CurrentRegion || playerOutside && bodyOutside) {
             body.Show();
         } else {
             body.Hide();
@@ -168,7 +162,7 @@ public partial class Building : Node2D
         nodes.AddRange(GetTree().GetNodesInGroup("Hostile"));
 
         foreach (Node2D node in nodes) {
-            UpdateNonPlayerBody(node);
+            UpdateNonPlayerBody(node as Moveable);
         }
     }
 
@@ -190,17 +184,6 @@ public partial class Building : Node2D
             region.Visible = true;
             region.ZIndex = 0;
         }
-    }
-
-    private int GetBodyElevationLevel(Node2D body) {
-        int currentElevationLevel = 0;
-        if (body is Character character) {
-            currentElevationLevel = character.CurrentElevationLevel;
-        } else if (body is Projectile projectile) {
-            currentElevationLevel = projectile.CurrentElevationLevel;
-        }
-
-        return currentElevationLevel;
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.

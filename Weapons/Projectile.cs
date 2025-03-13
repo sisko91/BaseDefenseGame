@@ -2,7 +2,7 @@ using ExtensionMethods;
 using Godot;
 using System;
 
-public partial class Projectile : CharacterBody2D
+public partial class Projectile : Moveable
 {
     [Export]
     public float InitialSpeed = 750.0f;
@@ -12,9 +12,6 @@ public partial class Projectile : CharacterBody2D
 
     [Export]
     public float Damage = 20.0f;
-
-    //Projectiles can exist at different elevations
-    public int CurrentElevationLevel = 0;
 
     // The instigator is used for attribution. If a weapon fires a projectile, the Player holding that weapon would be the logical instigator.
     // (This is an old concept stolen from Unreal Engine)
