@@ -118,9 +118,9 @@ public partial class Character : Moveable
         }
 
         NearbyInteractions.Clear();
+        int shift = targetFloor - CurrentElevationLevel;
         base.ChangeFloor(targetFloor);
 
-        int shift = targetFloor - CurrentElevationLevel;
         if (shift > 0) {
             NearbyBodySensor.CollisionLayer = NearbyBodySensor.CollisionLayer << shift * CollisionConfig.LAYERS_PER_FLOOR;
             NearbyBodySensor.CollisionMask = NearbyBodySensor.CollisionMask << shift * CollisionConfig.LAYERS_PER_FLOOR;
