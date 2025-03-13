@@ -50,8 +50,13 @@ public partial class Brain : Resource
         // Redefine AI action set.
         actions = new Godot.Collections.Array<AI.Action>();
         var moveAction = new AI.Actions.MoveToTargetAction();
-        moveAction.Initialize(this);
         actions.Add(moveAction);
+        var attackAction = new AI.Actions.AttackEnemyTargetAction();
+        actions.Add(attackAction);
+        foreach(var action in actions)
+        {
+            action.Initialize(this);
+        }
     }
 
     // Think() mirrors the intent of _Process() for Godot nodes. NPCs will delegate much of their processing to this function.
@@ -69,7 +74,12 @@ public partial class Brain : Resource
         }
 
         // Pick a new action if necessary
-        if(currentAction == null || !currentAction.IsActive)
+        if(currentAction != null && !currentAction.IsActive)
+        {
+            currentAction = null;
+        }
+
+        if(currentAction == null)
         {
             // Find the highest-scoring action.
             float currentActionScore = currentAction == null ? 0 : currentAction.CalculateScore();
@@ -77,15 +87,21 @@ public partial class Brain : Resource
             {
                 if(currentAction == candidate)
                 {
-                    continue; // don't pick the same action twice in a row if possible.
+                    //continue; // don't pick the same action twice in a row if possible.
                 }
 
                 float candidateScore = candidate.CalculateScore();
+                //GD.Print($"\t[{candidateScore}]{candidate.GetType().Name}");
                 if (candidateScore > currentActionScore)
                 {
                     currentAction = candidate;
                     currentActionScore = candidateScore;
                 }
+            }
+            if(currentActionScore == 0)
+            {
+                // if none of the actions score anything at all, don't run anything at all.
+                currentAction = null;
             }
         }
 
@@ -138,6 +154,10 @@ public partial class Brain : Resource
         {
             Owner.Velocity = (Owner.Velocity + -Owner.Velocity.Normalized() * Owner.MoveAccel);
         }
+        else if(currentAction != null && currentAction.IsActive && currentAction.PausesMotionWhileActive)
+        {
+            Owner.Velocity = Vector2.Zero;
+        }
         else
         {
             // Otherwise continue navigating 
@@ -147,15 +167,15 @@ public partial class Brain : Resource
 
         // Orient to face the direction the NPC is moving by default.
         var lookAngle = Owner.Velocity.Angle();
-        // Look along the nav path if stuck
-        if (Owner.GetRealVelocity().Length() < 0.1f * Owner.MovementSpeed)
+        // Look at the enemy if they exist and are nearby.
+        if(EnemyTarget != null && EnemyTarget is Player player && Owner.NearbyBodySensor.Players.Contains(player))
+        {
+            lookAngle = Owner.GlobalPosition.DirectionTo(player.GlobalPosition).Angle();
+        }
+        // otherwise look along the nav path if stuck
+        else if (Owner.GetRealVelocity().Length() < 0.1f * Owner.MovementSpeed)
         {
             lookAngle = lastNavPathDirection.Angle();
-        }
-        // Look at the player if nearby.
-        else if (Owner.NearbyBodySensor.Players.Count > 0 && Owner.GlobalPosition.DistanceTo(Owner.NearbyBodySensor.Players[0].GlobalPosition) < 100f)
-        {
-            lookAngle = Owner.GlobalPosition.DirectionTo(Owner.NearbyBodySensor.Players[0].GlobalPosition).Angle();
         }
 
         // Set the NPC to rotate towards the look angle we just decided.

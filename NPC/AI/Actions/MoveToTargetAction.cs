@@ -22,23 +22,28 @@ namespace AI
                     return 0;
                 }
 
-                if(Owner.NavAgent.TargetPosition.IsEqualApprox(Brain.EnemyTarget.GlobalPosition))
+                float targetDistance = GetAcceptableTargetDistance();
+                float distSq = Owner.GlobalPosition.DistanceSquaredTo(Brain.EnemyTarget.GlobalPosition);
+                if (distSq < targetDistance*targetDistance)
                 {
-                    if(Owner.NavAgent.IsNavigationFinished())
-                    {
-                        return 0;
-                    }
+                    // Too close, nothing to do.
+                    return 0;
                 }
 
                 return 1;
+            }
+
+            private float GetAcceptableTargetDistance()
+            {
+                // The NavAgent will never get closer than the combined radii of the NPC and its target enemy.
+                return (Owner.GetCollisionBodyRadius() + Brain.EnemyTarget.GetCollisionBodyRadius());
             }
 
             protected override void OnActivate()
             {
                 GD.Print($"{Owner?.Name}->Navigating to enemy ({Brain.EnemyTarget.Name})");
                 Owner.NavAgent.TargetPosition = Brain.EnemyTarget.GlobalPosition;
-                // The NavAgent will never get closer than the combined radii of the NPC and its target enemy.
-                Owner.NavAgent.TargetDesiredDistance = (Owner.NavAgent.Radius + Brain.EnemyTarget.GetCollisionBodyRadius());
+                Owner.NavAgent.TargetDesiredDistance = GetAcceptableTargetDistance();
             }
 
             protected override void OnDeactivate()

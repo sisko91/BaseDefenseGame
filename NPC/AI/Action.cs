@@ -19,6 +19,9 @@ namespace AI
 
         public bool IsActive { get; private set; }
 
+        // If true, this action pauses the brain's updates to velocity when activated, until deactivated.
+        public bool PausesMotionWhileActive { get; protected set; } = false;
+
         public virtual void Initialize(Brain brain)
         {
             Brain = brain;
