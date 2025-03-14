@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://bkhho87p3b2re"]
 
-[ext_resource type="Script" path="res://Weapons/Projectile.cs" id="1_ncsta"]
+[ext_resource type="Script" uid="uid://fpgiqa6lh14c" path="res://Weapons/Projectile.cs" id="1_ncsta"]
 
 [sub_resource type="Gradient" id="Gradient_4msl2"]
 

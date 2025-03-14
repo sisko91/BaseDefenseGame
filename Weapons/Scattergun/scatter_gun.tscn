@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://dkbkf106r6qu2"]
 
-[ext_resource type="Script" path="res://Weapons/Scattergun/Scattergun.cs" id="1_dia4h"]
+[ext_resource type="Script" uid="uid://bu482i04shb7k" path="res://Weapons/Scattergun/Scattergun.cs" id="1_dia4h"]
 [ext_resource type="PackedScene" uid="uid://bkhho87p3b2re" path="res://Weapons/Scattergun/scatter_proj.tscn" id="2_mks8e"]
 
 [sub_resource type="Gradient" id="Gradient_l4axp"]

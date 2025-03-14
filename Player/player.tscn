@@ -1,12 +1,12 @@
 [gd_scene load_steps=10 format=3 uid="uid://dy47gg8c687bv"]
 
-[ext_resource type="Script" path="res://Player/Player.cs" id="1_imx3i"]
+[ext_resource type="Script" uid="uid://dsdu35x76daf1" path="res://Player/Player.cs" id="1_imx3i"]
 [ext_resource type="PackedScene" uid="uid://dqdhhyjyrp2ri" path="res://Weapons/Pistol/pistol.tscn" id="2_psqbx"]
 [ext_resource type="PackedScene" uid="uid://dkbkf106r6qu2" path="res://Weapons/Scattergun/scatter_gun.tscn" id="2_rscqp"]
 [ext_resource type="Texture2D" uid="uid://doaffvj52e0h1" path="res://art/debug_texture_gradient.tres" id="2_s5van"]
-[ext_resource type="Script" path="res://Player/PlayerCamera.cs" id="3_vrqgk"]
-[ext_resource type="Script" path="res://Player/WeaponRing.cs" id="4_q66cr"]
-[ext_resource type="Script" path="res://NPC/BodySensor.cs" id="7_o4ihg"]
+[ext_resource type="Script" uid="uid://cmbjm5w5tbppd" path="res://Player/PlayerCamera.cs" id="3_vrqgk"]
+[ext_resource type="Script" uid="uid://ct1byufijcefb" path="res://Player/WeaponRing.cs" id="4_q66cr"]
+[ext_resource type="Script" uid="uid://2ajhnisvj48l" path="res://NPC/BodySensor.cs" id="7_o4ihg"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_3d41u"]
 radius = 32.0

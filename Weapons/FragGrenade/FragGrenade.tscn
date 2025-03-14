@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://cxmuahpxrlgnd"]
 
-[ext_resource type="Script" path="res://Weapons/FragGrenade/FragGrenade.cs" id="1_8qks0"]
+[ext_resource type="Script" uid="uid://ccus1oa6cxdqg" path="res://Weapons/FragGrenade/FragGrenade.cs" id="1_8qks0"]
 
 [sub_resource type="Gradient" id="Gradient_d7ts2"]
 offsets = PackedFloat32Array(0.402597, 0.571429, 1)

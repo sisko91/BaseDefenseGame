@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://cksfixrug8ht1"]
 
-[ext_resource type="Script" path="res://Weapons/Pistol/Bullet.cs" id="1_jfrxl"]
+[ext_resource type="Script" uid="uid://besoheoqrvcgm" path="res://Weapons/Pistol/Bullet.cs" id="1_jfrxl"]
 
 [sub_resource type="Gradient" id="Gradient_8usk2"]
 offsets = PackedFloat32Array(0.396104, 0.597403)

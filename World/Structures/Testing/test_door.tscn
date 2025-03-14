@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://chpuk4qnqqxm4"]
 
-[ext_resource type="Script" path="res://Gameplay/InteractionArea.cs" id="1_1smnp"]
-[ext_resource type="Script" path="res://World/Structures/Door.cs" id="1_42k6d"]
+[ext_resource type="Script" uid="uid://bolljvejit73e" path="res://Gameplay/InteractionArea.cs" id="1_1smnp"]
+[ext_resource type="Script" uid="uid://b0k4rorbjvnri" path="res://World/Structures/Door.cs" id="1_42k6d"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pvkm4"]
 size = Vector2(128, 24)
