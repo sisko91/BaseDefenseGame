@@ -106,6 +106,11 @@ public partial class NonPlayerCharacter : Character
     }
 
     public override void ChangeFloor(int targetFloor) {
+        //Handle edge case where mob spawns on stairs at game load, but maps are not initialized yet
+        if (CurrentElevationLevel >= this.GetGameWorld().NavMaps.Count) {
+            return;
+        }
+
         base.ChangeFloor(targetFloor);
         NavAgent.SetNavigationMap(this.GetGameWorld().NavMaps[CurrentElevationLevel]);
     }

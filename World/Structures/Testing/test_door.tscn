@@ -12,11 +12,18 @@ size = Vector2(128, 48)
 [node name="TestDoor" type="Node2D"]
 script = ExtResource("1_42k6d")
 
+[node name="DoorOpenColor" type="ColorRect" parent="."]
+offset_left = -64.0
+offset_top = -12.0
+offset_right = 64.0
+offset_bottom = 12.0
+color = Color(0.29, 0.29, 0.29, 1)
+
 [node name="Blockage" type="StaticBody2D" parent="."]
 collision_layer = 4
 collision_mask = 7
 
-[node name="ColorRect" type="ColorRect" parent="Blockage"]
+[node name="DoorColor" type="ColorRect" parent="Blockage"]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -28,7 +35,7 @@ offset_right = 64.0
 offset_bottom = 12.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.621831, 0.150751, 0.829184, 1)
+color = Color(0.185041, 0.113696, 0.0831003, 1)
 
 [node name="BlockageShape" type="CollisionShape2D" parent="Blockage"]
 shape = SubResource("RectangleShape2D_pvkm4")

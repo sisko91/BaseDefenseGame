@@ -44,6 +44,7 @@ metadata/_edit_use_anchors_ = true
 
 [node name="Background" type="Sprite2D" parent="."]
 texture_repeat = 2
+position = Vector2(-13, 79)
 texture = ExtResource("2_rsvub")
 region_enabled = true
 region_rect = Rect2(0, 0, 6144, 6144)
@@ -55,10 +56,26 @@ position = Vector2(-253, -386)
 [node name="TestBuilding2" parent="." instance=ExtResource("6_lhns8")]
 position = Vector2(371, -386)
 
+[node name="Overhang" type="Sprite2D" parent="."]
+z_index = 1
+position = Vector2(255, -325)
+
+[node name="ColorRect" type="ColorRect" parent="Overhang"]
+offset_right = 119.0
+offset_bottom = 26.0
+color = Color(0.623529, 0.333333, 0, 1)
+
+[node name="Shadow" type="ColorRect" parent="Overhang"]
+z_as_relative = false
+offset_top = 150.0
+offset_right = 119.0
+offset_bottom = 176.0
+color = Color(0.25, 0.133333, 0, 1)
+
 [node name="ShamblerSpawnZone" type="Node2D" parent="."]
 position = Vector2(320, -220)
 script = ExtResource("6_xi2eq")
 SpawnTemplate = ExtResource("6_a6glu")
 InnerRadius = 400.0
 OuterRadius = 500.0
-InitialCount = 2
+InitialCount = 0

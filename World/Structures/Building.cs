@@ -92,7 +92,7 @@ public partial class Building : Node2D
             // Set all regions on this elevation to be visible, and all above this elevation to be invisible.
             foreach (var other in AllRegions)
             {
-                other.Visible = other.ElevationLevel == region.ElevationLevel;
+                other.Visible = other.ElevationLevel == region.ElevationLevel || !region.InteriorRegion;
                 if (other.Visible) {
                     //Render above weather layer so we dont show clouds and stuff inside
                     other.ZIndex = 2;
