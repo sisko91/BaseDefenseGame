@@ -33,7 +33,7 @@ repeat_size = Vector2(6144, 6144)
 repeat_times = 2
 
 [node name="ColorRect" type="ColorRect" parent="ParallaxBackground"]
-z_index = 1
+z_index = 2
 texture_repeat = 3
 material = SubResource("ShaderMaterial_kx652")
 offset_left = -3072.0

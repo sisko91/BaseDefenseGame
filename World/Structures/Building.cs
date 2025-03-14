@@ -12,6 +12,9 @@ public partial class Building : Node2D
     private Godot.Collections.Array<BuildingRegion> _allRegions = null;
 
     public List<Door> Exits;
+
+    private static int BUILDING_Z_LAYER = 1;
+    private static int WEATHER_Z_LAYER = 2;
     public Godot.Collections.Array<BuildingRegion> AllRegions 
     { 
         get
@@ -85,7 +88,10 @@ public partial class Building : Node2D
         }
 
         entitiesInside.Add(body);
-        body.ZIndex = 2;
+        //Render above weather layer so we dont show clouds and stuff inside
+        var zIndex = region.InteriorRegion ? WEATHER_Z_LAYER + 1 : BUILDING_Z_LAYER;
+
+        body.ZIndex = zIndex;
         if (body is Player player)
         {
             player.CurrentRegion = region;
@@ -94,8 +100,7 @@ public partial class Building : Node2D
             {
                 other.Visible = other.ElevationLevel == region.ElevationLevel || !region.InteriorRegion;
                 if (other.Visible) {
-                    //Render above weather layer so we dont show clouds and stuff inside
-                    other.ZIndex = 2;
+                    other.ZIndex = zIndex;
                 }
             }
 
@@ -121,7 +126,7 @@ public partial class Building : Node2D
         }
 
         entitiesInside.Remove(body);
-        body.ZIndex = 0;
+        body.ZIndex = BUILDING_Z_LAYER - 1;
         if (!region.OverlapsBody(m)) {
             m.CurrentRegion = null;
             m.ChangeFloor(0);
@@ -182,7 +187,7 @@ public partial class Building : Node2D
         foreach (var region in AllRegions)
         {
             region.Visible = true;
-            region.ZIndex = 0;
+            region.ZIndex = BUILDING_Z_LAYER;
         }
     }
 

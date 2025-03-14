@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://h6mtv0wbug0t"]
+[gd_scene load_steps=15 format=3 uid="uid://h6mtv0wbug0t"]
 
 [ext_resource type="Script" path="res://World/Structures/Building.cs" id="1_7ffef"]
 [ext_resource type="PackedScene" uid="uid://cw48c72a4tsvk" path="res://World/Structures/Testing/test_wall.tscn" id="1_e2nee"]
@@ -30,24 +30,22 @@ fill_from = Vector2(0.5, 0.5)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_chivl"]
 size = Vector2(512, 257)
 
-[sub_resource type="Gradient" id="Gradient_3x6xn"]
-colors = PackedColorArray(0.82606, 0.82606, 0.82606, 1, 1, 1, 1, 1)
+[sub_resource type="Gradient" id="Gradient_8a53c"]
+offsets = PackedFloat32Array(0.785714, 1)
+colors = PackedColorArray(0.443242, 0.289186, 0.173296, 1, 0.41, 0.215455, 0.1107, 1)
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_7rssq"]
-noise_type = 0
-frequency = 0.0198
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_g0nlw"]
-width = 256
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_n21n1"]
+gradient = SubResource("Gradient_8a53c")
+width = 512
 height = 256
-seamless = true
-color_ramp = SubResource("Gradient_3x6xn")
-noise = SubResource("FastNoiseLite_7rssq")
+fill = 2
+fill_from = Vector2(0.5, 0.5)
 
 [node name="TestBuilding" type="Node2D"]
 script = ExtResource("1_7ffef")
 
 [node name="Floor0" type="Area2D" parent="."]
+z_index = 1
 collision_mask = 3
 script = ExtResource("1_edy31")
 
@@ -128,6 +126,7 @@ offset_bottom = 32.0
 color = Color(0.151488, 0.117894, 0.0368434, 1)
 
 [node name="Floor1" type="Area2D" parent="."]
+z_index = 1
 collision_layer = 16
 collision_mask = 48
 script = ExtResource("1_edy31")
@@ -238,7 +237,7 @@ shape = SubResource("RectangleShape2D_chivl")
 texture_repeat = 2
 position = Vector2(0, -14)
 scale = Vector2(1, 0.925781)
-texture = SubResource("NoiseTexture2D_g0nlw")
+texture = SubResource("GradientTexture2D_n21n1")
 centered = false
 region_enabled = true
 region_rect = Rect2(0, 0, 512, 256)
