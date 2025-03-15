@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://dy47gg8c687bv"]
+[gd_scene load_steps=11 format=3 uid="uid://dy47gg8c687bv"]
 
 [ext_resource type="Script" uid="uid://dsdu35x76daf1" path="res://Player/Player.cs" id="1_imx3i"]
 [ext_resource type="PackedScene" uid="uid://dqdhhyjyrp2ri" path="res://Weapons/Pistol/pistol.tscn" id="2_psqbx"]
@@ -8,8 +8,11 @@
 [ext_resource type="Script" uid="uid://ct1byufijcefb" path="res://Player/WeaponRing.cs" id="4_q66cr"]
 [ext_resource type="Script" uid="uid://2ajhnisvj48l" path="res://NPC/BodySensor.cs" id="7_o4ihg"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_3d41u"]
-radius = 32.0
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_vtle1"]
+polygon = PackedVector2Array(-32, -32, -32, 32, 32, 32, 32, -32)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vtle1"]
+size = Vector2(48, 48)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_wbypx"]
 radius = 120.0
@@ -23,8 +26,14 @@ CanDamageSelf = true
 metadata/_edit_group_ = true
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+light_mask = 2
 use_parent_material = true
 texture = ExtResource("2_s5van")
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="Sprite2D"]
+show_behind_parent = true
+scale = Vector2(0.25, 0.25)
+occluder = SubResource("OccluderPolygon2D_vtle1")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 process_callback = 0
@@ -34,7 +43,7 @@ drag_vertical_enabled = true
 script = ExtResource("3_vrqgk")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_3d41u")
+shape = SubResource("RectangleShape2D_vtle1")
 
 [node name="WeaponRing" type="Node2D" parent="."]
 script = ExtResource("4_q66cr")

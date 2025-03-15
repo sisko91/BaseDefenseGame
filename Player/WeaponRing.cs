@@ -6,7 +6,7 @@ public partial class WeaponRing : Node2D
 {
 	// The distance away from the center of the player that the equipped weapon will orbit as the aim is adjusted.
 	[Export]
-	public float AttachmentRadius = 50.0f;
+	public float AttachmentRadius = 25.0f;
 
 	// Cached reference to the currently equipped weapon.
 	public Weapon EquippedWeapon { get; private set; }

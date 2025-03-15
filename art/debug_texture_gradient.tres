@@ -1,7 +1,10 @@
 [gd_resource type="GradientTexture2D" load_steps=2 format=3 uid="uid://doaffvj52e0h1"]
 
 [sub_resource type="Gradient" id="Gradient_gspqo"]
-colors = PackedColorArray(0, 0, 0, 1, 1, 0.6, 0.25, 1)
+offsets = PackedFloat32Array(0, 0.980519)
+colors = PackedColorArray(0.312129, 0.188668, 0.124853, 1, 0.313726, 0.188235, 0.12549, 1)
 
 [resource]
 gradient = SubResource("Gradient_gspqo")
+width = 48
+height = 48

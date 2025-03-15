@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=11 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://2ctjrem32j1v" path="res://NPC/shambler.tscn" id="6_a6glu"]
 [ext_resource type="PackedScene" uid="uid://h6mtv0wbug0t" path="res://World/Structures/Testing/test_building.tscn" id="6_lhns8"]
 [ext_resource type="Script" uid="uid://bnt0qsggcts86" path="res://World/RadialSpawner.cs" id="6_xi2eq"]
+[ext_resource type="PackedScene" uid="uid://ca1u833dx2dax" path="res://World/Structures/Testing/test_fireplace.tscn" id="7_8h8jw"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_fn2eg"]
 frequency = 0.0075
@@ -57,10 +58,12 @@ position = Vector2(-253, -386)
 position = Vector2(371, -386)
 
 [node name="Overhang" type="Sprite2D" parent="."]
+light_mask = 2
 z_index = 1
 position = Vector2(255, -325)
 
 [node name="ColorRect" type="ColorRect" parent="Overhang"]
+light_mask = 2
 offset_right = 119.0
 offset_bottom = 26.0
 color = Color(0.623529, 0.333333, 0, 1)
@@ -78,4 +81,10 @@ script = ExtResource("6_xi2eq")
 SpawnTemplate = ExtResource("6_a6glu")
 InnerRadius = 400.0
 OuterRadius = 500.0
-InitialCount = 6
+InitialCount = 2
+
+[node name="TestFireplace" parent="." instance=ExtResource("7_8h8jw")]
+position = Vector2(312, -51)
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color(0.564962, 0.564962, 0.564962, 1)

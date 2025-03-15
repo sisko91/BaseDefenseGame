@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://h6mtv0wbug0t"]
+[gd_scene load_steps=16 format=3 uid="uid://h6mtv0wbug0t"]
 
 [ext_resource type="Script" uid="uid://drac3p47binwd" path="res://World/Structures/Building.cs" id="1_7ffef"]
 [ext_resource type="PackedScene" uid="uid://cw48c72a4tsvk" path="res://World/Structures/Testing/test_wall.tscn" id="1_e2nee"]
@@ -6,6 +6,9 @@
 [ext_resource type="PackedScene" uid="uid://chpuk4qnqqxm4" path="res://World/Structures/Testing/test_door.tscn" id="5_e5hgi"]
 [ext_resource type="PackedScene" uid="uid://boifro8bbs3lu" path="res://World/Structures/Testing/test_stairs.tscn" id="6_k5khk"]
 [ext_resource type="PackedScene" uid="uid://dgkvalqk6hieg" path="res://World/wall.tscn" id="6_mexbq"]
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_8qk5p"]
+polygon = PackedVector2Array(0, -24, 512, -24, 512, 233, 0, 233)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k1td7"]
 size = Vector2(480, 205)
@@ -43,6 +46,9 @@ fill_from = Vector2(0.5, 0.5)
 
 [node name="TestBuilding" type="Node2D"]
 script = ExtResource("1_7ffef")
+
+[node name="BuildingShadow" type="LightOccluder2D" parent="."]
+occluder = SubResource("OccluderPolygon2D_8qk5p")
 
 [node name="Floor0" type="Area2D" parent="."]
 z_index = 1

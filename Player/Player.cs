@@ -94,7 +94,7 @@ public partial class Player : Character
             case InputEventKey:
             case InputEventMouse:
                 bUsingGamepad = false;
-                Input.MouseMode = Input.MouseModeEnum.Confined;
+                //Input.MouseMode = Input.MouseModeEnum.Confined;
                 break;
             case InputEventJoypadButton:
             case InputEventJoypadMotion:
