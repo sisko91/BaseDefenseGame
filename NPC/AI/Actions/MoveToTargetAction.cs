@@ -11,6 +11,8 @@ namespace AI
         {
             Dictionary<Tuple<BuildingRegion, BuildingRegion>, List<Stairs>> StairsPathCache;
 
+            private Character originalEnemy = null;
+
             public override void Initialize(Brain brain) {
                 base.Initialize(brain);
                 StairsPathCache = new Dictionary<Tuple<BuildingRegion, BuildingRegion>, List<Stairs>>();
@@ -44,12 +46,15 @@ namespace AI
                 GD.Print($"{Owner?.Name}->Navigating to enemy ({Brain.EnemyTarget.Name})");
                 Owner.NavAgent.TargetPosition = Brain.EnemyTarget.GlobalPosition;
                 Owner.NavAgent.TargetDesiredDistance = GetAcceptableTargetDistance();
+                // TODO: Maybe just subscribe to something like an EnemyTargetChanged event?
+                originalEnemy = Brain.EnemyTarget;
             }
 
             protected override void OnDeactivate()
             {
                 //GD.Print($"{Owner?.Name}->{GetType().Name} deactivated :c");
                 Brain.ClearNavigationTarget();
+                originalEnemy = null;
             }
 
             public override void Update(double deltaTime)
@@ -61,7 +66,13 @@ namespace AI
                     return;
                 }
 
-                if(Owner.NavAgent.IsNavigationFinished())
+                // Abort any time the target changes because that probably warrants a reconsideration.
+                if (Brain.EnemyTarget != originalEnemy) {
+                    Deactivate();
+                    return;
+                }
+
+                if (Owner.NavAgent.IsNavigationFinished())
                 {
                     //GD.Print($"{Owner?.Name}->{GetType().Name} nav finished");
                     Deactivate();
