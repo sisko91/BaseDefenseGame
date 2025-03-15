@@ -10,6 +10,10 @@ public partial class Brain : Resource
     [Export]
     public bool CanOpenDoors = false;
 
+    // Distance after which a perfectly viable enemy target is forgotten (unless there's nothing better to focus on).
+    [Export]
+    public float AggroResetRange = 500.0f;
+
     public NonPlayerCharacter Owner { get; private set; }
 
     // What target - if any - the brain is currently focused on.
@@ -48,13 +52,8 @@ public partial class Brain : Resource
         }
 
         // Redefine AI action set.
-        actions = new Godot.Collections.Array<AI.Action>();
-        var moveAction = new AI.Actions.MoveToTargetAction();
-        actions.Add(moveAction);
-        var attackAction = new AI.Actions.AttackEnemyTargetAction();
-        actions.Add(attackAction);
-        foreach(var action in actions)
-        {
+        actions = [new AI.Actions.MoveToTargetAction(), new AI.Actions.AttackEnemyTargetAction()];
+        foreach (var action in actions) {
             action.Initialize(this);
         }
     }
@@ -67,13 +66,7 @@ public partial class Brain : Resource
             return;
         }
 
-        // Refresh the enemy target before any AI actions evaluate.
-        if(EnemyTarget == null || EnemyTarget.CurrentHealth <= 0)
-        {
-            GD.Print($"{Owner.Name} looking for target");
-            EnemyTarget = FindTarget();
-            GD.Print($"{Owner.Name} found target ({EnemyTarget?.Name})");
-        }
+        EnemyTarget = FindTarget();
 
         // Pick a new action if necessary
         if(currentAction != null && !currentAction.IsActive)
@@ -123,6 +116,22 @@ public partial class Brain : Resource
 
     private Character FindTarget()
     {
+        // TODO: Consider adding a "DefaultTarget" that the AI falls back to and setting the crystal there instead of all this other logic.
+        // Maintain any existing (non-crystal) target if they are still within aggro distance.
+        if(EnemyTarget != null && EnemyTarget is not CrystalTarget && EnemyTarget.CurrentHealth > 0) {
+            if(EnemyTarget.GlobalPosition.DistanceSquaredTo(Owner.GlobalPosition) < AggroResetRange*AggroResetRange) {
+                return EnemyTarget;
+            }
+        }
+
+        // Pick any nearby player to aggro.
+        foreach (var player in Owner.NearbyBodySensor.Players) {
+            if (player != null) {
+                return player;
+            }
+        }
+
+        // Find the nearest crystal to attack.
         CrystalTarget nearestCrystal = null;
         float nearest = 0;
         foreach(var crystal in Owner.GetGameWorld().Crystals)
@@ -147,13 +156,6 @@ public partial class Brain : Resource
                     nearestCrystal = candidate;
                     nearest = distance;
                 }
-            }
-        }
-
-        // Pick any nearby player over the crystal.
-        foreach (var player in Owner.NearbyBodySensor.Players) {
-            if (player != null) {
-                return player;
             }
         }
 
