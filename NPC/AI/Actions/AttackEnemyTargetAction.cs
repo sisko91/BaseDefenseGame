@@ -11,9 +11,6 @@ namespace AI
             public static float MeleeAttackDamage = 30.0f;
 
             // TODO: Placeholder
-            public static float MeleeAttackRange = 70.0f;
-
-            // TODO: Placeholder
             public static float MeleeAttackCooldown = 1.0f;
 
             private double lastAttackTime = -1;
@@ -36,8 +33,10 @@ namespace AI
                     return 0;
                 }
 
-                if(Brain.EnemyTarget.GlobalPosition.DistanceSquaredTo(Owner.GlobalPosition) > (MeleeAttackRange*MeleeAttackRange))
+                float meleeAttackRange = GetMeleeAttackRange();
+                if(Brain.EnemyTarget.GlobalPosition.DistanceSquaredTo(Owner.GlobalPosition) > (meleeAttackRange * meleeAttackRange))
                 {
+                    GD.Print($"{Brain.EnemyTarget.GlobalPosition.DistanceSquaredTo(Owner.GlobalPosition)}");
                     // Out of range.
                     return 0;
                 }
@@ -65,7 +64,8 @@ namespace AI
                     return;
                 }
 
-                if (Brain.EnemyTarget.GlobalPosition.DistanceSquaredTo(Owner.GlobalPosition) > (MeleeAttackRange * MeleeAttackRange))
+                float meleeAttackRange = GetMeleeAttackRange();
+                if (Brain.EnemyTarget.GlobalPosition.DistanceSquaredTo(Owner.GlobalPosition) > (meleeAttackRange * meleeAttackRange))
                 {
                     // Out of range.
                     Deactivate();
@@ -88,6 +88,11 @@ namespace AI
             private double GetTimeSeconds()
             {
                 return Time.GetTicksUsec() / 1000000.0;
+            }
+
+            private float GetMeleeAttackRange()
+            {
+                return Brain.EnemyTarget.GetCollisionBodyRadius() + Owner.GetCollisionBodyRadius() + 5;
             }
         }
     }
