@@ -68,9 +68,11 @@ public partial class Brain : Resource
         }
 
         // Refresh the enemy target before any AI actions evaluate.
-        if(EnemyTarget == null)
+        if(EnemyTarget == null || EnemyTarget.CurrentHealth <= 0)
         {
+            GD.Print($"{Owner.Name} looking for target");
             EnemyTarget = FindTarget();
+            GD.Print($"{Owner.Name} found target ({EnemyTarget?.Name})");
         }
 
         // Pick a new action if necessary
@@ -121,17 +123,56 @@ public partial class Brain : Resource
 
     private Character FindTarget()
     {
-        foreach (var player in Owner.GetGameWorld().Players)
+        CrystalTarget nearestCrystal = null;
+        float nearest = 0;
+        foreach(var crystal in Owner.GetGameWorld().Crystals)
         {
-            if (player != null)
+            var candidate = (CrystalTarget)crystal;
+            if(candidate.CurrentHealth <= 0)
             {
-                // TODO: Only select players that are within an aggro radius.
-                return (Character)player;
+                // Skip dead crystals
+                continue;
+            }
+
+            if (nearestCrystal == null)
+            {
+                nearestCrystal = candidate;
+                nearest = candidate.GlobalPosition.DistanceTo(Owner.GlobalPosition);
+            }
+            else
+            {
+                var distance = candidate.GlobalPosition.DistanceTo(Owner.GlobalPosition);
+                if (distance < nearest)
+                {
+                    nearestCrystal = candidate;
+                    nearest = distance;
+                }
             }
         }
 
-        // TODO: Target the crystal(s) if no player is within aggro radius.
-        return null;
+        // Pick any nearby player over the crystal.
+        foreach(var player in Owner.NearbyBodySensor.Players)
+        {
+            if(player != null)
+            {
+                return player;
+            }
+        }
+
+        // Pick any player at all when there's no living crystal (though this is probably game over).
+        if(nearestCrystal == null || nearestCrystal.CurrentHealth <= 0)
+        {
+            foreach (var p in Owner.GetGameWorld().Players)
+            {
+                var player = p as Player;
+                if (player != null)
+                {
+                    return player;
+                }
+            }
+        }
+        
+        return nearestCrystal;
     }
 
     // ThinkPhysics() mirrors the intent of _PhysicsProcess() for Godot nodes. NPCs will delegate some of their physics-related processing to this function.

@@ -1,0 +1,36 @@
+[gd_scene load_steps=7 format=3 uid="uid://dys3a163srv0l"]
+
+[ext_resource type="Script" uid="uid://cnoqjrtxeaoix" path="res://Characters/Character.cs" id="1_1gr7f"]
+[ext_resource type="Texture2D" uid="uid://deyurmldm56dm" path="res://art/CrystalTarget/runeBlue_slabOutline_005.png" id="2_5vhs2"]
+[ext_resource type="PackedScene" uid="uid://bjk4qjwt7h3d2" path="res://UI/floating_health_bar.tscn" id="3_6ntlg"]
+[ext_resource type="Script" uid="uid://2ajhnisvj48l" path="res://NPC/BodySensor.cs" id="3_vcxs1"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_vcxs1"]
+radius = 30.0
+height = 110.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_vcxs1"]
+radius = 200.0
+
+[node name="CrystalTarget" type="CharacterBody2D"]
+collision_mask = 7
+script = ExtResource("1_1gr7f")
+MovementSpeed = 0.0
+MaxHealth = 500.0
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_5vhs2")
+
+[node name="FloatingHealthBar" parent="." instance=ExtResource("3_6ntlg")]
+position = Vector2(-20, -56)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_vcxs1")
+
+[node name="NearbyBodySensor" type="Area2D" parent="."]
+script = ExtResource("3_vcxs1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NearbyBodySensor"]
+shape = SubResource("CircleShape2D_vcxs1")
+
+[connection signal="HealthChanged" from="." to="FloatingHealthBar" method="OnCharacterHealthChanged"]

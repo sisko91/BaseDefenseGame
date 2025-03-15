@@ -26,6 +26,14 @@ public partial class World : Node2D
         }
     }
 
+    public Godot.Collections.Array<Node> Crystals
+    {
+        get
+        {
+            return GetTree().GetNodesInGroup("Crystal");
+        }
+    }
+
     // Cached reference to the background sprite defined by the .tscn.
     private Sprite2D backgroundSprite;
 
