@@ -51,7 +51,7 @@ public partial class HealthBar : Node2D
 		}
     }
 
-	public void OnCharacterHealthChanged(NonPlayerCharacter character, float newHealth, float oldHealth)
+	public void OnCharacterHealthChanged(Character character, float newHealth, float oldHealth)
 	{
 		PercentageFull = Mathf.Clamp(newHealth / character.MaxHealth, 0, 1.0f);
 		// Adjust the width of the health rectange, but keep its height the same.
