@@ -1,3 +1,4 @@
+using ExtensionMethods;
 using Godot;
 using System;
 
@@ -145,6 +146,10 @@ public partial class Character : Moveable
     public float GetCollisionBodyRadius()
     {
         var boundingRect = CollisionShape.Shape.GetRect();
+        if (DebugConfig.DRAW_COLLISION_BODY_RADIUS) {
+            this.ClearLines(GetPath() + "bb");
+            this.DrawDebugRect(GlobalPosition, boundingRect, new Color(0, 0, 1), 1, GetPath() + "bb");
+        }
         var collisionDiameter = Mathf.Max(boundingRect.Size.X, boundingRect.Size.Y);
         return collisionDiameter / 2;
     }

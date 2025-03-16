@@ -32,7 +32,6 @@ namespace AI
                 {
                     return 0;
                 }
-
                 float meleeAttackRange = GetMeleeAttackRange();
                 if(Brain.EnemyTarget.GlobalPosition.DistanceSquaredTo(Owner.GlobalPosition) > (meleeAttackRange * meleeAttackRange))
                 {

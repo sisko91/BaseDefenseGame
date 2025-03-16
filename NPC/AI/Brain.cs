@@ -151,10 +151,8 @@ public partial class Brain : Resource
         }
 
         // Pick any nearby player over the crystal.
-        foreach(var player in Owner.NearbyBodySensor.Players)
-        {
-            if(player != null)
-            {
+        foreach (var player in Owner.NearbyBodySensor.Players) {
+            if (player != null) {
                 return player;
             }
         }
