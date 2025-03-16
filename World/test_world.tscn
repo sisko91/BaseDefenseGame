@@ -114,4 +114,5 @@ position = Vector2(312, -51)
 [node name="CrystalTarget" parent="." instance=ExtResource("7_8h8jj")]
 position = Vector2(-194, 0)
 script = ExtResource("8_ioycy")
-dayLengthSeconds = 15
+dayLengthSeconds = 300
+dayStartTime = 0.5
