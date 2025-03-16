@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=18 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Shader" uid="uid://dbq15bbjbsfyi" path="res://Shaders/daynight.gdshader" id="2_2xslp"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://dys3a163srv0l" path="res://Gameplay/crystal_target.tscn" id="7_8h8jj"]
 [ext_resource type="PackedScene" uid="uid://ca1u833dx2dax" path="res://World/Structures/Testing/test_fireplace.tscn" id="7_8h8jw"]
 [ext_resource type="Script" uid="uid://bunp1yq3jjjv7" path="res://World/DayNight/DayNight.cs" id="8_ioycy"]
+[ext_resource type="Script" uid="uid://7x2lypek5o4l" path="res://Gameplay/CrystalTarget.cs" id="11_dghf1"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_523qg"]
 shader = ExtResource("2_2xslp")
@@ -113,6 +114,5 @@ position = Vector2(312, -51)
 
 [node name="CrystalTarget" parent="." instance=ExtResource("7_8h8jj")]
 position = Vector2(-194, 0)
-script = ExtResource("8_ioycy")
-dayLengthSeconds = 300
-dayStartTime = 0.5
+script = ExtResource("11_dghf1")
+MaxHealth = 100.0
