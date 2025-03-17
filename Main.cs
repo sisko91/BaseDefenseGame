@@ -16,6 +16,13 @@ public partial class Main : Node
     [Export]
     public PackedScene PlayerTemplate {  get; private set; }
 
+    // The template scene to instantiate for the Pause Menu.
+    [Export]
+    public PackedScene PauseMenuTemplate { get; private set; }
+
+    // During play, when the pause menu is open this reference tracks the node instance.
+    private Node instancedPauseMenu = null;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -47,9 +54,17 @@ public partial class Main : Node
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
-        if(Input.IsActionJustPressed("debug_quit"))
-        {
-            GetTree().Quit();
+        if(Input.IsActionJustPressed("pause_menu")) {
+            // The menu removes itself as a child and deletes itself, but in case that expectation changes we can do it here as well.
+            if(IsInstanceValid(instancedPauseMenu)) {
+                RemoveChild(instancedPauseMenu);
+                instancedPauseMenu.QueueFree();
+                instancedPauseMenu = null;
+            }
+            else {
+                instancedPauseMenu = PauseMenuTemplate.Instantiate();
+                AddChild(instancedPauseMenu);
+            }
         }
     }
 }

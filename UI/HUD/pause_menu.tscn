@@ -1,0 +1,41 @@
+[gd_scene load_steps=2 format=3 uid="uid://bwskh2c74a37q"]
+
+[ext_resource type="Script" uid="uid://b7iwicjde5u15" path="res://UI/HUD/PauseMenu.cs" id="1_ojko3"]
+
+[node name="PauseMenu" type="CanvasLayer"]
+script = ExtResource("1_ojko3")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 1
+
+[node name="PanelContainer" type="PanelContainer" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/PanelContainer"]
+layout_mode = 2
+size_flags_vertical = 4
+alignment = 1
+
+[node name="ResumeButton" type="Button" parent="HBoxContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "Resume
+"
+
+[node name="OptionsButton" type="Button" parent="HBoxContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "Options
+"
+
+[node name="QuitButton" type="Button" parent="HBoxContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "Quit Game"
+
+[connection signal="pressed" from="HBoxContainer/PanelContainer/VBoxContainer/ResumeButton" to="." method="CloseMenu"]
+[connection signal="pressed" from="HBoxContainer/PanelContainer/VBoxContainer/QuitButton" to="." method="QuitGame"]

@@ -1,13 +1,15 @@
-[gd_scene load_steps=5 format=3 uid="uid://fsemlkislawf"]
+[gd_scene load_steps=6 format=3 uid="uid://fsemlkislawf"]
 
 [ext_resource type="Script" uid="uid://djo07ped2qw88" path="res://Main.cs" id="1_yq6fc"]
 [ext_resource type="PackedScene" uid="uid://bapcmf72ww8v3" path="res://World/test_world.tscn" id="2_f1mpy"]
 [ext_resource type="PackedScene" uid="uid://dy47gg8c687bv" path="res://Player/player.tscn" id="2_y848n"]
 [ext_resource type="PackedScene" uid="uid://h8frpggagysk" path="res://UI/HUD/hud.tscn" id="3_ipp5o"]
+[ext_resource type="PackedScene" uid="uid://bwskh2c74a37q" path="res://UI/HUD/pause_menu.tscn" id="3_lquwl"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_yq6fc")
 PlayerTemplate = ExtResource("2_y848n")
+PauseMenuTemplate = ExtResource("3_lquwl")
 
 [node name="World" parent="." instance=ExtResource("2_f1mpy")]
 
