@@ -37,5 +37,5 @@ text = "Options
 layout_mode = 2
 text = "Quit Game"
 
-[connection signal="pressed" from="HBoxContainer/PanelContainer/VBoxContainer/ResumeButton" to="." method="CloseMenu"]
+[connection signal="pressed" from="HBoxContainer/PanelContainer/VBoxContainer/ResumeButton" to="." method="ToggleDisplay"]
 [connection signal="pressed" from="HBoxContainer/PanelContainer/VBoxContainer/QuitButton" to="." method="QuitGame"]

@@ -11,6 +11,11 @@ script = ExtResource("1_yq6fc")
 PlayerTemplate = ExtResource("2_y848n")
 PauseMenuTemplate = ExtResource("3_lquwl")
 
+[node name="PauseMenu" parent="." instance=ExtResource("3_lquwl")]
+visible = false
+
 [node name="World" parent="." instance=ExtResource("2_f1mpy")]
+process_mode = 1
 
 [node name="Hud" parent="." instance=ExtResource("3_ipp5o")]
+process_mode = 1

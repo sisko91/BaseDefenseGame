@@ -20,8 +20,13 @@ public partial class Main : Node
     [Export]
     public PackedScene PauseMenuTemplate { get; private set; }
 
-    // During play, when the pause menu is open this reference tracks the node instance.
-    private Node instancedPauseMenu = null;
+    // Cached reference to the PauseMenu scene node defined on main.tscn.
+    private PauseMenu pauseMenu = null;
+
+    public Main() {
+        // The main scene is NEVER paused, as it handles top-level input processing for the game (menus, terminal signals, etc.)
+        ProcessMode = ProcessModeEnum.Always;
+    }
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -40,6 +45,10 @@ public partial class Main : Node
         {
             DebugNodeExtensions.EnableDebugRenderers();
         }
+
+        pauseMenu = GetNode<PauseMenu>("PauseMenu");
+        // Refresh the game's pause state any time the pause menu is opened or closed.
+        pauseMenu.VisibilityChanged += CheckAndUpdatePause;
     }
 
     private void OnPlayerHealthChanged(Character character, float newHealth, float oldHealth)
@@ -55,16 +64,19 @@ public partial class Main : Node
     public override void _Process(double delta)
     {
         if(Input.IsActionJustPressed("pause_menu")) {
-            // The menu removes itself as a child and deletes itself, but in case that expectation changes we can do it here as well.
-            if(IsInstanceValid(instancedPauseMenu)) {
-                RemoveChild(instancedPauseMenu);
-                instancedPauseMenu.QueueFree();
-                instancedPauseMenu = null;
-            }
-            else {
-                instancedPauseMenu = PauseMenuTemplate.Instantiate();
-                AddChild(instancedPauseMenu);
-            }
+            pauseMenu.ToggleDisplay();
+        }
+    }
+
+    // Reviews current game state and determines if the main scene should be paused or unpaused.
+    // Today only the PauseMenu causes the game to pause, but eventually other parameters (e.g. world events, messages to players, etc.)
+    // might want to momentarily pause the game as well.
+    private void CheckAndUpdatePause() {
+        if(IsInstanceValid(pauseMenu) && pauseMenu.Visible) {
+            GetTree().Paused = true;
+        }
+        else {
+            GetTree().Paused = false;
         }
     }
 }
