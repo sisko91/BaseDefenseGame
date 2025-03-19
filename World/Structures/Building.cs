@@ -90,11 +90,13 @@ public partial class Building : Node2D
         entitiesInside.Add(body);
         //Render above weather layer so we dont show clouds and stuff inside
         var zIndex = region.InteriorRegion ? WEATHER_Z_LAYER + 1 : BUILDING_Z_LAYER;
-
         body.ZIndex = zIndex;
+
+        m.CurrentRegion = region;
+        m.SetInside(region != null && region.InteriorRegion);
+
         if (body is Player player)
         {
-            player.CurrentRegion = region;
             // Set all regions on this elevation to be visible, and all above this elevation to be invisible.
             foreach (var other in AllRegions)
             {
@@ -108,7 +110,6 @@ public partial class Building : Node2D
         }
         else
         {
-            m.CurrentRegion = region;
             UpdateNonPlayerBody(m);
         }
     }
@@ -131,6 +132,8 @@ public partial class Building : Node2D
             m.CurrentRegion = null;
             m.ChangeFloor(0);
         }
+
+        m.SetInside(m.CurrentRegion != null && m.CurrentRegion.InteriorRegion);
 
         if (body is Player player)
         {

@@ -136,3 +136,10 @@ pause_menu={
 
 3d/default_cell_size=1.0
 3d/default_cell_height=1.0
+
+[shader_globals]
+
+day_night_color={
+"type": "color",
+"value": Color(1, 1, 1, 1)
+}

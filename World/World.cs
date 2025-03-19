@@ -34,6 +34,14 @@ public partial class World : Node2D
         }
     }
 
+    public DayNight DayNight
+    {
+        get
+        {
+            return GetNode<DayNight>("DayNight");
+        }
+    }
+
     // Cached reference to the background sprite defined by the .tscn.
     private Sprite2D backgroundSprite;
 

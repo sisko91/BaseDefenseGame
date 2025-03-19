@@ -1,12 +1,20 @@
-[gd_scene load_steps=11 format=3 uid="uid://dy47gg8c687bv"]
+[gd_scene load_steps=13 format=3 uid="uid://dy47gg8c687bv"]
 
 [ext_resource type="Script" uid="uid://dsdu35x76daf1" path="res://Player/Player.cs" id="1_imx3i"]
+[ext_resource type="Shader" uid="uid://cfv027nbsnbss" path="res://Shaders/character.gdshader" id="1_od3ui"]
 [ext_resource type="PackedScene" uid="uid://dqdhhyjyrp2ri" path="res://Weapons/Pistol/pistol.tscn" id="2_psqbx"]
 [ext_resource type="PackedScene" uid="uid://dkbkf106r6qu2" path="res://Weapons/Scattergun/scatter_gun.tscn" id="2_rscqp"]
 [ext_resource type="Texture2D" uid="uid://doaffvj52e0h1" path="res://art/debug_texture_gradient.tres" id="2_s5van"]
 [ext_resource type="Script" uid="uid://cmbjm5w5tbppd" path="res://Player/PlayerCamera.cs" id="3_vrqgk"]
 [ext_resource type="Script" uid="uid://ct1byufijcefb" path="res://Player/WeaponRing.cs" id="4_q66cr"]
 [ext_resource type="Script" uid="uid://2ajhnisvj48l" path="res://NPC/BodySensor.cs" id="7_o4ihg"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_od3ui"]
+shader = ExtResource("1_od3ui")
+shader_parameter/is_hit = false
+shader_parameter/is_inside = false
+shader_parameter/time_scale = 20.0
+shader_parameter/gb_ceil = 0.75
 
 [sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_vtle1"]
 polygon = PackedVector2Array(-32, -32, -32, 32, 32, 32, 32, -32)
@@ -18,6 +26,7 @@ size = Vector2(48, 48)
 radius = 120.0
 
 [node name="Player" type="CharacterBody2D"]
+material = SubResource("ShaderMaterial_od3ui")
 collision_mask = 2147483655
 motion_mode = 1
 script = ExtResource("1_imx3i")
@@ -50,6 +59,7 @@ script = ExtResource("4_q66cr")
 AttachmentRadius = 80.0
 
 [node name="NearbyBodySensor" type="Area2D" parent="."]
+visible = false
 collision_mask = 13
 script = ExtResource("7_o4ihg")
 

@@ -28,4 +28,8 @@ public partial class Moveable : CharacterBody2D {
             CollisionMask = CollisionMask >> -shift * CollisionConfig.LAYERS_PER_FLOOR;
         }
     }
+
+    public void SetInside(bool inside) {
+        Material.Set("shader_parameter/is_inside", inside);
+    }
 }

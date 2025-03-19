@@ -33,8 +33,8 @@ public partial class Projectile : Moveable
 
         if (Instigator is Character c) {
             CurrentElevationLevel = c.CurrentElevationLevel;
-            CollisionLayer  = CollisionLayer << c.CurrentElevationLevel * 4;
-            CollisionMask = CollisionMask << c.CurrentElevationLevel * 4;
+            CollisionLayer = CollisionLayer << c.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
+            CollisionMask = CollisionMask << c.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
         }
 
         var timer = this.GetGameWorld().GetTree().CreateTimer(LifetimeSeconds);

@@ -45,7 +45,7 @@ public partial class Character : Moveable
 
         HitAnimationTimer = new Timer();
         HitAnimationTimer.OneShot = true;
-        HitAnimationTimer.Timeout += RemoveHitMaterial;
+        HitAnimationTimer.Timeout += DisableHitShader;
         AddChild(HitAnimationTimer);
     }
 
@@ -65,7 +65,7 @@ public partial class Character : Moveable
         
         //Repeated calls reset the timer
         HitAnimationTimer.Start(HitAnimationSeconds);
-        SetHitMaterial();
+        EnableHitShader();
 
 
         var oldHealth = CurrentHealth;
@@ -131,16 +131,18 @@ public partial class Character : Moveable
         }
     }
 
-    private void SetHitMaterial()
+    private void EnableHitShader()
     {
-        ShaderMaterial hitMaterial = new ShaderMaterial();
-        hitMaterial.Shader = GD.Load<Shader>("res://Shaders/hit.gdshader");
-        Material = hitMaterial;
+        if (Material != null) {
+            Material.Set("shader_parameter/is_hit", true);
+        }
     }
 
-    private void RemoveHitMaterial()
+    private void DisableHitShader()
     {
-        Material = null;
+        if (Material != null) {
+            Material.Set("shader_parameter/is_hit", false);
+        }
     }
 
     public float GetCollisionBodyRadius()

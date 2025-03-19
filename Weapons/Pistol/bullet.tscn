@@ -1,6 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://cksfixrug8ht1"]
+[gd_scene load_steps=7 format=3 uid="uid://cksfixrug8ht1"]
 
 [ext_resource type="Script" uid="uid://besoheoqrvcgm" path="res://Weapons/Pistol/Bullet.cs" id="1_jfrxl"]
+[ext_resource type="Shader" uid="uid://c6kodin14qwfb" path="res://Shaders/projectile.gdshader" id="1_rep0m"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rep0m"]
+shader = ExtResource("1_rep0m")
+shader_parameter/is_inside = false
 
 [sub_resource type="Gradient" id="Gradient_8usk2"]
 offsets = PackedFloat32Array(0.396104, 0.597403)
@@ -17,12 +22,14 @@ fill_from = Vector2(0.5, 0.5)
 radius = 7.79657
 
 [node name="Bullet" type="CharacterBody2D"]
+material = SubResource("ShaderMaterial_rep0m")
 collision_layer = 2
 collision_mask = 5
 script = ExtResource("1_jfrxl")
 Damage = 10.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+use_parent_material = true
 texture = SubResource("GradientTexture2D_t3qvy")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

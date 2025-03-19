@@ -1,14 +1,15 @@
-[gd_scene load_steps=16 format=3 uid="uid://h6mtv0wbug0t"]
+[gd_scene load_steps=22 format=3 uid="uid://h6mtv0wbug0t"]
 
 [ext_resource type="Script" uid="uid://drac3p47binwd" path="res://World/Structures/Building.cs" id="1_7ffef"]
 [ext_resource type="PackedScene" uid="uid://cw48c72a4tsvk" path="res://World/Structures/Testing/test_wall.tscn" id="1_e2nee"]
 [ext_resource type="Script" uid="uid://cbfqcsyk76tqo" path="res://World/Structures/BuildingRegion.cs" id="1_edy31"]
+[ext_resource type="Shader" uid="uid://dbq15bbjbsfyi" path="res://Shaders/building.gdshader" id="2_pvg10"]
 [ext_resource type="PackedScene" uid="uid://chpuk4qnqqxm4" path="res://World/Structures/Testing/test_door.tscn" id="5_e5hgi"]
 [ext_resource type="PackedScene" uid="uid://boifro8bbs3lu" path="res://World/Structures/Testing/test_stairs.tscn" id="6_k5khk"]
 [ext_resource type="PackedScene" uid="uid://dgkvalqk6hieg" path="res://World/wall.tscn" id="6_mexbq"]
 
-[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_8qk5p"]
-polygon = PackedVector2Array(0, -24, 512, -24, 512, 233, 0, 233)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pvg10"]
+shader = ExtResource("2_pvg10")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k1td7"]
 size = Vector2(480, 205)
@@ -20,6 +21,27 @@ colors = PackedColorArray(0.188235, 0.133333, 0, 1, 0, 0, 0, 1)
 gradient = SubResource("Gradient_wah7p")
 fill = 2
 fill_to = Vector2(0, 0)
+
+[sub_resource type="Gradient" id="Gradient_xkuvy"]
+offsets = PackedFloat32Array(1)
+colors = PackedColorArray(0.160784, 0.160784, 0.160784, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_f2yig"]
+gradient = SubResource("Gradient_xkuvy")
+width = 249
+height = 32
+
+[sub_resource type="Gradient" id="Gradient_oogqs"]
+offsets = PackedFloat32Array(1)
+colors = PackedColorArray(0.160784, 0.160784, 0.160784, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_tlued"]
+gradient = SubResource("Gradient_oogqs")
+width = 448
+height = 56
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4jyrl"]
+shader = ExtResource("2_pvg10")
 
 [sub_resource type="Gradient" id="Gradient_bacaw"]
 offsets = PackedFloat32Array(0.233766, 0.88961)
@@ -47,20 +69,20 @@ fill_from = Vector2(0.5, 0.5)
 [node name="TestBuilding" type="Node2D"]
 script = ExtResource("1_7ffef")
 
-[node name="BuildingShadow" type="LightOccluder2D" parent="."]
-occluder = SubResource("OccluderPolygon2D_8qk5p")
-
 [node name="Floor0" type="Area2D" parent="."]
 z_index = 1
+material = SubResource("ShaderMaterial_pvg10")
 collision_mask = 3
 script = ExtResource("1_edy31")
 
 [node name="Boundary" type="CollisionShape2D" parent="Floor0"]
+use_parent_material = true
 position = Vector2(256, 130.5)
 shape = SubResource("RectangleShape2D_k1td7")
 
 [node name="Ground" type="Sprite2D" parent="Floor0"]
 texture_repeat = 2
+use_parent_material = true
 position = Vector2(-1.90735e-06, 24)
 scale = Vector2(1, 0.90625)
 texture = SubResource("GradientTexture2D_qtn0d")
@@ -69,70 +91,74 @@ region_enabled = true
 region_rect = Rect2(0, 0, 512, 256)
 
 [node name="TopWall0" parent="Floor0" instance=ExtResource("1_e2nee")]
+use_parent_material = true
 position = Vector2(128, 28)
 scale = Vector2(1, 0.25)
 
 [node name="TopWall1" parent="Floor0" instance=ExtResource("1_e2nee")]
+use_parent_material = true
 position = Vector2(384, 28)
 scale = Vector2(1, 0.25)
 
 [node name="LeftWall" parent="Floor0" instance=ExtResource("1_e2nee")]
+use_parent_material = true
 position = Vector2(16, 128)
 rotation = 1.5708
 scale = Vector2(0.75, 1)
 
 [node name="RightWall" parent="Floor0" instance=ExtResource("1_e2nee")]
+use_parent_material = true
 position = Vector2(496, 128)
 rotation = 1.5708
 scale = Vector2(0.75, 1)
 
 [node name="BottomWall0" parent="Floor0" instance=ExtResource("1_e2nee")]
+use_parent_material = true
 position = Vector2(96, 240)
 scale = Vector2(0.75, 1)
 
 [node name="BottomWall1" parent="Floor0" instance=ExtResource("1_e2nee")]
+use_parent_material = true
 position = Vector2(416, 240)
 scale = Vector2(0.75, 1)
 
 [node name="Wall" parent="Floor0" instance=ExtResource("6_mexbq")]
+use_parent_material = true
 position = Vector2(202, 133)
 rotation = 0.958186
 
 [node name="StairsFloor0" parent="Floor0" node_paths=PackedStringArray("TargetStairs") instance=ExtResource("6_k5khk")]
+use_parent_material = true
 position = Vector2(447, 192)
 TargetStairs = NodePath("../../Floor1/StairsFloor1Down")
 
 [node name="FrontDoor" parent="Floor0" instance=ExtResource("5_e5hgi")]
 z_index = 3
 z_as_relative = false
+use_parent_material = true
 position = Vector2(256, 244)
 IsExit = true
 
-[node name="RightWallCover" type="ColorRect" parent="Floor0"]
-offset_left = 512.0
-offset_top = -24.0
-offset_right = 761.0
-offset_bottom = 8.0
+[node name="LeftWallCover" type="Sprite2D" parent="Floor0"]
+use_parent_material = true
+position = Vector2(16, 100.5)
 rotation = 1.5708
-color = Color(0.162066, 0.162066, 0.162066, 1)
+texture = SubResource("GradientTexture2D_f2yig")
 
-[node name="LeftWallCover" type="ColorRect" parent="Floor0"]
-offset_left = 32.0
-offset_top = -24.0
-offset_right = 281.0
-offset_bottom = 8.0
+[node name="RightWallCover" type="Sprite2D" parent="Floor0"]
+use_parent_material = true
+position = Vector2(496, 100.5)
 rotation = 1.5708
-color = Color(0.162066, 0.162066, 0.162066, 1)
+texture = SubResource("GradientTexture2D_f2yig")
 
-[node name="BackWallCover" type="ColorRect" parent="Floor0"]
-offset_left = 32.0
-offset_top = -24.0
-offset_right = 480.0
-offset_bottom = 32.0
-color = Color(0.151488, 0.117894, 0.0368434, 1)
+[node name="BackWallCover" type="Sprite2D" parent="Floor0"]
+use_parent_material = true
+position = Vector2(256, 4)
+texture = SubResource("GradientTexture2D_tlued")
 
 [node name="Floor1" type="Area2D" parent="."]
 z_index = 1
+material = SubResource("ShaderMaterial_4jyrl")
 collision_layer = 16
 collision_mask = 48
 script = ExtResource("1_edy31")
@@ -144,6 +170,7 @@ shape = SubResource("RectangleShape2D_k1td7")
 
 [node name="Ground" type="Sprite2D" parent="Floor1"]
 texture_repeat = 2
+use_parent_material = true
 position = Vector2(9, 32)
 scale = Vector2(0.964844, 0.84375)
 texture = SubResource("GradientTexture2D_r8dof")
@@ -152,18 +179,21 @@ region_enabled = true
 region_rect = Rect2(0, 0, 512, 256)
 
 [node name="TopWall0" parent="Floor1" instance=ExtResource("1_e2nee")]
+use_parent_material = true
 position = Vector2(128, 28)
 scale = Vector2(1, 0.25)
 collision_layer = 64
 collision_mask = 112
 
 [node name="TopWall1" parent="Floor1" instance=ExtResource("1_e2nee")]
+use_parent_material = true
 position = Vector2(384, 28)
 scale = Vector2(1, 0.25)
 collision_layer = 64
 collision_mask = 112
 
 [node name="LeftWall" parent="Floor1" instance=ExtResource("1_e2nee")]
+use_parent_material = true
 position = Vector2(16, 128)
 rotation = 1.5708
 scale = Vector2(0.75, 1)
@@ -171,6 +201,7 @@ collision_layer = 64
 collision_mask = 112
 
 [node name="RightWall" parent="Floor1" instance=ExtResource("1_e2nee")]
+use_parent_material = true
 position = Vector2(496, 128)
 rotation = 1.5708
 scale = Vector2(0.75, 1)
@@ -178,57 +209,58 @@ collision_layer = 64
 collision_mask = 112
 
 [node name="BottomWall0" parent="Floor1" instance=ExtResource("1_e2nee")]
+use_parent_material = true
 position = Vector2(128, 240)
 collision_layer = 64
 collision_mask = 112
+metadata/_edit_group_ = true
 
 [node name="BottomWall1" parent="Floor1" instance=ExtResource("1_e2nee")]
+use_parent_material = true
 position = Vector2(384, 240)
 collision_layer = 64
 collision_mask = 112
 
 [node name="Wall" parent="Floor1" instance=ExtResource("6_mexbq")]
+use_parent_material = true
 position = Vector2(257, 190)
 collision_layer = 64
 collision_mask = 112
 
 [node name="StairsFloor1Down" parent="Floor1" node_paths=PackedStringArray("TargetStairs") instance=ExtResource("6_k5khk")]
+use_parent_material = true
 position = Vector2(448, 191)
 collision_layer = 128
 collision_mask = 16
 TargetStairs = NodePath("../../Floor0/StairsFloor0")
 
 [node name="StairsFloor1Up" parent="Floor1" node_paths=PackedStringArray("TargetStairs") instance=ExtResource("6_k5khk")]
+use_parent_material = true
 position = Vector2(64, 192)
 collision_layer = 128
 collision_mask = 16
 TargetStairs = NodePath("../../Roof/StairsRoof")
 
-[node name="RightWallCover" type="ColorRect" parent="Floor1"]
-offset_left = 512.0
-offset_top = -24.0
-offset_right = 761.0
-offset_bottom = 8.0
+[node name="LeftWallCover" type="Sprite2D" parent="Floor1"]
+use_parent_material = true
+position = Vector2(16, 100.5)
 rotation = 1.5708
-color = Color(0.162066, 0.162066, 0.162066, 1)
+texture = SubResource("GradientTexture2D_f2yig")
 
-[node name="LeftWallCover" type="ColorRect" parent="Floor1"]
-offset_left = 32.0
-offset_top = -24.0
-offset_right = 281.0
-offset_bottom = 8.0
+[node name="RightWallCover" type="Sprite2D" parent="Floor1"]
+use_parent_material = true
+position = Vector2(496, 100.5)
 rotation = 1.5708
-color = Color(0.162066, 0.162066, 0.162066, 1)
+texture = SubResource("GradientTexture2D_f2yig")
 
-[node name="BackWallCover" type="ColorRect" parent="Floor1"]
-offset_left = 32.0
-offset_top = -24.0
-offset_right = 480.0
-offset_bottom = 32.0
-color = Color(0.216155, 0.0230637, 0.0643222, 1)
+[node name="BackWallCover" type="Sprite2D" parent="Floor1"]
+use_parent_material = true
+position = Vector2(256, 4)
+texture = SubResource("GradientTexture2D_tlued")
 
 [node name="Roof" type="Area2D" parent="."]
 z_index = 1
+use_parent_material = true
 collision_layer = 256
 collision_mask = 768
 script = ExtResource("1_edy31")

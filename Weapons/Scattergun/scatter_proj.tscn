@@ -1,6 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://bkhho87p3b2re"]
+[gd_scene load_steps=7 format=3 uid="uid://bkhho87p3b2re"]
 
+[ext_resource type="Shader" uid="uid://c6kodin14qwfb" path="res://Shaders/projectile.gdshader" id="1_d47jw"]
 [ext_resource type="Script" uid="uid://fpgiqa6lh14c" path="res://Weapons/Projectile.cs" id="1_ncsta"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dgsgp"]
+shader = ExtResource("1_d47jw")
+shader_parameter/is_inside = false
 
 [sub_resource type="Gradient" id="Gradient_4msl2"]
 
@@ -11,6 +16,7 @@ gradient = SubResource("Gradient_4msl2")
 size = Vector2(4, 10)
 
 [node name="ScatterProj" type="CharacterBody2D"]
+material = SubResource("ShaderMaterial_dgsgp")
 collision_layer = 2
 collision_mask = 5
 script = ExtResource("1_ncsta")
@@ -18,6 +24,7 @@ InitialSpeed = 1500.0
 Damage = 8.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+use_parent_material = true
 position = Vector2(0, 5)
 rotation = 1.5708
 scale = Vector2(0.015625, 10)

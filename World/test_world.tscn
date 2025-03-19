@@ -1,26 +1,15 @@
-[gd_scene load_steps=18 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=14 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
-[ext_resource type="Shader" uid="uid://dbq15bbjbsfyi" path="res://Shaders/daynight.gdshader" id="2_2xslp"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
-[ext_resource type="Shader" uid="uid://cudyiyn8n3ntx" path="res://Shaders/fog.gdshader" id="2_vxmty"]
+[ext_resource type="Shader" uid="uid://cudyiyn8n3ntx" path="res://Shaders/cloud.gdshader" id="2_vxmty"]
 [ext_resource type="PackedScene" uid="uid://2ctjrem32j1v" path="res://NPC/shambler.tscn" id="6_a6glu"]
 [ext_resource type="PackedScene" uid="uid://h6mtv0wbug0t" path="res://World/Structures/Testing/test_building.tscn" id="6_lhns8"]
 [ext_resource type="Script" uid="uid://bnt0qsggcts86" path="res://World/RadialSpawner.cs" id="6_xi2eq"]
 [ext_resource type="PackedScene" uid="uid://dys3a163srv0l" path="res://Gameplay/crystal_target.tscn" id="7_8h8jj"]
 [ext_resource type="PackedScene" uid="uid://ca1u833dx2dax" path="res://World/Structures/Testing/test_fireplace.tscn" id="7_8h8jw"]
-[ext_resource type="Script" uid="uid://bunp1yq3jjjv7" path="res://World/DayNight/DayNight.cs" id="8_ioycy"]
+[ext_resource type="Script" uid="uid://bunp1yq3jjjv7" path="res://World/DayNight/DayNight.cs" id="11_11lc6"]
 [ext_resource type="Script" uid="uid://7x2lypek5o4l" path="res://Gameplay/CrystalTarget.cs" id="11_dghf1"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_523qg"]
-shader = ExtResource("2_2xslp")
-shader_parameter/tint = Vector4(0, 0, 0, 0)
-
-[sub_resource type="Gradient" id="Gradient_2xslp"]
-colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_523qg"]
-gradient = SubResource("Gradient_2xslp")
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_fn2eg"]
 frequency = 0.0075
@@ -42,23 +31,14 @@ shader_parameter/speed = Vector2(0.02, 0.01)
 script = ExtResource("1_tr0n8")
 RegionBounds = Vector2(6000, 6000)
 
-[node name="DayNight" type="Node2D" parent="."]
-z_index = 2
-material = SubResource("ShaderMaterial_523qg")
-script = ExtResource("8_ioycy")
-
-[node name="Sprite2D" type="Sprite2D" parent="DayNight"]
-use_parent_material = true
-texture = SubResource("GradientTexture2D_523qg")
-region_enabled = true
-region_rect = Rect2(0, 0, 6144, 6144)
-
 [node name="ParallaxBackground" type="Parallax2D" parent="."]
+light_mask = 2
 scroll_scale = Vector2(0.9, 0.9)
 repeat_size = Vector2(6144, 6144)
 repeat_times = 2
 
 [node name="ColorRect" type="ColorRect" parent="ParallaxBackground"]
+light_mask = 2
 z_index = 2
 texture_repeat = 3
 material = SubResource("ShaderMaterial_kx652")
@@ -107,12 +87,16 @@ InnerRadius = 400.0
 OuterRadius = 500.0
 StartAngleDegrees = -90.0
 StopAngleDegrees = 90.0
-InitialCount = 6
 
 [node name="TestFireplace" parent="." instance=ExtResource("7_8h8jw")]
 position = Vector2(312, -51)
 
 [node name="CrystalTarget" parent="." instance=ExtResource("7_8h8jj")]
-position = Vector2(-194, 0)
+position = Vector2(1, 65)
 script = ExtResource("11_dghf1")
 MaxHealth = 100.0
+
+[node name="DayNight" type="Node" parent="."]
+script = ExtResource("11_11lc6")
+
+[node name="CanvasModulate" type="CanvasModulate" parent="DayNight"]

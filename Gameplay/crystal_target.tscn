@@ -28,6 +28,7 @@ position = Vector2(-20, -56)
 shape = SubResource("CapsuleShape2D_vcxs1")
 
 [node name="NearbyBodySensor" type="Area2D" parent="."]
+visible = false
 script = ExtResource("3_vcxs1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NearbyBodySensor"]
