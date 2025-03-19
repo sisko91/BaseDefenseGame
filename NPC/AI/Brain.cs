@@ -248,7 +248,7 @@ public partial class Brain : Resource
             Vector2 interestDirection = Vector2.Right.Rotated(angle).Rotated(Owner.Rotation);
             direction += interestDirection * Interest[i];
 
-            if (DebugConfig.DRAW_STEERING)
+            if (DebugConfig.Instance.DRAW_STEERING)
             {
                 var color = Interest[i] <= 0 ? new Color(1, 0, 0) : new Color(0, 1, 0);
                 var line = (interestDirection * Math.Abs(Interest[i]));
@@ -273,7 +273,7 @@ public partial class Brain : Resource
             direction = highestInterestDirection;
         }
 
-        if (DebugConfig.DRAW_STEERING)
+        if (DebugConfig.Instance.DRAW_STEERING)
         {
             Owner.DrawDebugLine(Owner.GlobalPosition, Owner.GlobalPosition + direction.Normalized() * 150, new Color(1, 1, 0), 0.1, Owner.GetPath());
         }
@@ -341,7 +341,7 @@ public partial class Brain : Resource
 
     private void CheckAndAddDanger(Vector2 dangerGlobalPosition, float dangerMinRange)
     {
-        if (DebugConfig.DRAW_STEERING)
+        if (DebugConfig.Instance.DRAW_STEERING)
         {
             Owner.DrawDebugLine(dangerGlobalPosition, dangerGlobalPosition, new Color(1, 1, 1), 0.1, Owner.GetPath());
         }

@@ -44,7 +44,10 @@ public partial class NonPlayerCharacter : Character
         await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
 
         NavAgent = new NavigationAgent2D();
-        NavAgent.DebugEnabled = DebugConfig.DRAW_NAVIGATION;
+        NavAgent.DebugEnabled = DebugConfig.Instance.DRAW_NAVIGATION;
+        // Update the NavAgent any time the debug config changes.
+        DebugConfig.Instance.DrawNavigationChanged += () => { NavAgent.DebugEnabled = DebugConfig.Instance.DRAW_NAVIGATION; };
+
         NavAgent.PathDesiredDistance = NavigationConfig.PATH_DESIRED_DISTANCE;
         NavAgent.TargetDesiredDistance = NavigationConfig.DEFAULT_TARGET_DESIRED_DISTANCE; // Updated by the AI depending on what the target is.
         NavAgent.Radius = GetCollisionBodyRadius();

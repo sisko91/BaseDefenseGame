@@ -153,7 +153,7 @@ public partial class Character : Moveable
     public float GetCollisionBodyRadius()
     {
         var boundingRect = CollisionShape.Shape.GetRect();
-        if (DebugConfig.DRAW_COLLISION_BODY_RADIUS) {
+        if (DebugConfig.Instance.DRAW_COLLISION_BODY_RADIUS) {
             this.ClearLines(GetPath() + "bb");
             this.DrawDebugRect(GlobalPosition, boundingRect, new Color(0, 0, 1), 1, GetPath() + "bb");
         }
