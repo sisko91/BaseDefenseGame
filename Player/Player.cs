@@ -14,6 +14,15 @@ public partial class Player : Character
     [Export]
     public Godot.Collections.Array<PackedScene> StarterWeaponTemplates;
 
+    [Export]
+    public float DashDuration = 0.25f;
+
+    [Export]
+    public float DashSpeed = 1000f;
+
+    [Export]
+    public float DashCoolDown = 1f;
+
     // Cached weapon ring reference from the player.tscn.
     public WeaponRing WeaponRing { get; private set; }
 
@@ -50,6 +59,12 @@ public partial class Player : Character
     // Whether the player is using a gamepad (when false, keyboard+mouse is assumed).
     public bool bUsingGamepad { get; private set; } = false;
 
+    private bool isDashing = false;
+    private Vector2 dashDirection;
+    private Timer dashTimer;
+    private Timer dashGhostTimer;
+    double lastDashTime;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -71,6 +86,22 @@ public partial class Player : Character
                 WeaponRing.Equip(starterWeapon);
             }
         }
+
+        dashTimer = new Timer();
+        dashTimer.OneShot = true;
+        dashTimer.Timeout += () =>
+        {
+            isDashing = false;
+            lastDashTime = Time.GetTicksUsec() / 1000000.0;
+            Material.Set("shader_parameter/is_dashing", false);
+            dashGhostTimer.Stop();
+        };
+        AddChild(dashTimer);
+
+        dashGhostTimer = new Timer();
+        dashGhostTimer.Timeout += SpawnDashGhost;
+        AddChild(dashGhostTimer);
+        lastDashTime = Time.GetTicksUsec() / 1000000.0 - DashCoolDown;
     }
 
     // Called every tick of the physics thread.
@@ -107,10 +138,14 @@ public partial class Player : Character
 
     private void HandleMovement(double delta)
     {
-        // Below is based loosely on: https://docs.godotengine.org/en/stable/tutorials/physics/using_character_body_2d.html#platformer-movement
-        Vector2 movement = Input.GetVector("player_move_left", "player_move_right", "player_move_up", "player_move_down");
+        Vector2 movement = dashDirection;
+        float speed = DashSpeed;
+        if (!isDashing) {
+            movement = Input.GetVector("player_move_left", "player_move_right", "player_move_up", "player_move_down");
+            speed = MovementSpeed;
+        }
         
-        Velocity = movement * MovementSpeed * (float)delta;
+        Velocity = movement * speed * (float)delta;
 
         var collision = MoveAndCollide(Velocity);
         if (collision != null)
@@ -184,5 +219,39 @@ public partial class Player : Character
         {
             InteractWithNearestObject();
         }
+
+        if (Input.IsActionJustPressed("dash")) {
+            Dash();
+        }
+    }
+
+    private void Dash()
+    {
+        double now = Time.GetTicksUsec() / 1000000.0;
+        if (!isDashing && now - lastDashTime >= DashCoolDown) {
+            dashDirection = Input.GetVector("player_move_left", "player_move_right", "player_move_up", "player_move_down");
+            if (dashDirection.IsZeroApprox()) {
+                dashDirection = Vector2.Right.Rotated(WeaponRing.AimAngle);
+            }
+            isDashing = true;
+            dashTimer.Start(DashDuration);
+
+            SpawnDashGhost();
+            dashGhostTimer.Start(0.03);
+        }
+    }
+
+    private void SpawnDashGhost() {
+        Sprite2D ghostSprite = (Sprite2D)GetNode<Sprite2D>("Sprite2D").Duplicate();
+        ghostSprite.GlobalPosition = GlobalPosition;
+        var mat = new CanvasItemMaterial();
+        mat.BlendMode = CanvasItemMaterial.BlendModeEnum.Mix;
+        ghostSprite.Material = mat;
+
+        var tween = CreateTween();
+        tween.TweenProperty(ghostSprite, "modulate:a", 0.0, 0.5);
+        tween.Finished += ghostSprite.QueueFree;
+
+        this.GetGameWorld().AddChild(ghostSprite);
     }
 }

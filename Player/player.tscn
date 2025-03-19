@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://dy47gg8c687bv"]
+[gd_scene load_steps=12 format=3 uid="uid://dy47gg8c687bv"]
 
 [ext_resource type="Script" uid="uid://dsdu35x76daf1" path="res://Player/Player.cs" id="1_imx3i"]
 [ext_resource type="Shader" uid="uid://cfv027nbsnbss" path="res://Shaders/character.gdshader" id="1_od3ui"]
@@ -15,9 +15,6 @@ shader_parameter/is_hit = false
 shader_parameter/is_inside = false
 shader_parameter/time_scale = 20.0
 shader_parameter/gb_ceil = 0.75
-
-[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_vtle1"]
-polygon = PackedVector2Array(-32, -32, -32, 32, 32, 32, 32, -32)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vtle1"]
 size = Vector2(48, 48)
@@ -38,11 +35,6 @@ metadata/_edit_group_ = true
 light_mask = 2
 use_parent_material = true
 texture = ExtResource("2_s5van")
-
-[node name="LightOccluder2D" type="LightOccluder2D" parent="Sprite2D"]
-show_behind_parent = true
-scale = Vector2(0.25, 0.25)
-occluder = SubResource("OccluderPolygon2D_vtle1")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 process_callback = 0

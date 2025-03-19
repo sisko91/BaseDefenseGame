@@ -24,11 +24,11 @@ void fragment() {
 	if (is_hit) {
 		color = hit(color);
 	}
-	
+
 	if (is_inside) {
 		color = color / day_night_color;
 	}
-	
+
 	COLOR = color;
 }
 
