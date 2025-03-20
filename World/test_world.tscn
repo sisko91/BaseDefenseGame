@@ -56,21 +56,22 @@ region_rect = Rect2(0, 0, 6144, 6144)
 region_filter_clip_enabled = true
 
 [node name="TestBuilding" parent="." instance=ExtResource("6_lhns8")]
-position = Vector2(-253, -386)
+position = Vector2(-566, -305)
 
 [node name="TestBuilding2" parent="." instance=ExtResource("6_lhns8")]
-position = Vector2(371, -386)
+position = Vector2(58, -305)
 
 [node name="Overhang" type="Sprite2D" parent="."]
 light_mask = 2
 z_index = 1
-position = Vector2(255, -325)
+position = Vector2(-58, -244)
 
 [node name="ColorRect" type="ColorRect" parent="Overhang"]
 light_mask = 2
 offset_right = 119.0
 offset_bottom = 26.0
 color = Color(0.623529, 0.333333, 0, 1)
+metadata/_edit_use_anchors_ = true
 
 [node name="Shadow" type="ColorRect" parent="Overhang"]
 z_as_relative = false
@@ -78,9 +79,10 @@ offset_top = 150.0
 offset_right = 119.0
 offset_bottom = 176.0
 color = Color(0.25, 0.133333, 0, 1)
+metadata/_edit_use_anchors_ = true
 
 [node name="ShamblerSpawnZone" type="Node2D" parent="."]
-position = Vector2(320, -425)
+position = Vector2(7, -344)
 script = ExtResource("6_xi2eq")
 SpawnTemplate = ExtResource("6_a6glu")
 InnerRadius = 400.0
@@ -90,10 +92,10 @@ StopAngleDegrees = 90.0
 InitialCount = 6
 
 [node name="TestFireplace" parent="." instance=ExtResource("7_8h8jw")]
-position = Vector2(312, -51)
+position = Vector2(-1, 30)
 
 [node name="CrystalTarget" parent="." instance=ExtResource("7_8h8jj")]
-position = Vector2(1, 65)
+position = Vector2(-312, 146)
 script = ExtResource("11_dghf1")
 MaxHealth = 100.0
 

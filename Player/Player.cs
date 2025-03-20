@@ -1,6 +1,7 @@
 using ExtensionMethods;
 using Godot;
 using System;
+using System.Collections.Generic;
 
 public partial class Player : Character
 {
@@ -77,6 +78,7 @@ public partial class Player : Character
     private Timer dashTimer;
     private Timer dashGhostTimer;
     double lastDashTime;
+    private HashSet<Sprite2D> ghostSprites;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -121,6 +123,8 @@ public partial class Player : Character
             Thrower = ThrowerTemplate.Instantiate<Thrower>();
             Thrower.ThrowableTemplate = GD.Load<PackedScene>("res://Weapons/Throwables/grenade.tscn");
         }
+
+        ghostSprites = new HashSet<Sprite2D>();
     }
 
     // Called every tick of the physics thread.
@@ -259,14 +263,28 @@ public partial class Player : Character
     private void SpawnDashGhost() {
         Sprite2D ghostSprite = (Sprite2D)GetNode<Sprite2D>("Sprite2D").Duplicate();
         ghostSprite.GlobalPosition = GlobalPosition;
+        ghostSprite.ZIndex = ZIndex;
         var mat = new CanvasItemMaterial();
         mat.BlendMode = CanvasItemMaterial.BlendModeEnum.Mix;
         ghostSprite.Material = mat;
 
         var tween = CreateTween();
         tween.TweenProperty(ghostSprite, "modulate:a", 0.0, 0.5);
-        tween.Finished += ghostSprite.QueueFree;
+        tween.Finished += () => {
+            ghostSprites.Remove(ghostSprite);
+            ghostSprite.QueueFree();
+        };
 
+        ghostSprites.Add(ghostSprite);
         this.GetGameWorld().AddChild(ghostSprite);
+    }
+
+    public override void ChangeFloor(int targetFloor) {
+        base.ChangeFloor(targetFloor);
+
+        //Hide dash ghosts when changing floors
+        foreach (var ghostSprite in ghostSprites) {
+            ghostSprite.Hide();
+        }
     }
 }
