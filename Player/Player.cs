@@ -147,6 +147,13 @@ public partial class Player : Character
             // KB+M
             case InputEventKey:
             case InputEventMouse:
+                if (@event is InputEventMouseMotion) {
+                    // High-DPI mice (and maybe others) push zero-velocity events periodically and it interferes with gamepad use.
+                    var motionEvent = @event as InputEventMouseMotion;
+                    if(motionEvent.Velocity.IsZeroApprox()) {
+                        break;
+                    }
+                }
                 bUsingGamepad = false;
                 //Input.MouseMode = Input.MouseModeEnum.Confined;
                 break;
