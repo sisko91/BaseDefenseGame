@@ -120,7 +120,12 @@ public partial class Character : Moveable
 
         NearbyInteractions.Clear();
         int shift = targetFloor - CurrentElevationLevel;
+
+        //Don't shift the world layer when changing floors
+        var worldBoundMask = (uint)Math.Pow(2, CollisionConfig.WORLD_BOUNDS_LAYER - 1);
+        CollisionMask -= worldBoundMask;
         base.ChangeFloor(targetFloor);
+        CollisionMask += worldBoundMask;
 
         if (shift > 0) {
             NearbyBodySensor.CollisionLayer = NearbyBodySensor.CollisionLayer << shift * CollisionConfig.LAYERS_PER_FLOOR;
