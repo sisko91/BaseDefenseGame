@@ -124,7 +124,7 @@ public partial class Character : Moveable
         }
     }
 
-    public virtual void ChangeFloor(int targetFloor) {
+    public override void ChangeFloor(int targetFloor) {
         if (targetFloor == CurrentElevationLevel) {
             return;
         }
@@ -134,6 +134,7 @@ public partial class Character : Moveable
 
         //Don't shift the world layer when changing floors
         var worldBoundMask = (uint)Math.Pow(2, CollisionConfig.WORLD_BOUNDS_LAYER - 1);
+
         CollisionMask -= worldBoundMask;
         base.ChangeFloor(targetFloor);
         CollisionMask += worldBoundMask;
