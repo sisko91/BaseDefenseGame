@@ -11,6 +11,10 @@ public partial class WeaponRing : Node2D
 	// Cached reference to the currently equipped weapon.
 	public Weapon EquippedWeapon { get; private set; }
 
+	// Returns the last-equipped weapon *before* the one currently equipped. Note that this weapon will most likely no longer be
+	// part of the scene unless it was added back as a child elsewhere.
+	public Weapon LastEquippedWeapon { get; private set; }
+
     // The current angle (radians) that the equipped weapon is being aimed in.
     // Aim angle for the weapon ring is wherever the ring's Node2D location is relative to its parent. If for some reason the parent doesn't have a position then we assume the rotation of the ring directs the aim.
     public float AimAngle { 
@@ -35,6 +39,7 @@ public partial class WeaponRing : Node2D
 
 	public void Equip(Weapon weapon)
 	{
+		LastEquippedWeapon = EquippedWeapon;
 		if(EquippedWeapon != null)
 		{
 			RemoveChild(EquippedWeapon);

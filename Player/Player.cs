@@ -56,6 +56,15 @@ public partial class Player : Character
 
     #endregion Weapons
 
+    #region Throwables
+    // A specialized weapon type for throwing projectiles at a target / target location.
+    protected Thrower Thrower { get; set; }
+
+    // TODO: Throwables inventory data structure. We should store a stack count for each template (# held)
+    //       PackedScene is so vague, maybe think about defining a `Throwable` Resource type that captures stuff in a descriptive way.
+
+    #endregion
+
     // Whether the player is using a gamepad (when false, keyboard+mouse is assumed).
     public bool bUsingGamepad { get; private set; } = false;
 
@@ -102,6 +111,11 @@ public partial class Player : Character
         dashGhostTimer.Timeout += SpawnDashGhost;
         AddChild(dashGhostTimer);
         lastDashTime = Time.GetTicksUsec() / 1000000.0 - DashCoolDown;
+
+
+        // Note: This remains unequipped until we're about to use it.
+        Thrower = new Thrower();
+        Thrower.ThrowableTemplate = GD.Load<PackedScene>("res://Weapons/Throwables/grenade.tscn");
     }
 
     // Called every tick of the physics thread.
@@ -191,27 +205,23 @@ public partial class Player : Character
 
         if (Input.IsActionJustPressed("throw_grenade"))
         {
-            //TODO: Make Throwables container
-            var grenadeScene = GD.Load<PackedScene>("res://Weapons/FragGrenade/FragGrenade.tscn");
-            var grenade = grenadeScene.Instantiate<FragGrenade>();
-
-            //Spawn a bit in front of the player aim dir
-            var rot = (GetGlobalMousePosition() - GlobalPosition).Angle();
-            var dir = new Vector2((float)Math.Cos(rot), (float)Math.Sin(rot)).Normalized();
-            var pos = GlobalPosition + dir * new Vector2(100, 100);
-            grenade.Start(pos, rot);
-            var timer = GetTree().CreateTimer(grenade.LifetimeSeconds);
-            timer.Timeout += grenade.Explode;
-
-            this.GetGameWorld().AddChild(grenade);
+            WeaponRing.Equip(Thrower);
+            WeaponRing.EquippedWeapon?.PressFire();
+        }
+        else if(Input.IsActionJustReleased("throw_grenade")) {
+            if(WeaponRing.EquippedWeapon == Thrower) {
+                WeaponRing.EquippedWeapon?.ReleaseFire();
+                WeaponRing.Equip(WeaponRing.LastEquippedWeapon);
+            }
+            else {
+                GD.PushError($"Thrower should be equipped but was: {WeaponRing.EquippedWeapon}");
+            }
         }
 
-        if(Input.IsActionJustPressed("cycle_weapon_forward"))
-        {
+        if (Input.IsActionJustPressed("cycle_weapon_forward")) {
             WeaponRing.Equip(NextWeapon);
         }
-        else if (Input.IsActionJustPressed("cycle_weapon_back"))
-        {
+        else if (Input.IsActionJustPressed("cycle_weapon_back")) {
             WeaponRing.Equip(PreviousWeapon);
         }
 

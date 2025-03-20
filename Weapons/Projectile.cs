@@ -37,10 +37,14 @@ public partial class Projectile : Moveable
             CollisionMask = CollisionMask << c.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
         }
 
-        var timer = this.GetGameWorld().GetTree().CreateTimer(LifetimeSeconds);
-        timer.Timeout += QueueFree;
+        if(LifetimeSeconds > 0) {
+            var timer = this.GetGameWorld().GetTree().CreateTimer(LifetimeSeconds);
+            timer.Timeout += OnLifetimeExpired;
+        }
 
         this.GetGameWorld().AddChild(this);
+
+        OnStart();
     }
 
     public override void _PhysicsProcess(double delta)
@@ -56,9 +60,18 @@ public partial class Projectile : Moveable
         }
     }
 
+    protected virtual void OnStart() {
+        // Override in children.
+    }
+
     // TODO: Maybe we should just have this base type detect certain things, and have explicit OnCollideNPC(), OnCollidePlayer(), etc.?
     protected virtual void OnCollide(KinematicCollision2D collision)
     {
+        QueueFree();
+    }
+
+    // Children can override this to decide what happens when the projectile times out. Default behavior is deletion.
+    protected virtual void OnLifetimeExpired() {
         QueueFree();
     }
 }
