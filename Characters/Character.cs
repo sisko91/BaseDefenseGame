@@ -14,6 +14,10 @@ public partial class Character : Moveable
 
     public float CurrentHealth { get; protected set; }
 
+    public bool Stunned { get; protected set; }
+
+    public Vector2 Knockback {  get; set; }
+
     // A Signal that other elements can (be) subscribe(d) to in order to hear about updates to character health.
     [Signal]
     public delegate void HealthChangedEventHandler(Character character, float newHealth, float oldHealth);
@@ -33,20 +37,28 @@ public partial class Character : Moveable
     public Godot.Collections.Array<InteractionArea> NearbyInteractions;
 
     protected float HitAnimationSeconds = 0.1f;
-    protected Timer HitAnimationTimer;
+    protected Timer HitTimer;
+    protected Timer StunTimer;
 
     public override void _Ready()
     {
         CurrentHealth = MaxHealth;
+        Stunned = false;
 
         CollisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
         NearbyBodySensor = GetNode<BodySensor>("NearbyBodySensor");
         NearbyInteractions = new Godot.Collections.Array<InteractionArea>();
 
-        HitAnimationTimer = new Timer();
-        HitAnimationTimer.OneShot = true;
-        HitAnimationTimer.Timeout += DisableHitShader;
-        AddChild(HitAnimationTimer);
+        HitTimer = new Timer();
+        HitTimer.OneShot = true;
+        HitTimer.Timeout += DisableHitShader;
+
+        StunTimer = new Timer();
+        StunTimer.OneShot = true;
+        StunTimer.Timeout += () => { Stunned = false; };
+
+        AddChild(HitTimer);
+        AddChild(StunTimer);
     }
 
     // Process an incoming impact from the sourceNode. The impact is calculated by the other collider, i.e. impact.Collider == this.
@@ -64,9 +76,8 @@ public partial class Character : Moveable
         }
         
         //Repeated calls reset the timer
-        HitAnimationTimer.Start(HitAnimationSeconds);
         EnableHitShader();
-
+        HitTimer.Start(HitAnimationSeconds);
 
         var oldHealth = CurrentHealth;
         CurrentHealth = Mathf.Max(CurrentHealth - damage, 0);
@@ -75,17 +86,17 @@ public partial class Character : Moveable
 
         if (CurrentHealth > 0)
         {
-            // knockback - neither of the computations of kbDirection below actually give us what we want so we just calculate
-            // the incident angle from positions.
-            //var kbDirection = bullet.Velocity.Normalized();
-            //var kbDirection = impact.GetAngle() - Mathf.Pi;
             var kbDirection = (GlobalPosition - source.GlobalPosition).Normalized();
-            var kbVelocity = kbDirection * damage * 5;
+            // Just use the damage as the momentum transferred, essentially.
+            var kbVelocity = kbDirection * damage;
+
             // Render the impact angle if debugging is enabled.
             //this.DrawDebugLine(GlobalPosition, GlobalPosition + kbVelocity, new Color(1, 0, 0), 2.0f);
-
-            // Just use the damage as the momentum transferred, essentially.
-            Velocity += kbVelocity;
+            if (source is Projectile p && p.ShouldKnockback) {
+                Stunned = true;
+                StunTimer.Start(1);
+                Knockback += kbVelocity;
+            }
         }
         else
         {

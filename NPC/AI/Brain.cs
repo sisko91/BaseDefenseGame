@@ -32,6 +32,8 @@ public partial class Brain : Resource
     // The currently-selected AI action this brain is executing.
     private AI.Action currentAction;
 
+    private bool justStunned = false;
+
     public Brain() : base()
     {
         // The Brain should always be local to the scene because otherwise every instance of an NPC will have the same brain (it doesn't work well).
@@ -190,10 +192,18 @@ public partial class Brain : Resource
         SetInterest(lastNavPathDirection);
         SetDanger();
 
-        // If moving faster than allowed (e.g. from explosion), just pause AI and slow down
-        if (Owner.Velocity.Length() > Owner.MovementSpeed + 0.1)
+        if (!Owner.Stunned) {
+            justStunned = false;
+        }
+        if (!justStunned && Owner.Stunned) {
+            justStunned = true;
+            Owner.Velocity = new Vector2(0f, 0f);
+            Owner.Velocity += Owner.Knockback;
+        }
+        else if (Owner.Velocity.Length() > Owner.MovementSpeed + 0.1 || Owner.Stunned)
         {
-            Owner.Velocity = (Owner.Velocity + -Owner.Velocity.Normalized() * Owner.MoveAccel);
+            Owner.Velocity += Owner.Knockback;
+            Owner.Velocity = (Owner.Velocity + -Owner.Velocity.Normalized() * 5f);
         }
         else if(currentAction != null && currentAction.IsActive && currentAction.PausesMotionWhileActive)
         {
@@ -205,6 +215,8 @@ public partial class Brain : Resource
             var direction = ChooseDirection();
             Owner.Velocity = (Owner.Velocity + direction * Owner.MoveAccel).LimitLength(Owner.MovementSpeed);
         }
+
+        Owner.Knockback = Owner.Knockback.Lerp(Vector2.Zero, 0.2f);
 
         // Orient to face the direction the NPC is moving by default.
         var lookAngle = Owner.Velocity.Angle();

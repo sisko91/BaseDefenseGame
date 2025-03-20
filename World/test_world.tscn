@@ -87,6 +87,7 @@ InnerRadius = 400.0
 OuterRadius = 500.0
 StartAngleDegrees = -90.0
 StopAngleDegrees = 90.0
+InitialCount = 6
 
 [node name="TestFireplace" parent="." instance=ExtResource("7_8h8jw")]
 position = Vector2(312, -51)
