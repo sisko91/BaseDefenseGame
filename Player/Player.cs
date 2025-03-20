@@ -58,7 +58,11 @@ public partial class Player : Character
 
     #region Throwables
     // A specialized weapon type for throwing projectiles at a target / target location.
-    protected Thrower Thrower { get; set; }
+    protected Thrower Thrower { get; private set; }
+
+    // Scene description for the Thrower that the player should use.
+    [Export]
+    protected PackedScene ThrowerTemplate { get; private set; }
 
     // TODO: Throwables inventory data structure. We should store a stack count for each template (# held)
     //       PackedScene is so vague, maybe think about defining a `Throwable` Resource type that captures stuff in a descriptive way.
@@ -112,10 +116,11 @@ public partial class Player : Character
         AddChild(dashGhostTimer);
         lastDashTime = Time.GetTicksUsec() / 1000000.0 - DashCoolDown;
 
-
         // Note: This remains unequipped until we're about to use it.
-        Thrower = new Thrower();
-        Thrower.ThrowableTemplate = GD.Load<PackedScene>("res://Weapons/Throwables/grenade.tscn");
+        if (ThrowerTemplate != null) {
+            Thrower = ThrowerTemplate.Instantiate<Thrower>();
+            Thrower.ThrowableTemplate = GD.Load<PackedScene>("res://Weapons/Throwables/grenade.tscn");
+        }
     }
 
     // Called every tick of the physics thread.

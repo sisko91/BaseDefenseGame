@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://dy47gg8c687bv"]
+[gd_scene load_steps=13 format=3 uid="uid://dy47gg8c687bv"]
 
 [ext_resource type="Script" uid="uid://dsdu35x76daf1" path="res://Player/Player.cs" id="1_imx3i"]
 [ext_resource type="Shader" uid="uid://cfv027nbsnbss" path="res://Shaders/character.gdshader" id="1_od3ui"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://doaffvj52e0h1" path="res://art/debug_texture_gradient.tres" id="2_s5van"]
 [ext_resource type="Script" uid="uid://cmbjm5w5tbppd" path="res://Player/PlayerCamera.cs" id="3_vrqgk"]
 [ext_resource type="Script" uid="uid://ct1byufijcefb" path="res://Player/WeaponRing.cs" id="4_q66cr"]
+[ext_resource type="PackedScene" uid="uid://csp5yukh5lbt0" path="res://Weapons/Throwables/player_thrower_weapon.tscn" id="5_00tjw"]
 [ext_resource type="Script" uid="uid://2ajhnisvj48l" path="res://NPC/BodySensor.cs" id="7_o4ihg"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_od3ui"]
@@ -28,6 +29,7 @@ collision_mask = 2147483655
 motion_mode = 1
 script = ExtResource("1_imx3i")
 StarterWeaponTemplates = Array[PackedScene]([ExtResource("2_psqbx"), ExtResource("2_rscqp")])
+ThrowerTemplate = ExtResource("5_00tjw")
 CanDamageSelf = true
 metadata/_edit_group_ = true
 
