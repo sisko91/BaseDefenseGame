@@ -252,7 +252,7 @@ public partial class Player : Character
             dashTimer.Start(DashDuration);
 
             SpawnDashGhost();
-            dashGhostTimer.Start(0.03);
+            dashGhostTimer.Start(2f/60f); //spawn every 2 frames
         }
     }
 
