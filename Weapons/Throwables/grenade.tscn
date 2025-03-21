@@ -18,6 +18,7 @@ collision_mask = 5
 motion_mode = 1
 script = ExtResource("1_bly1o")
 InitialSpeed = 400.0
+ShouldKnockback = true
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 use_parent_material = true

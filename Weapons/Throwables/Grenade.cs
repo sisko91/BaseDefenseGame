@@ -18,6 +18,10 @@ public partial class Grenade : Projectile
     [Export]
     protected float FreeRotationRateDegrees = 360.0f;
 
+    // The amount of damage the grenade does for just hitting an enemy directly, before even exploding.
+    [Export]
+    protected float BluntImpactDamage = 20.0f;
+
     // Where the last bounce occurred.
     protected Vector2 lastBounceLocation;
 
@@ -31,6 +35,25 @@ public partial class Grenade : Projectile
             CurrentBounce += 1;
             Bounce(collision);
         }
+        else {
+            if(BluntImpactDamage > 0 && collision.GetCollider() is Character character) {
+                character.ReceiveHit(collision, BluntImpactDamage, this);
+            }
+            // Stop as soon as we hit something soft.
+            Settle();
+        }
+    }
+
+    // Common logic run when the grenade comes to rest, after being thrown but before expoding.
+    protected void Settle() {
+        // This will cause the grenade to rapidly decrease velocity.
+        CurrentBounce = MaxBounces;
+
+        // Disable collision
+        CollisionLayer = 0;
+        CollisionMask = 0;
+
+        // TODO: Set z-order to be ground level so that characters can walk over the bomb and will render above it.
     }
 
     protected void Bounce(KinematicCollision2D collision) {
@@ -49,9 +72,7 @@ public partial class Grenade : Projectile
     }
 
     protected override void OnLifetimeExpired() {
-        // TODO: Boom!
-
-        base.OnLifetimeExpired();
+        QueueFree();
     }
 
     public override void _PhysicsProcess(double delta) {
@@ -71,6 +92,11 @@ public partial class Grenade : Projectile
                 // TODO: Add a small angular variance here to simulate rough terrain? For now just bounce forward.
                 CurrentBounce += 1;
                 Bounce(null);
+
+                // If that was our final bounce then come to a rest.
+                if(CurrentBounce == MaxBounces) {
+                    Settle();
+                }
             }
         }
 

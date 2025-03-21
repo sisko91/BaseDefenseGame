@@ -55,10 +55,6 @@ public partial class Projectile : Moveable
         var collision = MoveAndCollide(Velocity * (float)delta);
         if (collision != null)
         {
-            if (collision.GetCollider() is Character character)
-            {
-                character.ReceiveHit(collision, Damage, this);
-            }
             OnCollide(collision);
         }
     }
@@ -70,6 +66,9 @@ public partial class Projectile : Moveable
     // TODO: Maybe we should just have this base type detect certain things, and have explicit OnCollideNPC(), OnCollidePlayer(), etc.?
     protected virtual void OnCollide(KinematicCollision2D collision)
     {
+        if (collision.GetCollider() is Character character) {
+            character.ReceiveHit(collision, Damage, this);
+        }
         QueueFree();
     }
 
