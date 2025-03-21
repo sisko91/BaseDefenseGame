@@ -92,6 +92,17 @@ public partial class NonPlayerCharacter : Character
 
     public void OnCollide(KinematicCollision2D collision)
     {
+        //Make knocked back npcs bounce off other npcs
+        if (!Knockback.IsZeroApprox()) {
+            Velocity = Velocity.Bounce(collision.GetNormal());
+            Knockback = Knockback.Length() * Velocity.Normalized();
+        }
+
+        //Transfer momentum when hitting other entities
+        if (collision.GetCollider() is Character character) {
+            character.Velocity -= Velocity / 2.0f;
+            Velocity /= 2;
+        }
     }
 
     // This is currently just to test with.
