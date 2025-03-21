@@ -1,5 +1,6 @@
 using ExtensionMethods;
 using Godot;
+using static Godot.HttpClient;
 
 public partial class NonPlayerCharacter : Character
 {
@@ -92,16 +93,21 @@ public partial class NonPlayerCharacter : Character
 
     public void OnCollide(KinematicCollision2D collision)
     {
-        //Make knocked back npcs bounce off other npcs
-        if (!Knockback.IsZeroApprox()) {
-            Velocity = Velocity.Bounce(collision.GetNormal());
-            Knockback = Knockback.Length() * Velocity.Normalized();
-        }
-
         //Transfer momentum when hitting other entities
         if (collision.GetCollider() is Character character) {
-            character.Velocity -= Velocity / 2.0f;
-            Velocity /= 2;
+            //var desiredVelocity = (Velocity - character.Velocity) / 2.0f;
+            //GD.Print($"Desired: {desiredVelocity}. Current: {Velocity}. Collided object velocity: {character.Velocity}");
+
+            Callable.From(() => {
+                //GD.Print("Modifying velocity");
+                //Velocity = desiredVelocity;
+
+                //Make knocked back npcs bounce off other npcs
+                if (!Knockback.IsZeroApprox()) {
+                    Velocity = Velocity.Bounce(collision.GetNormal());
+                    Knockback = Knockback.Length() * Velocity.Normalized();
+                }
+            }).CallDeferred();
         }
     }
 
