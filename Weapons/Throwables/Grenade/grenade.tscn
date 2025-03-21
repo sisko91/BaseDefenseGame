@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://dpc7ivx4ytc2m"]
 
-[ext_resource type="Script" uid="uid://bx3faytau4b2n" path="res://Weapons/Throwables/Grenade.cs" id="1_bly1o"]
+[ext_resource type="Script" uid="uid://bx3faytau4b2n" path="res://Weapons/Throwables/Grenade/Grenade.cs" id="1_bly1o"]
 [ext_resource type="Shader" uid="uid://c6kodin14qwfb" path="res://Shaders/projectile.gdshader" id="1_gig5r"]
 [ext_resource type="Texture2D" uid="uid://cmxxxmnboybqa" path="res://art/Grenade/runeBlack_slab_036.png" id="2_1kc8b"]
 

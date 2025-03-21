@@ -1,5 +1,4 @@
 using Godot;
-using System;
 
 public partial class Grenade : Projectile
 {
@@ -72,7 +71,12 @@ public partial class Grenade : Projectile
     }
 
     protected override void OnLifetimeExpired() {
+        SpawnExplosion();
         QueueFree();
+    }
+
+    private void SpawnExplosion() {
+
     }
 
     public override void _PhysicsProcess(double delta) {

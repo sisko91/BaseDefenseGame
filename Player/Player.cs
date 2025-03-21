@@ -121,7 +121,7 @@ public partial class Player : Character
         // Note: This remains unequipped until we're about to use it.
         if (ThrowerTemplate != null) {
             Thrower = ThrowerTemplate.Instantiate<Thrower>();
-            Thrower.ThrowableTemplate = GD.Load<PackedScene>("res://Weapons/Throwables/grenade.tscn");
+            Thrower.ThrowableTemplate = GD.Load<PackedScene>("res://Weapons/Throwables/Grenade/grenade.tscn");
         }
 
         ghostSprites = new HashSet<Sprite2D>();
