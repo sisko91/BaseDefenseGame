@@ -2,6 +2,20 @@ using ExtensionMethods;
 using Godot;
 using System;
 
+// HitResult is a simple data structure used to capture and communicate information about an impact. This is a lightweight and simpler alternative to KinematicCollision2D.
+public struct HitResult
+{
+    public Vector2 ImpactNormal;
+    public Vector2 ImpactLocation;
+
+    public HitResult(KinematicCollision2D collision = null) {
+        if(collision != null) {
+            ImpactNormal = collision.GetNormal();
+            ImpactLocation = collision.GetPosition();
+        }
+    }
+}
+
 public partial class Character : Moveable
 {
     #region Stats
@@ -62,17 +76,12 @@ public partial class Character : Moveable
     }
 
     // Process an incoming impact from the sourceNode. The impact is calculated by the other collider, i.e. impact.Collider == this.
-    public void ReceiveHit(KinematicCollision2D impact, float damage, Node2D source)
+    public void ReceiveHit(HitResult hitResult, float damage, IInstigated source)
     {
-        // TODO: This is shitty but I haven't worked out the right way to bake this into a base "DamageSource" type that doesn't shoehorn every damage source into
-        // being the same thing (e.g. CharacterBody2D).
-        if(source is Projectile projectile)
+        if (!CanDamageSelf && source?.Instigator == this)
         {
-            if (!CanDamageSelf && (source.FindCharacterAncestor() == this || projectile.Instigator == this))
-            {
-                // Disallow damage from anything 
-                return;
-            }
+            // Disallow damage from anything instigated by ourself.
+            return;
         }
         
         //Repeated calls reset the timer
@@ -81,12 +90,13 @@ public partial class Character : Moveable
 
         var oldHealth = CurrentHealth;
         CurrentHealth = Mathf.Max(CurrentHealth - damage, 0);
+        //GD.Print($"{Name} taking {damage} damage from {source?.Instigator?.Name}");
         // Broadcast the damage received to anyone listening.
         EmitSignal(SignalName.HealthChanged, this, CurrentHealth, oldHealth);
 
         if (CurrentHealth > 0)
         {
-            var kbDirection = (GlobalPosition - source.GlobalPosition).Normalized();
+            var kbDirection = hitResult.ImpactNormal.Normalized();
             // Just use the damage as the momentum transferred, essentially.
             var kbVelocity = kbDirection * damage;
 

@@ -1,0 +1,136 @@
+using Godot;
+
+public partial class Explosion : Area2D, IInstigated
+{
+    // Instigator property satisfies IInstigated interface.
+    public Character Instigator { get; set; }
+
+    // The outer-most distance that the blast will cover, in world units.
+    [Export]
+    public float MaximumRadius { get; set; } = 100.0f;
+
+    [Export]
+    public float InitialRadius { get; set; } = 10.0f;
+
+    // The duration in seconds that the explosion takes to grow from its initial radius to its maximum radius.
+    [Export]
+    public float ExpansionDuration { get; set; } = 0.5f;
+
+    // The maximum damage to characters that the explosion will do close to its epicenter. As distance from the epicenter is increased, the blast does less damage.
+    [Export]
+    public float BaseDamage { get; set; } = 50.0f;
+
+    // The minimum damage to characters that the explosion will do at its outer edge.
+    [Export]
+    public float MinimumDamage { get; set; } = 10.0f;
+
+    // The power to raise the damage gradient to when calculating exponential falloff damage for distant targets. Generally keep this > 0.5 and < 3.
+    [Export]
+    public float DamageGradientExponent { get; set; } = 2.0f;
+
+    // All character bodies detected in the vicinity of the explosion.
+    public Godot.Collections.Array<Character> NearbyCharacters { get; private set; }
+    // All character bodies already damaged by this explosion.
+    public Godot.Collections.Array<Character> DamagedCharacters { get; private set; }
+
+    public double SpawnEpochSeconds { get; private set; }
+
+    // The collision shape for this explosion. Created dynamically when the explosion is spawned into the scene tree.
+    public CollisionShape2D Collider { get; private set; }
+
+    public override void _Ready() {
+        base._Ready();
+
+        // Set up to detect bodies in radius.
+        NearbyCharacters = new Godot.Collections.Array<Character>();
+        DamagedCharacters = new Godot.Collections.Array<Character>();
+        BodyEntered += Explosion_BodyEntered;
+        BodyExited += Explosion_BodyExited;
+
+        // Spawn the collider.
+        var sensorShape = new CircleShape2D();
+        sensorShape.Radius = MaximumRadius;
+        Collider = new CollisionShape2D();
+        Collider.Shape = sensorShape;
+        AddChild(Collider);
+
+        // Start explosion.
+        SpawnEpochSeconds = Time.GetTicksMsec() / 1000.0;
+    }
+
+    private void Explosion_BodyEntered(Node2D body) {
+        if (body is Character character) {
+            NearbyCharacters.Add(character);
+        }
+    }
+
+    private void Explosion_BodyExited(Node2D body) {
+        if (body is Character character) {
+            NearbyCharacters.Remove(character);
+        }
+    }
+
+    public override void _Draw() {
+        double timeSeconds = Time.GetTicksMsec() / 1000.0;
+        var spawnDeltaRatio = (timeSeconds - SpawnEpochSeconds) / ExpansionDuration;
+        var drawRadius = Mathf.Lerp(InitialRadius, MaximumRadius, spawnDeltaRatio);
+        //GD.Print($"Elapsed: {timeSeconds - SpawnEpochSeconds}, Duration: {ExpansionDuration}, Ratio: {spawnDeltaRatio}, drawRadius: {drawRadius}");
+        DrawCircle(Vector2.Zero, (float)drawRadius, new Color(1, 0, 0, 0.5f));
+    }
+
+    public override void _PhysicsProcess(double delta) {
+        base._PhysicsProcess(delta);
+
+        // Every physics tick, we re-calculate bodies within the radius. We do this not by detecting physical collisions but by distance-checking bodies and their
+        // collision volumes, since it's a lot faster (and simpler than dynamically-growing the collision body).
+
+        double timeSeconds = Time.GetTicksMsec() / 1000.0;
+        var spawnDeltaRatio = (timeSeconds - SpawnEpochSeconds) / ExpansionDuration;
+        var testRadius = Mathf.Lerp(InitialRadius, MaximumRadius, spawnDeltaRatio);
+
+        // Makes the debug circle show up.
+        QueueRedraw();
+
+        foreach (var character in NearbyCharacters) {
+            // TODO: This goes to the centerpoint of the character, but maybe we should subtract the collision radius?
+            var distance = character.GlobalPosition.DistanceTo(GlobalPosition);
+            if (distance < testRadius) {
+                if(DamagedCharacters.Contains(character)) {
+                    // Don't damage the same character twice.
+                    continue;
+                }
+                HitResult hr = new HitResult();
+                hr.ImpactLocation = character.GlobalPosition;
+                hr.ImpactNormal = (character.GlobalPosition - GlobalPosition).Normalized();
+                character.ReceiveHit(hr, CalculateBlastDamage(distance), this);
+                DamagedCharacters.Add(character);
+            }
+        }
+
+        if(spawnDeltaRatio >= 1) {
+            // The explosion is over.
+            QueueFree();
+        }
+    }
+
+    protected float CalculateBlastDamage(float distance) {
+        // Never divide by 0.
+        distance = Mathf.Max(distance, InitialRadius + Mathf.Epsilon);
+
+        // Note: I tried a bunch of equations for this, and all have different tradeoffs.
+
+        // Inverse-Square Law: Too aggressive with the falloff. This works well for point effects like light propagation or gravity.
+
+        // Quadratic Law: Better than Inverse-Square but still somewhat aggressive.
+
+        // Linear: Very unnatural. Nothing scales down linearly.
+
+        // Exponential Falloff: Nice and smooth, and we can control the falloff factor to get different gradients of damage (while still controlling min/max damage dealt).
+
+        float alpha = Mathf.Pow(distance / MaximumRadius, DamageGradientExponent);
+        float finalDamage = Mathf.Lerp(BaseDamage, MinimumDamage, alpha);
+
+        // Avoid negative damage (healing explosions).
+        return Mathf.Max(finalDamage, 0);
+    }
+}

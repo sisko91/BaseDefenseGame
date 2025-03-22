@@ -5,8 +5,19 @@ namespace AI
 {
     namespace Actions
     {
-        public partial class AttackEnemyTargetAction : AI.Action
+        public partial class AttackEnemyTargetAction : AI.Action, IInstigated
         {
+            // Instigator property satisfies IInstigated interface.
+            public Character Instigator {
+                get {
+                    return Owner;
+                }
+                set {
+                    // AI actions are always instigated by their owner, and the instigator cannot be overridden.
+                    throw new NotSupportedException();
+                }
+            }
+
             // TODO: Placeholder
             public static float MeleeAttackDamage = 30.0f;
 
@@ -77,8 +88,11 @@ namespace AI
                 }
 
                 // TODO: We should be implementing a melee weapon that they use that does this correctly (for some definition of correct).
-                KinematicCollision2D impact = null;
-                Brain.EnemyTarget.ReceiveHit(impact, MeleeAttackDamage, Owner);
+                var hr = new HitResult();
+                // Impact location is the midpoint between the two characters meleeing. The normal points from attacker -> target.
+                hr.ImpactLocation = (Owner.GlobalPosition + Brain.EnemyTarget.GlobalPosition) / 2;
+                hr.ImpactNormal = (Brain.EnemyTarget.GlobalPosition - Owner.GlobalPosition);
+                Brain.EnemyTarget.ReceiveHit(hr, MeleeAttackDamage, this);
                 GD.Print("Hiyah!");
                 lastAttackTime = GetTimeSeconds();
             }

@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://dpc7ivx4ytc2m"]
+[gd_scene load_steps=7 format=3 uid="uid://dpc7ivx4ytc2m"]
 
 [ext_resource type="Script" uid="uid://bx3faytau4b2n" path="res://Weapons/Throwables/Grenade/Grenade.cs" id="1_bly1o"]
 [ext_resource type="Shader" uid="uid://c6kodin14qwfb" path="res://Shaders/projectile.gdshader" id="1_gig5r"]
 [ext_resource type="Texture2D" uid="uid://cmxxxmnboybqa" path="res://art/Grenade/runeBlack_slab_036.png" id="2_1kc8b"]
+[ext_resource type="PackedScene" uid="uid://cx4fxn4mm7vc4" path="res://Weapons/Throwables/Grenade/grenade_explosion.tscn" id="3_bkle0"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_y2psw"]
 shader = ExtResource("1_gig5r")
@@ -17,7 +18,9 @@ collision_layer = 2
 collision_mask = 5
 motion_mode = 1
 script = ExtResource("1_bly1o")
+ExplosionTemplate = ExtResource("3_bkle0")
 InitialSpeed = 400.0
+Damage = 10.0
 ShouldKnockback = true
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

@@ -2,8 +2,11 @@ using ExtensionMethods;
 using Godot;
 using System;
 
-public partial class Projectile : Moveable
+public partial class Projectile : Moveable, IInstigated
 {
+    // Instigator property satisfies IInstigated interface.
+    public Character Instigator { get; set; }
+
     [Export]
     public float InitialSpeed = 750.0f;
 
@@ -16,10 +19,6 @@ public partial class Projectile : Moveable
     [Export]
     public bool ShouldKnockback = false;
 
-    // The instigator is used for attribution. If a weapon fires a projectile, the Player holding that weapon would be the logical instigator.
-    // (This is an old concept stolen from Unreal Engine)
-    public Node Instigator = null;
-
     public string AllProjectilesGroup = "Projectiles";
 
     public override void _Ready() {
@@ -27,7 +26,7 @@ public partial class Projectile : Moveable
     }
 
     // Adds the projectile to the gameworld and initializes its position, velocity, etc.
-    public void Start(Vector2 worldPosition, float worldDirection, Node instigator)
+    public void Start(Vector2 worldPosition, float worldDirection, Character instigator)
     {
         GlobalRotation = worldDirection;
         GlobalPosition = worldPosition;
@@ -67,7 +66,7 @@ public partial class Projectile : Moveable
     protected virtual void OnCollide(KinematicCollision2D collision)
     {
         if (collision.GetCollider() is Character character) {
-            character.ReceiveHit(collision, Damage, this);
+            character.ReceiveHit(new HitResult(collision), Damage, this);
         }
         QueueFree();
     }

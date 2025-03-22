@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://cx4fxn4mm7vc4"]
+
+[ext_resource type="Script" uid="uid://c4omck4eu2wr3" path="res://Gameplay/Effects/Explosion.cs" id="1_3h2h4"]
+
+[node name="GrenadeExplosion" type="Area2D"]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1_3h2h4")
+MaximumRadius = 250.0
+ExpansionDuration = 0.05
+BaseDamage = 110.0

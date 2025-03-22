@@ -1,7 +1,9 @@
+using ExtensionMethods;
 using Godot;
 
-public partial class Grenade : Projectile
+public partial class Grenade : Projectile, IInstigated
 {
+    [ExportCategory("> 'Physics'")]
     // Max number of times the grenade can bounce before it comes to a rest.
     [Export]
     protected int MaxBounces = 2;
@@ -17,12 +19,13 @@ public partial class Grenade : Projectile
     [Export]
     protected float FreeRotationRateDegrees = 360.0f;
 
-    // The amount of damage the grenade does for just hitting an enemy directly, before even exploding.
-    [Export]
-    protected float BluntImpactDamage = 20.0f;
-
     // Where the last bounce occurred.
     protected Vector2 lastBounceLocation;
+
+    [ExportCategory("> Explosion")]
+    // The explosion effect to spawn when the grenade timer expires.
+    [Export]
+    public PackedScene ExplosionTemplate { get; set; } = null;
 
     protected override void OnStart() {
         lastBounceLocation = GlobalPosition;
@@ -35,8 +38,8 @@ public partial class Grenade : Projectile
             Bounce(collision);
         }
         else {
-            if(BluntImpactDamage > 0 && collision.GetCollider() is Character character) {
-                character.ReceiveHit(collision, BluntImpactDamage, this);
+            if(Damage > 0 && collision.GetCollider() is Character character) {
+                character.ReceiveHit(new HitResult(collision), Damage, this);
             }
             // Stop as soon as we hit something soft.
             Settle();
@@ -76,7 +79,13 @@ public partial class Grenade : Projectile
     }
 
     private void SpawnExplosion() {
-
+        var explosion = ExplosionTemplate?.Instantiate<Explosion>();
+        if(explosion != null) {
+            // Communicate the original instigator, so that characters receiving damage know who did it.
+            explosion.Instigator = Instigator;
+            explosion.GlobalPosition = GlobalPosition;
+            this.GetGameWorld().AddChild(explosion);
+        }
     }
 
     public override void _PhysicsProcess(double delta) {
