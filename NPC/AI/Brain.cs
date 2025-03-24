@@ -216,7 +216,7 @@ public partial class Brain : Resource
             Owner.Velocity = (Owner.Velocity + direction * Owner.MoveAccel).LimitLength(Owner.MovementSpeed);
         }
 
-        Owner.Knockback = Owner.Knockback.Lerp(Vector2.Zero, 0.2f);
+        Owner.Knockback = Owner.Knockback.Lerp(Vector2.Zero, 0.4f);
 
         // Orient to face the direction the NPC is moving by default.
         var lookAngle = Owner.Velocity.Angle();

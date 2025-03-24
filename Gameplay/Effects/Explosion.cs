@@ -24,9 +24,9 @@ public partial class Explosion : Area2D, IInstigated
     [Export]
     public float MinimumDamage { get; set; } = 10.0f;
 
-    // The power to raise the damage gradient to when calculating exponential falloff damage for distant targets. Generally keep this > 0.5 and < 3.
+    // The power to raise the gradient to when calculating exponential falloff for the blast force applied to distant targets. Generally keep this > 0.5 and < 3.
     [Export]
-    public float DamageGradientExponent { get; set; } = 2.0f;
+    public float ForceGradientExponent { get; set; } = 2.0f;
 
     // How long in seconds before this explosion is removed from the scene and all effects are halted.
     [Export]
@@ -122,15 +122,16 @@ public partial class Explosion : Area2D, IInstigated
                     HitResult hr = new HitResult();
                     hr.ImpactLocation = character.GlobalPosition;
                     hr.ImpactNormal = (character.GlobalPosition - GlobalPosition).Normalized();
-                    character.ReceiveHit(hr, CalculateBlastDamage(distance), this);
+                    // TODO: Add a knockback force for the explosion if we decide the damage is too much to use for it.
+                    hr.KnockbackForce = CalculateBlastStrength(distance, BaseDamage, MinimumDamage);
+                    character.ReceiveHit(hr, CalculateBlastStrength(distance, BaseDamage, MinimumDamage), this);
                     DamagedCharacters.Add(character);
                 }
             }
         }
-
     }
 
-    protected float CalculateBlastDamage(float distance) {
+    protected float CalculateBlastStrength(float distance, float basePower, float minimumPower) {
         // Never divide by 0.
         distance = Mathf.Max(distance, InitialRadius + Mathf.Epsilon);
 
@@ -144,10 +145,10 @@ public partial class Explosion : Area2D, IInstigated
 
         // Exponential Falloff: Nice and smooth, and we can control the falloff factor to get different gradients of damage (while still controlling min/max damage dealt).
 
-        float alpha = Mathf.Pow(distance / MaximumRadius, DamageGradientExponent);
-        float finalDamage = Mathf.Lerp(BaseDamage, MinimumDamage, alpha);
+        float alpha = Mathf.Pow(distance / MaximumRadius, ForceGradientExponent);
+        float finalDamage = Mathf.Lerp(basePower, minimumPower, alpha);
 
-        // Avoid negative damage (healing explosions).
+        // Avoid negative force.
         return Mathf.Max(finalDamage, 0);
     }
 }

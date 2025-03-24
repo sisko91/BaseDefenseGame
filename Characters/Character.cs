@@ -2,17 +2,28 @@ using ExtensionMethods;
 using Godot;
 using System;
 
-// HitResult is a simple data structure used to capture and communicate information about an impact. This is a lightweight and simpler alternative to KinematicCollision2D.
+// HitResult is a simple data structure used to capture and communicate information about an impact.
+// This is a lightweight and simpler alternative to KinematicCollision2D, and carries additional info not captured there.
 public struct HitResult
 {
+    // The incidence angle of the hit. If a laser beam A strikes a flat target B, the normal is the angle that the laser beam approached
+    // B at (in world-space). Typically calculated by the colliding objects as part of the hit calculation.
     public Vector2 ImpactNormal;
+
+    // The location of impact for the hit. Typically calculated by the colliding objects as part of the hit calculation.
+    // This is always in world-space coordinates.
     public Vector2 ImpactLocation;
 
-    public HitResult(KinematicCollision2D collision = null) {
+    // The force of knockback to apply to the hit object. The units for this value is not defined. See Character.ReceiveHit for
+    // interpretation of this parameter.
+    public float KnockbackForce;
+
+    public HitResult(KinematicCollision2D collision = null, float kbForce = 0) {
         if(collision != null) {
             ImpactNormal = collision.GetNormal();
             ImpactLocation = collision.GetPosition();
         }
+        KnockbackForce = kbForce;
     }
 }
 
@@ -96,13 +107,13 @@ public partial class Character : Moveable
 
         if (CurrentHealth > 0)
         {
-            var kbDirection = hitResult.ImpactNormal.Normalized();
-            // Just use the damage as the momentum transferred, essentially.
-            var kbVelocity = kbDirection * damage;
+            if(hitResult.KnockbackForce > 0) {
+                var kbDirection = hitResult.ImpactNormal.Normalized();
+                var kbVelocity = kbDirection * hitResult.KnockbackForce;
 
-            // Render the impact angle if debugging is enabled.
-            //this.DrawDebugLine(GlobalPosition, GlobalPosition + kbVelocity, new Color(1, 0, 0), 2.0f);
-            if (source is Projectile p && p.ShouldKnockback) {
+                // Render the impact angle if debugging is enabled.
+                //this.DrawDebugLine(GlobalPosition, GlobalPosition + kbDirection * 100, new Color(1, 0, 0), 2.0f);
+
                 Stunned = true;
                 StunTimer.Start(1);
                 Knockback += kbVelocity;

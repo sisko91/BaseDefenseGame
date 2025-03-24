@@ -13,11 +13,13 @@ public partial class Projectile : Moveable, IInstigated
     [Export]
     public float LifetimeSeconds = 3.0f;
 
+    // How much damage the projectile will do to targets it directly hits.
     [Export]
     public float Damage = 20.0f;
 
+    // The base force of knockback applied to the struck object by this projectile.
     [Export]
-    public bool ShouldKnockback = false;
+    public float KnockbackForce = 0;
 
     public string AllProjectilesGroup = "Projectiles";
 
@@ -66,7 +68,11 @@ public partial class Projectile : Moveable, IInstigated
     protected virtual void OnCollide(KinematicCollision2D collision)
     {
         if (collision.GetCollider() is Character character) {
-            character.ReceiveHit(new HitResult(collision), Damage, this);
+            var hr = new HitResult(collision, KnockbackForce);
+            // KinematicCollision2D's normal is going to be the surface normal of the thing this projectile hit, and will point back toward the projectile.
+            // In order for this to be useful as a HitResult, the normal needs to be reversed to point in the direction of impact.
+            hr.ImpactNormal *= -1;
+            character.ReceiveHit(hr, Damage, this);
         }
         QueueFree();
     }

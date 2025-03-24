@@ -39,7 +39,11 @@ public partial class Grenade : Projectile, IInstigated
         }
         else {
             if(Damage > 0 && collision.GetCollider() is Character character) {
-                character.ReceiveHit(new HitResult(collision), Damage, this);
+                var hr = new HitResult(collision, KnockbackForce);
+                // KinematicCollision2D's normal is going to be the surface normal of the thing this grenade struck, and will point back toward the projectile.
+                // In order for this to be useful as a HitResult, the normal needs to be reversed to point in the direction of impact.
+                hr.ImpactNormal *= -1;
+                character.ReceiveHit(hr, Damage, this);
             }
             // Stop as soon as we hit something soft.
             Settle();
