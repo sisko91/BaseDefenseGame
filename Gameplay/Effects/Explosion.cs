@@ -28,6 +28,10 @@ public partial class Explosion : Area2D, IInstigated
     [Export]
     public float DamageGradientExponent { get; set; } = 2.0f;
 
+    // How long in seconds before this explosion is removed from the scene and all effects are halted.
+    [Export]
+    public float CleanupLifetime = 3.0f;
+
     // All character bodies detected in the vicinity of the explosion.
     public Godot.Collections.Array<Character> NearbyCharacters { get; private set; }
     // All character bodies already damaged by this explosion.
@@ -56,6 +60,21 @@ public partial class Explosion : Area2D, IInstigated
 
         // Start explosion.
         SpawnEpochSeconds = Time.GetTicksMsec() / 1000.0;
+        if(CleanupLifetime > 0) {
+            var timer = new Timer();
+            timer.WaitTime = CleanupLifetime;
+            timer.OneShot = true;
+            timer.Timeout += QueueFree;
+            AddChild(timer);
+            timer.Start();
+        }
+
+        // OneShot particle effects don't seem to emit by default so we have to turn them all on.
+        foreach(var node in GetChildren()) {
+            if(node is GpuParticles2D particles) {
+                particles.Emitting = true;
+            }
+        }
     }
 
     private void Explosion_BodyEntered(Node2D body) {
@@ -70,13 +89,13 @@ public partial class Explosion : Area2D, IInstigated
         }
     }
 
-    public override void _Draw() {
+    /*public override void _Draw() {
         double timeSeconds = Time.GetTicksMsec() / 1000.0;
         var spawnDeltaRatio = (timeSeconds - SpawnEpochSeconds) / ExpansionDuration;
         var drawRadius = Mathf.Lerp(InitialRadius, MaximumRadius, spawnDeltaRatio);
         //GD.Print($"Elapsed: {timeSeconds - SpawnEpochSeconds}, Duration: {ExpansionDuration}, Ratio: {spawnDeltaRatio}, drawRadius: {drawRadius}");
-        DrawCircle(Vector2.Zero, (float)drawRadius, new Color(1, 0, 0, 0.5f));
-    }
+        DrawCircle(Vector2.Zero, (float)drawRadius, new Color(1, 0, 0, 0.25f));
+    }*/
 
     public override void _PhysicsProcess(double delta) {
         base._PhysicsProcess(delta);
@@ -89,28 +108,26 @@ public partial class Explosion : Area2D, IInstigated
         var testRadius = Mathf.Lerp(InitialRadius, MaximumRadius, spawnDeltaRatio);
 
         // Makes the debug circle show up.
-        QueueRedraw();
+        //QueueRedraw();
 
-        foreach (var character in NearbyCharacters) {
-            // TODO: This goes to the centerpoint of the character, but maybe we should subtract the collision radius?
-            var distance = character.GlobalPosition.DistanceTo(GlobalPosition);
-            if (distance < testRadius) {
-                if(DamagedCharacters.Contains(character)) {
-                    // Don't damage the same character twice.
-                    continue;
+        if (spawnDeltaRatio < 1) {
+            foreach (var character in NearbyCharacters) {
+                // TODO: This goes to the centerpoint of the character, but maybe we should subtract the collision radius?
+                var distance = character.GlobalPosition.DistanceTo(GlobalPosition);
+                if (distance < testRadius) {
+                    if (DamagedCharacters.Contains(character)) {
+                        // Don't damage the same character twice.
+                        continue;
+                    }
+                    HitResult hr = new HitResult();
+                    hr.ImpactLocation = character.GlobalPosition;
+                    hr.ImpactNormal = (character.GlobalPosition - GlobalPosition).Normalized();
+                    character.ReceiveHit(hr, CalculateBlastDamage(distance), this);
+                    DamagedCharacters.Add(character);
                 }
-                HitResult hr = new HitResult();
-                hr.ImpactLocation = character.GlobalPosition;
-                hr.ImpactNormal = (character.GlobalPosition - GlobalPosition).Normalized();
-                character.ReceiveHit(hr, CalculateBlastDamage(distance), this);
-                DamagedCharacters.Add(character);
             }
         }
 
-        if(spawnDeltaRatio >= 1) {
-            // The explosion is over.
-            QueueFree();
-        }
     }
 
     protected float CalculateBlastDamage(float distance) {
