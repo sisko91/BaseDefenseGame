@@ -21,6 +21,25 @@ public partial class Thrower : Weapon
     [Export]
     public float QuickThrowStrengthRatio = 0.35f;
 
+    // When true, the thrown Projectile's Damage parameter is interpreted as the maximum damage it will do upon impact, and
+    // projectiles thrown by this Thrower will have their damage adjusted proportional to the wind up strength. See DamageModulationFactor.
+    [Export]
+    public bool ModulateDamageByWindUp = true;
+
+    // When ModulateDamageByWindUp = true, the modulation is multiplied by this factor in addition to the wind up strength.
+    [Export]
+    public float DamageModulationFactor = 1f;
+
+    // When true, the thrown Projectile's KnockbackForce parameter is interpreted as the maximum damage it will do upon impact, and
+    // projectiles thrown by this Thrower will have their knockback force reduced proportional to the wind up strength. See
+    // KnockbackModulationFactor.
+    [Export]
+    public bool ModulateKnockbackByWindUp = true;
+
+    // When ModulateKnockbackByWindUp = true, the modulation is multiplied by this factor in addition to the wind up strength.
+    [Export]
+    public float KnockbackModulationFactor = 1f;
+
     public double CurrentWindUpSeconds {
         get {
             return Time.GetTicksMsec() / 1000.0 - lastWindUpStartSeconds;
@@ -68,19 +87,27 @@ public partial class Thrower : Weapon
 
     public override void ReleaseFire() {
         // How far can we throw?
-        double windUpRatio = CurrentWindUpSeconds / MaxWindUpSeconds;
+        float windUpRatio = (float)Mathf.Min(CurrentWindUpSeconds / MaxWindUpSeconds, 1.0f);
         // If the press/release cycle was <100ms then assume the player wants to quick-throw.
         if(CurrentWindUpSeconds < 0.1 && CanQuickThrow) {
             windUpRatio = QuickThrowStrengthRatio;
         }
-        var cappedThrowDistance = (float)Mathf.Min(MaxWindUpThrowDistance, windUpRatio * MaxWindUpThrowDistance);
+        var throwDistance = Mathf.Min(MaxWindUpThrowDistance, windUpRatio * MaxWindUpThrowDistance);
 
         // Where is that?
-        var targetLocation = GlobalPosition + Vector2.FromAngle(GlobalRotation) * cappedThrowDistance;
+        var targetLocation = GlobalPosition + Vector2.FromAngle(GlobalRotation) * throwDistance;
 
         // How fast do we need to throw to reach there (in 1 second)?
         var throwable = ThrowableTemplate.Instantiate<Projectile>();
         throwable.InitialSpeed = CalculateRequiredSpeed(targetLocation, 1.0f);
+        
+        if(ModulateDamageByWindUp) {
+            throwable.Damage *= windUpRatio * DamageModulationFactor;
+        }
+        if(ModulateKnockbackByWindUp) {
+            throwable.KnockbackForce *= windUpRatio * KnockbackModulationFactor;
+            GD.Print($"Releasing with KB: {throwable.KnockbackForce}");
+        }
 
         var instigator = this.FindCharacterAncestor();
         throwable.Start(GlobalPosition, GlobalRotation, instigator);

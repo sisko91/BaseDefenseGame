@@ -16,6 +16,8 @@ fill_to = Vector2(1, 1)
 script = ExtResource("1_2q5e8")
 MaxWindUpSeconds = 2.0
 MaxWindUpThrowDistance = 700.0
+DamageModulationFactor = 2.0
+KnockbackModulationFactor = 3.0
 
 [node name="GroundTarget" type="Sprite2D" parent="."]
 scale = Vector2(2, 2)

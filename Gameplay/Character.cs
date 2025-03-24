@@ -101,7 +101,7 @@ public partial class Character : Moveable
 
         var oldHealth = CurrentHealth;
         CurrentHealth = Mathf.Max(CurrentHealth - damage, 0);
-        //GD.Print($"{Name} taking {damage} damage from {source?.Instigator?.Name}");
+        //GD.Print($"{Name} taking {damage} damage, {hitResult.KnockbackForce} knockback from {source?.Instigator?.Name}");
         // Broadcast the damage received to anyone listening.
         EmitSignal(SignalName.HealthChanged, this, CurrentHealth, oldHealth);
 
