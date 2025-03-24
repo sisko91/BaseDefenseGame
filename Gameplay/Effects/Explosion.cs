@@ -1,3 +1,4 @@
+using ExtensionMethods;
 using Godot;
 
 public partial class Explosion : Area2D, IInstigated
@@ -42,6 +43,9 @@ public partial class Explosion : Area2D, IInstigated
     // The collision shape for this explosion. Created dynamically when the explosion is spawned into the scene tree.
     public CollisionShape2D Collider { get; private set; }
 
+    // The raycaster node spawned for this explosion, used to check line-of-sight for calculating blast force on targets behind walls and other obstructions.
+    protected RayCast2D Raycaster { get; private set; }
+
     public override void _Ready() {
         base._Ready();
 
@@ -57,6 +61,12 @@ public partial class Explosion : Area2D, IInstigated
         Collider = new CollisionShape2D();
         Collider.Shape = sensorShape;
         AddChild(Collider);
+
+        // Spawn the raycaster, this is used to check that line-of-sight exists before applying blast damage.
+        Raycaster = new RayCast2D();
+        Raycaster.CollisionMask = CollisionMask;
+        Raycaster.Enabled = false; // We only want to use this on-demand so disable otherwise.
+        AddChild(Raycaster);
 
         // Start explosion.
         SpawnEpochSeconds = Time.GetTicksMsec() / 1000.0;
@@ -119,6 +129,19 @@ public partial class Explosion : Area2D, IInstigated
                         // Don't damage the same character twice.
                         continue;
                     }
+
+                    // Adjust the raycaster to check the current character. TargetPosition is *relative* so we need to calculate the offset.
+                    Raycaster.TargetPosition = (character.GlobalPosition - Raycaster.GlobalPosition);
+                    Raycaster.ForceRaycastUpdate();
+                    // If we hit something, it will block damage to the character (unless what we hit was another soft target like another character).
+                    if (Raycaster.GetCollider() != null) {
+                        //this.DrawDebugLine(GlobalPosition, Raycaster.GetCollisionPoint(), new Color(1, 1, 0));
+                        //GD.Print($"Hit {((Node)Raycaster.GetCollider()).Name}");
+                        if (Raycaster.GetCollider() is not Character) {
+                            continue; // block damage to tested character
+                        }
+                    }
+
                     HitResult hr = new HitResult();
                     hr.ImpactLocation = character.GlobalPosition;
                     hr.ImpactNormal = (character.GlobalPosition - GlobalPosition).Normalized();
