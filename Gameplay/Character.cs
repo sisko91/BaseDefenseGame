@@ -27,6 +27,7 @@ public struct HitResult
     }
 }
 
+
 public partial class Character : Moveable
 {
     #region Stats
@@ -51,6 +52,10 @@ public partial class Character : Moveable
 
     [Export]
     public bool CanDamageSelf = false;
+
+    // TODO: Temporary while fleshing out impact FX stuff.
+    [Export]
+    public PackedScene ImpactTemplateForBlood = null;
 
     // Cached reference to the NearbyBodySensor defined on the .tscn
     public BodySensor NearbyBodySensor { get; protected set; }
@@ -104,6 +109,14 @@ public partial class Character : Moveable
         //GD.Print($"{Name} taking {damage} damage, {hitResult.KnockbackForce} knockback from {source?.Instigator?.Name}");
         // Broadcast the damage received to anyone listening.
         EmitSignal(SignalName.HealthChanged, this, CurrentHealth, oldHealth);
+
+        if(damage > 0 && ImpactTemplateForBlood != null) {
+            // Spawn a blood impact 
+            var impact = ImpactTemplateForBlood.Instantiate<Impact>();
+            AddChild(impact);
+            impact.GlobalPosition = hitResult.ImpactLocation;
+            impact.GlobalRotation = (hitResult.ImpactNormal * -1).Angle(); // reverse the normal as it will point inward toward the character hit.
+        }
 
         if (CurrentHealth > 0)
         {

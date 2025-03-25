@@ -106,7 +106,6 @@ public partial class Thrower : Weapon
         }
         if(ModulateKnockbackByWindUp) {
             throwable.KnockbackForce *= windUpRatio * KnockbackModulationFactor;
-            GD.Print($"Releasing with KB: {throwable.KnockbackForce}");
         }
 
         var instigator = this.FindCharacterAncestor();
