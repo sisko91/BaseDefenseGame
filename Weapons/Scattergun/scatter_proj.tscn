@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://bkhho87p3b2re"]
+[gd_scene load_steps=8 format=3 uid="uid://bkhho87p3b2re"]
 
 [ext_resource type="Shader" uid="uid://c6kodin14qwfb" path="res://Shaders/projectile.gdshader" id="1_d47jw"]
 [ext_resource type="Script" uid="uid://fpgiqa6lh14c" path="res://Weapons/Projectile.cs" id="1_ncsta"]
+[ext_resource type="PackedScene" uid="uid://bfrjbygekem55" path="res://Gameplay/Effects/Impacts/impact_default_bullet.tscn" id="3_dgsgp"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dgsgp"]
 shader = ExtResource("1_d47jw")
@@ -23,6 +24,7 @@ script = ExtResource("1_ncsta")
 InitialSpeed = 1500.0
 Damage = 8.0
 KnockbackForce = 5.0
+DefaultResponseHint = ExtResource("3_dgsgp")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 use_parent_material = true

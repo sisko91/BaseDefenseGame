@@ -8,6 +8,10 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
     // Instigator property satisfies IInstigated interface.
     public Character Instigator { get; set; }
 
+    // When true, the next collision for this projectile will result in it QueueFree()'ing itself.
+    [Export]
+    public bool DestroyOnNextCollision = true;
+
     [Export]
     public float InitialSpeed = 750.0f;
 
@@ -25,6 +29,10 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
     // ImpactMaterialType satisfies IImpactMaterial interface.
     [Export]
     public IImpactMaterial.MaterialType ImpactMaterialType { get; protected set; } = IImpactMaterial.MaterialType.Bullet;
+
+    // DefaultResponseHint satisfies IImpactMaterial interface.
+    [Export]
+    public PackedScene DefaultResponseHint { get; protected set; } = null;
 
     // ImpactResponseTable satisfies IImpactMaterial interface.
     // Note this should somewhat rarely be populated for projectiles. These are *responses* so it only matters if the projectile itself
@@ -77,14 +85,17 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
     // TODO: Maybe we should just have this base type detect certain things, and have explicit OnCollideNPC(), OnCollidePlayer(), etc.?
     protected virtual void OnCollide(KinematicCollision2D collision)
     {
-        if (collision.GetCollider() is Character character) {
-            var hr = new HitResult(collision, KnockbackForce);
-            // KinematicCollision2D's normal is going to be the surface normal of the thing this projectile hit, and will point back toward the projectile.
-            // In order for this to be useful as a HitResult, the normal needs to be reversed to point in the direction of impact.
-            hr.ImpactNormal *= -1;
-            character.ReceiveHit(hr, Damage, this);
+        var hr = new HitResult(collision, KnockbackForce);
+        // KinematicCollision2D's normal is going to be the surface normal of the thing this projectile hit, and will point back toward the projectile.
+        // In order for this to be useful as a HitResult, the normal needs to be reversed to point in the direction of impact.
+        hr.ImpactNormal *= -1;
+        if(collision.GetCollider() is Node collidedWith) {
+            collidedWith.TryRegisterImpact(hr, this, Damage);
         }
-        QueueFree();
+
+        if(DestroyOnNextCollision) {
+            QueueFree();
+        }
     }
 
     // Children can override this to decide what happens when the projectile times out. Default behavior is deletion.

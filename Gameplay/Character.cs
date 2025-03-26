@@ -65,6 +65,11 @@ public partial class Character : Moveable, IImpactMaterial
     [Export]
     public IImpactMaterial.MaterialType ImpactMaterialType { get; protected set; } = IImpactMaterial.MaterialType.Human;
 
+    // DefaultResponseHint satisfies IImpactMaterial interface. For characters this should typically be null unless the character
+    // ever impacts other things directly (such as one character being the source of an impact to another character, which is unlikely
+    // because the attacking character would most likely have a weapon making the actual impact not themselves).
+    public PackedScene DefaultResponseHint { get; protected set; } = null;
+
     // ImpactResponseTable satisfies IImpactMaterial interface.
     [Export]
     public Dictionary<IImpactMaterial.MaterialType, PackedScene> ImpactResponseTable { get; protected set; } = [];
@@ -117,18 +122,6 @@ public partial class Character : Moveable, IImpactMaterial
         //GD.Print($"{Name} taking {damage} damage, {hitResult.KnockbackForce} knockback from {source?.Instigator?.Name}");
         // Broadcast the damage received to anyone listening.
         EmitSignal(SignalName.HealthChanged, this, CurrentHealth, oldHealth);
-
-        // Impact FX
-        if(damage > 0) {
-            // casting using 'as' will return null when not possible, and SelectImpactScene() handles null sources gracefully.
-            var impactScene = this.SelectImpactScene(source as IImpactMaterial);
-            var impact = impactScene?.Instantiate<Impact>();
-            if(impact != null) {
-                AddChild(impact);
-                impact.GlobalPosition = hitResult.ImpactLocation;
-                impact.GlobalRotation = (hitResult.ImpactNormal * -1).Angle(); // reverse the normal as it will point inward toward the character hit.
-            }
-        }
 
         if (CurrentHealth > 0)
         {

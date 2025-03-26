@@ -27,24 +27,24 @@ public partial class Grenade : Projectile, IInstigated
     [Export]
     public PackedScene ExplosionTemplate { get; set; } = null;
 
+    public Grenade() {
+        // Grenades shouldn't destroy themselves after colliding. They handle this themselves within OnCollide(), Bounce(), and Settle().
+        DestroyOnNextCollision = false;
+    }
+
     protected override void OnStart() {
         lastBounceLocation = GlobalPosition;
     }
 
     protected override void OnCollide(KinematicCollision2D collision) {
+        base.OnCollide(collision);
+
         bool bMightBeAWall = !(collision.GetCollider() is Character or Projectile);
         if (bMightBeAWall && CurrentBounce < MaxBounces) {
             CurrentBounce += 1;
             Bounce(collision);
         }
         else {
-            if(Damage > 0 && collision.GetCollider() is Character character) {
-                var hr = new HitResult(collision, KnockbackForce);
-                // KinematicCollision2D's normal is going to be the surface normal of the thing this grenade struck, and will point back toward the projectile.
-                // In order for this to be useful as a HitResult, the normal needs to be reversed to point in the direction of impact.
-                hr.ImpactNormal *= -1;
-                character.ReceiveHit(hr, Damage, this);
-            }
             // Stop as soon as we hit something soft.
             Settle();
         }
