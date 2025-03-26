@@ -8,15 +8,20 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
     // Instigator property satisfies IInstigated interface.
     public Character Instigator { get; set; }
 
-    // When true, the next collision for this projectile will result in it QueueFree()'ing itself.
-    [Export]
-    public bool DestroyOnNextCollision = true;
-
     [Export]
     public float InitialSpeed = 750.0f;
 
+    // When true, the projectile's global rotation will be continuously updated to match its velocity each tick.
+    [Export]
+    public bool OrientToVelocity = false;
+
     [Export]
     public float LifetimeSeconds = 3.0f;
+
+    [ExportCategory("Impacts")]
+    // When true, the next collision for this projectile will result in it QueueFree()'ing itself.
+    [Export]
+    public bool DestroyOnNextCollision = true;
 
     // How much damage the projectile will do to targets it directly hits.
     [Export]
@@ -75,6 +80,9 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
         if (collision != null)
         {
             OnCollide(collision);
+        }
+        if(OrientToVelocity) {
+            GlobalRotation = Velocity.Angle();
         }
     }
 

@@ -9,7 +9,7 @@ public interface IImpactMaterial
     // All material types defined for impact resolution. Add to this list as needed.
     public enum MaterialType
     {
-        Default = 0, // Pseudo-material, should not be assigned to objects or returned from ImpactMaterialType. This is only used by the ImpactRegistry/editor.
+        Default = 0, // Pseudo-material, should not be assigned to objects or returned from ImpactMaterialType. This is only used in the editor and for internal lookups.
         Human = 1,
         Bullet = 2,
     }
