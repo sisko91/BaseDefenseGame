@@ -1,0 +1,39 @@
+[gd_scene load_steps=5 format=3 uid="uid://bfrjbygekem55"]
+
+[ext_resource type="Script" uid="uid://bdlpabjq7i1yw" path="res://Gameplay/Effects/Impacts/Impact.cs" id="1_38j1k"]
+
+[sub_resource type="Gradient" id="Gradient_2led1"]
+colors = PackedColorArray(0.548963, 0.548963, 0.548963, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_w4t2o"]
+gradient = SubResource("Gradient_2led1")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_qiiwe"]
+particle_flag_disable_z = true
+spread = 25.0
+initial_velocity_min = 198.79
+initial_velocity_max = 398.79
+gravity = Vector3(0, 0, 0)
+damping_max = 50.26
+scale_max = 2.0
+color = Color(1, 1, 0, 1)
+color_initial_ramp = SubResource("GradientTexture1D_w4t2o")
+turbulence_noise_strength = 1.1
+
+[node name="ImpactDefaultBullet" type="Node2D" node_paths=PackedStringArray("ParticleFX")]
+script = ExtResource("1_38j1k")
+CleanupLifetime = 0.6
+ParticleFX = NodePath("SparkParticles")
+metadata/_custom_type_script = "uid://bdlpabjq7i1yw"
+
+[node name="SparkParticles" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 2
+lifetime = 0.2
+interp_to_end = 0.067
+one_shot = true
+explosiveness = 1.0
+trail_enabled = true
+trail_lifetime = 0.08
+trail_sections = 4
+process_material = SubResource("ParticleProcessMaterial_qiiwe")

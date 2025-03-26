@@ -57,7 +57,6 @@ motion_mode = 1
 script = ExtResource("1_s50ym")
 Brain = SubResource("Resource_qedxc")
 MovementSpeed = 30.0
-ImpactTemplateForBlood = ExtResource("4_v0p2n")
 ImpactResponseTable = Dictionary[int, PackedScene]({
 0: ExtResource("4_v0p2n")
 })
