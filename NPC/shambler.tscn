@@ -58,6 +58,9 @@ script = ExtResource("1_s50ym")
 Brain = SubResource("Resource_qedxc")
 MovementSpeed = 30.0
 ImpactTemplateForBlood = ExtResource("4_v0p2n")
+ImpactResponseTable = Dictionary[int, PackedScene]({
+0: ExtResource("4_v0p2n")
+})
 
 [node name="FloatingHealthBar" parent="." instance=ExtResource("2_l0ij1")]
 position = Vector2(-20, -36)

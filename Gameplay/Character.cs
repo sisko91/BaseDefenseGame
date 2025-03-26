@@ -1,5 +1,6 @@
 using ExtensionMethods;
 using Godot;
+using Godot.Collections;
 using System;
 
 // HitResult is a simple data structure used to capture and communicate information about an impact.
@@ -27,8 +28,7 @@ public struct HitResult
     }
 }
 
-
-public partial class Character : Moveable
+public partial class Character : Moveable, IImpactMaterial
 {
     #region Stats
 
@@ -53,15 +53,23 @@ public partial class Character : Moveable
     [Export]
     public bool CanDamageSelf = false;
 
-    // TODO: Temporary while fleshing out impact FX stuff.
-    [Export]
-    public PackedScene ImpactTemplateForBlood = null;
-
     // Cached reference to the NearbyBodySensor defined on the .tscn
     public BodySensor NearbyBodySensor { get; protected set; }
 
     // Cached reference to the collision shape defined on the .tscn
     public CollisionShape2D CollisionShape { get; private set; }
+
+    #region Interface: IImpactMaterial
+
+    // ImpactMaterialType satisfies IImpactMaterial interface.
+    [Export]
+    public IImpactMaterial.MaterialType ImpactMaterialType { get; protected set; } = IImpactMaterial.MaterialType.Human;
+
+    // ImpactResponseTable satisfies IImpactMaterial interface.
+    [Export]
+    public Dictionary<IImpactMaterial.MaterialType, PackedScene> ImpactResponseTable { get; protected set; } = [];
+
+    #endregion
 
     // Nearby interaction areas that have announced themselves to this character. Interaction areas do this automatically for characters detected in their proximity.
     public Godot.Collections.Array<InteractionArea> NearbyInteractions;
@@ -110,12 +118,16 @@ public partial class Character : Moveable
         // Broadcast the damage received to anyone listening.
         EmitSignal(SignalName.HealthChanged, this, CurrentHealth, oldHealth);
 
-        if(damage > 0 && ImpactTemplateForBlood != null) {
-            // Spawn a blood impact 
-            var impact = ImpactTemplateForBlood.Instantiate<Impact>();
-            AddChild(impact);
-            impact.GlobalPosition = hitResult.ImpactLocation;
-            impact.GlobalRotation = (hitResult.ImpactNormal * -1).Angle(); // reverse the normal as it will point inward toward the character hit.
+        // Impact FX
+        if(damage > 0) {
+            // casting using 'as' will return null when not possible, and SelectImpactScene() handles null sources gracefully.
+            var impactScene = this.SelectImpactScene(source as IImpactMaterial);
+            var impact = impactScene?.Instantiate<Impact>();
+            if(impact != null) {
+                AddChild(impact);
+                impact.GlobalPosition = hitResult.ImpactLocation;
+                impact.GlobalRotation = (hitResult.ImpactNormal * -1).Angle(); // reverse the normal as it will point inward toward the character hit.
+            }
         }
 
         if (CurrentHealth > 0)

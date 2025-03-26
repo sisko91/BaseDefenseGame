@@ -1,8 +1,9 @@
 using ExtensionMethods;
 using Godot;
+using Godot.Collections;
 using System;
 
-public partial class Projectile : Moveable, IInstigated
+public partial class Projectile : Moveable, IInstigated, IImpactMaterial
 {
     // Instigator property satisfies IInstigated interface.
     public Character Instigator { get; set; }
@@ -20,6 +21,15 @@ public partial class Projectile : Moveable, IInstigated
     // The base force of knockback applied to the struck object by this projectile.
     [Export]
     public float KnockbackForce = 0;
+
+    // ImpactMaterialType satisfies IImpactMaterial interface.
+    [Export]
+    public IImpactMaterial.MaterialType ImpactMaterialType { get; protected set; } = IImpactMaterial.MaterialType.Bullet;
+
+    // ImpactResponseTable satisfies IImpactMaterial interface.
+    // Note this should somewhat rarely be populated for projectiles. These are *responses* so it only matters if the projectile itself
+    // can be impacted by other things.
+    public Dictionary<IImpactMaterial.MaterialType, PackedScene> ImpactResponseTable { get; protected set; } = [];
 
     public string AllProjectilesGroup = "Projectiles";
 
