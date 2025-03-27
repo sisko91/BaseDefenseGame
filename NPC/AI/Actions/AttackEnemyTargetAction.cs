@@ -92,7 +92,7 @@ namespace AI
                 // Impact location is the midpoint between the two characters meleeing. The normal points from attacker -> target.
                 hr.ImpactLocation = (Owner.GlobalPosition + Brain.EnemyTarget.GlobalPosition) / 2;
                 hr.ImpactNormal = (Brain.EnemyTarget.GlobalPosition - Owner.GlobalPosition);
-                Brain.EnemyTarget.ReceiveHit(hr, MeleeAttackDamage, this);
+                Brain.EnemyTarget.TryRegisterImpact(hr, Owner, MeleeAttackDamage);
                 GD.Print("Hiyah!");
                 lastAttackTime = GetTimeSeconds();
             }
