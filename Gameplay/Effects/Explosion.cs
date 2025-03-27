@@ -1,7 +1,8 @@
 using ExtensionMethods;
 using Godot;
+using Godot.Collections;
 
-public partial class Explosion : Area2D, IInstigated
+public partial class Explosion : Area2D, IInstigated, IImpactMaterial
 {
     // Instigator property satisfies IInstigated interface.
     public Character Instigator { get; set; }
@@ -17,6 +18,12 @@ public partial class Explosion : Area2D, IInstigated
     [Export]
     public float ExpansionDuration { get; set; } = 0.5f;
 
+    // How long in seconds before this explosion is removed from the scene and all effects are halted.
+    [Export]
+    public float CleanupLifetime = 3.0f;
+
+    [ExportCategory("Impact")]
+
     // The maximum damage to characters that the explosion will do close to its epicenter. As distance from the epicenter is increased, the blast does less damage.
     [Export]
     public float BaseDamage { get; set; } = 50.0f;
@@ -29,9 +36,17 @@ public partial class Explosion : Area2D, IInstigated
     [Export]
     public float ForceGradientExponent { get; set; } = 2.0f;
 
-    // How long in seconds before this explosion is removed from the scene and all effects are halted.
+    // ImpactMaterialType satisfies IImpactMaterial.
+    // Explosions are generally of impact type "Explosion".
     [Export]
-    public float CleanupLifetime = 3.0f;
+    public IImpactMaterial.MaterialType ImpactMaterialType { get; protected set; } = IImpactMaterial.MaterialType.Explosion;
+
+    // DefaultResponseHit satisfies IImpactMaterial.
+    public PackedScene DefaultResponseHint { get; protected set; } = null;
+
+    // ImpactResponseTable satisfies IImpactMaterial.
+    // Explosions cannot be impacted by other things, so this always returns an empty table.
+    public Dictionary<IImpactMaterial.MaterialType, PackedScene> ImpactResponseTable => [];
 
     // All character bodies detected in the vicinity of the explosion.
     public Godot.Collections.Array<Character> NearbyCharacters { get; private set; }
@@ -147,7 +162,8 @@ public partial class Explosion : Area2D, IInstigated
                     hr.ImpactNormal = (character.GlobalPosition - GlobalPosition).Normalized();
                     // TODO: Add a knockback force for the explosion if we decide the damage is too much to use for it.
                     hr.KnockbackForce = CalculateBlastStrength(distance, BaseDamage, MinimumDamage);
-                    character.ReceiveHit(hr, CalculateBlastStrength(distance, BaseDamage, MinimumDamage), this);
+                    //character.ReceiveHit(hr, CalculateBlastStrength(distance, BaseDamage, MinimumDamage), this);
+                    character.TryRegisterImpact(hr, this, CalculateBlastStrength(distance, BaseDamage, MinimumDamage));
                     DamagedCharacters.Add(character);
                 }
             }

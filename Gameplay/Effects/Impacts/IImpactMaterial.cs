@@ -12,6 +12,7 @@ public interface IImpactMaterial
         Default = 0, // Pseudo-material, should not be assigned to objects or returned from ImpactMaterialType. This is only used in the editor and for internal lookups.
         Human = 1,
         Bullet = 2,
+        Explosion = 3, 
     }
 
     // Implementations must provide a MaterialType identifier.
