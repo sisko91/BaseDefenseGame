@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3 uid="uid://dqhfdjea7nc0o"]
+
+[ext_resource type="Script" uid="uid://bdqgfdp26tfg4" path="res://Weapons/Barber/Barb.cs" id="1_8d4xc"]
+
+[sub_resource type="Gradient" id="Gradient_8d4xc"]
+offsets = PackedFloat32Array(0, 0.193322, 0.200351, 0.224956, 0.237258, 1)
+colors = PackedColorArray(4.62055e-06, 0.953795, 0.866867, 1, 0.00609633, 0.96224, 0.708424, 1, 0.96, 0.00959999, 0.0254398, 1, 0.960784, 0.00784314, 0.0235294, 1, 0.00720924, 0.963783, 0.679477, 1, 0.0333333, 1, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_lh0t1"]
+gradient = SubResource("Gradient_8d4xc")
+width = 32
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0f4c6"]
+size = Vector2(32, 2)
+
+[node name="BarbProj" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1_8d4xc")
+EmbeddedRatio = 0.3
+OrientToVelocity = true
+LifetimeSeconds = 4.0
+DestroyOnNextCollision = false
+Damage = 5.0
+KnockbackForce = 1.0
+ImpactMaterialType = 0
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(1, 2)
+texture = SubResource("GradientTexture1D_lh0t1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_0f4c6")
