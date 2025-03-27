@@ -81,7 +81,7 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
         {
             OnCollide(collision);
         }
-        if(OrientToVelocity) {
+        if(OrientToVelocity && !Velocity.IsZeroApprox()) {
             GlobalRotation = Velocity.Angle();
         }
     }
