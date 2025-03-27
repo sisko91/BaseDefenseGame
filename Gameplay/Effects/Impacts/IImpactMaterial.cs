@@ -48,29 +48,27 @@ public static class IImpactMaterialExtensions
     // Attempts to register an impact against a node in the game. The node may or may not implement the necessary interfaces to facilitate a valid impact. Returns false
     // when the impact was unsuccessful (i.e. likely the recipient doesn't know how to respond).
     public static bool TryRegisterImpact(this Node recipient, HitResult hitResult, IImpactMaterial sourceMaterial, float impactDamage) {
-        bool bDidImpact = false;
         PackedScene impactScene = null;
         if(recipient is IImpactMaterial recipientMaterial) {
             impactScene = recipientMaterial.SelectImpactScene(sourceMaterial);
             //GD.Print($"Using recipient for response: {impactScene?.ResourcePath}");
         }
-        else {
+        if(impactScene == null) {
             //GD.Print($"Using default response hint: {sourceMaterial?.DefaultResponseHint?.ResourcePath}");
             impactScene = sourceMaterial.DefaultResponseHint; // Default response for anything this source hits, may be null.
         }
 
         if (impactScene?.Instantiate() is Impact impact) {
-            bDidImpact = true;
             recipient.AddChild(impact);
             impact.GlobalPosition = hitResult.ImpactLocation;
             impact.GlobalRotation = (hitResult.ImpactNormal * -1).Angle(); // reverse the normal as it will point inward toward the character hit.
         }
 
         // Characters receive hits on valid impacts.
-        if (bDidImpact && recipient is Character character) {
+        if (recipient is Character character) {
             character.ReceiveHit(hitResult, impactDamage, sourceMaterial as IInstigated);
         }
 
-        return bDidImpact;
+        return true;
     }
 }

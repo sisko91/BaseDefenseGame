@@ -43,7 +43,7 @@ alpha_curve = SubResource("CurveTexture_rhid6")
 turbulence_enabled = true
 
 [sub_resource type="Gradient" id="Gradient_3h2h4"]
-colors = PackedColorArray(1, 1, 0, 1, 0.560784, 0, 0, 1)
+colors = PackedColorArray(0, 1, 0, 1, 0.13, 0.362, 1, 1)
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_rhid6"]
 gradient = SubResource("Gradient_3h2h4")
@@ -58,13 +58,20 @@ gradient = SubResource("Gradient_diujn")
 lifetime_randomness = 0.21
 particle_flag_disable_z = true
 spread = 180.0
-initial_velocity_min = 20.0
-initial_velocity_max = 100.0
+initial_velocity_min = 101.46
+initial_velocity_max = 181.46
+orbit_velocity_min = 9.49949e-08
+orbit_velocity_max = 2.0
 gravity = Vector3(0, 0, 0)
-scale_min = 5.0
-scale_max = 100.0
+scale_max = 10.0
 color_ramp = SubResource("GradientTexture1D_llblg")
 color_initial_ramp = SubResource("GradientTexture1D_rhid6")
+turbulence_enabled = true
+turbulence_noise_strength = 5.0
+turbulence_influence_min = 0.0
+turbulence_influence_max = 0.107
+turbulence_initial_displacement_min = 1.49012e-06
+turbulence_initial_displacement_max = 1.49012e-06
 
 [sub_resource type="Gradient" id="Gradient_rhid6"]
 colors = PackedColorArray(1, 0, 0, 1, 0.821858, 0.632813, 7.70092e-07, 1)
@@ -160,13 +167,12 @@ trail_sections = 4
 trail_section_subdivisions = 1
 process_material = SubResource("ParticleProcessMaterial_llblg")
 
-[node name="FlameBallParticles" type="GPUParticles2D" parent="."]
-visible = false
+[node name="FizzleParticles" type="GPUParticles2D" parent="."]
 emitting = false
-amount = 15
+amount = 45
 lifetime = 0.3
 one_shot = true
-explosiveness = 0.6
+explosiveness = 0.4
 process_material = SubResource("ParticleProcessMaterial_a8tr5")
 
 [node name="DebrisParticles" type="GPUParticles2D" parent="."]

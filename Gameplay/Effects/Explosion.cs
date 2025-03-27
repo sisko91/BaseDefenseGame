@@ -162,7 +162,6 @@ public partial class Explosion : Area2D, IInstigated, IImpactMaterial
                     hr.ImpactNormal = (character.GlobalPosition - GlobalPosition).Normalized();
                     // TODO: Add a knockback force for the explosion if we decide the damage is too much to use for it.
                     hr.KnockbackForce = CalculateBlastStrength(distance, BaseDamage, MinimumDamage);
-                    //character.ReceiveHit(hr, CalculateBlastStrength(distance, BaseDamage, MinimumDamage), this);
                     character.TryRegisterImpact(hr, this, CalculateBlastStrength(distance, BaseDamage, MinimumDamage));
                     DamagedCharacters.Add(character);
                 }
