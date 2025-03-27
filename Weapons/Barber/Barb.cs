@@ -60,13 +60,10 @@ public partial class Barb : Projectile
         // Detonate ALL attached barbs attached to this object.
         foreach(var child in GetParent()?.GetChildren()) {
             if(child is Barb barb) {
-                GD.Print($"Detonating on {GetParent()?.Name}");
                 barb.Detonate();
                 barb.QueueFree();
             }
         }
-
-        
     }
 
     protected void Detonate() {
