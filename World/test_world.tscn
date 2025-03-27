@@ -82,12 +82,12 @@ color = Color(0.25, 0.133333, 0, 1)
 metadata/_edit_use_anchors_ = true
 
 [node name="ShamblerSpawnZone" type="Node2D" parent="."]
-position = Vector2(7, -344)
+position = Vector2(7, 0)
 script = ExtResource("6_xi2eq")
 SpawnTemplate = ExtResource("6_a6glu")
 InnerRadius = 400.0
 OuterRadius = 500.0
-StartAngleDegrees = -90.0
+StartAngleDegrees = 270.0
 StopAngleDegrees = 90.0
 InitialCount = 2
 
