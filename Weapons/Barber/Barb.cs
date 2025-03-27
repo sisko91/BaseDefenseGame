@@ -57,10 +57,16 @@ public partial class Barb : Projectile
     }
 
     protected override void OnLifetimeExpired() {
-        // TODO: Explode, doing damage to the target and applying knockback.
-        Detonate();
+        // Detonate ALL attached barbs attached to this object.
+        foreach(var child in GetParent()?.GetChildren()) {
+            if(child is Barb barb) {
+                GD.Print($"Detonating on {GetParent()?.Name}");
+                barb.Detonate();
+                barb.QueueFree();
+            }
+        }
 
-        QueueFree();
+        
     }
 
     protected void Detonate() {
