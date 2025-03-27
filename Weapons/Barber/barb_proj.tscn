@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://dqhfdjea7nc0o"]
+[gd_scene load_steps=6 format=3 uid="uid://dqhfdjea7nc0o"]
 
 [ext_resource type="Script" uid="uid://bdqgfdp26tfg4" path="res://Weapons/Barber/Barb.cs" id="1_8d4xc"]
+[ext_resource type="PackedScene" uid="uid://cxgmn8liix0v7" path="res://Weapons/Barber/barb_explosion.tscn" id="2_lh0t1"]
 
 [sub_resource type="Gradient" id="Gradient_8d4xc"]
 offsets = PackedFloat32Array(0, 0.193322, 0.200351, 0.224956, 0.237258, 1)
@@ -18,6 +19,7 @@ collision_layer = 2
 collision_mask = 5
 script = ExtResource("1_8d4xc")
 EmbeddedRatio = 0.3
+ExplosionTemplate = ExtResource("2_lh0t1")
 OrientToVelocity = true
 LifetimeSeconds = 4.0
 DestroyOnNextCollision = false

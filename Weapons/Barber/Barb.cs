@@ -1,3 +1,4 @@
+using ExtensionMethods;
 using Godot;
 using System;
 
@@ -6,6 +7,10 @@ public partial class Barb : Projectile
     // What percentage of the barb's total length should be embedded within targets it strikes. 0.5 = 50%
     [Export]
     protected float EmbeddedRatio = 0.10f;
+
+    // The explosion scene to instantiate when the barb explodes.
+    [Export]
+    public PackedScene ExplosionTemplate { get; protected set; }
 
     protected float BarbLength { get; private set; }
 
@@ -53,12 +58,18 @@ public partial class Barb : Projectile
 
     protected override void OnLifetimeExpired() {
         // TODO: Explode, doing damage to the target and applying knockback.
-        
+        Detonate();
+
+        QueueFree();
     }
 
     protected void Detonate() {
-        GD.Print("BOOM!");
-
-        QueueFree();
+        var explosion = ExplosionTemplate?.Instantiate<Explosion>();
+        if (explosion != null) {
+            // Communicate the original instigator, so that characters receiving damage know who did it.
+            explosion.Instigator = Instigator;
+            explosion.GlobalPosition = GlobalPosition;
+            this.GetGameWorld().AddChild(explosion);
+        }
     }
 }
