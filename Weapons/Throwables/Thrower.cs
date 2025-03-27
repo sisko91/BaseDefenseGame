@@ -108,8 +108,7 @@ public partial class Thrower : Weapon
             throwable.KnockbackForce *= windUpRatio * KnockbackModulationFactor;
         }
 
-        var instigator = this.FindCharacterAncestor();
-        throwable.Start(GlobalPosition, GlobalRotation, instigator);
+        throwable.Start(GlobalPosition, GlobalRotation, Instigator);
     }
 
     private float CalculateRequiredSpeed(Vector2 targetLocation, float timeframeSeconds) {

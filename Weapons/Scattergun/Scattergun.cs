@@ -46,7 +46,6 @@ public partial class Scattergun : Weapon
 
         lastFireTime = timeSeconds;
 
-        var instigator = this.FindCharacterAncestor();
         var roundSpreadRads = Mathf.DegToRad(Mathf.Abs(MaxRoundSpreadDegrees));
         for (int i = 0; i < RoundsPerFire; i++)
         {
@@ -55,7 +54,7 @@ public partial class Scattergun : Weapon
             // Less randomness for the first rounds in the payload. This just makes the cone tighter toward the center with falloff.
             float randInfluence = (float)(RoundsPerFire - i) / (float)RoundsPerFire;
             float rotationOffset = roundSpreadRads * randNegativeOneToOne * randInfluence;
-            round.Start(GlobalPosition, GlobalRotation + rotationOffset, instigator);
+            round.Start(GlobalPosition, GlobalRotation + rotationOffset, Instigator);
             // Allow some rounds to fire up to 5% faster.
             round.Velocity *= 1.0f + GD.Randf() * 0.05f;
         }
