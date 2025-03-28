@@ -14,6 +14,9 @@ public partial class Barb : Projectile
 
     protected float BarbLength { get; private set; }
 
+    // Returns true if the barb instance has stuck inside of something.
+    public bool Stuck { get; private set; } = false;
+
     public Barb() {
         // Barbs stick into surfaces and shouldn't destroy when they collide with stuff.
         DestroyOnNextCollision = false;
@@ -28,6 +31,8 @@ public partial class Barb : Projectile
 
     protected override void OnCollide(KinematicCollision2D collision) {
         base.OnCollide(collision);
+
+        Stuck = true;
 
         // Stop all motion immediately.
         Velocity = Vector2.Zero;
@@ -57,12 +62,18 @@ public partial class Barb : Projectile
     }
 
     protected override void OnLifetimeExpired() {
-        // Detonate ALL attached barbs attached to this object.
-        foreach(var child in GetParent()?.GetChildren()) {
-            if(child is Barb barb) {
-                barb.Detonate();
-                barb.QueueFree();
+        // Detonate ALL barbs attached to this object.
+        if(Stuck) {
+            foreach (var child in GetParent()?.GetChildren()) {
+                if (child is Barb barb) {
+                    barb.Detonate();
+                    barb.QueueFree();
+                }
             }
+        }
+        else {
+            Detonate();
+            QueueFree();
         }
     }
 
