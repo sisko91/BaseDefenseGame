@@ -53,11 +53,9 @@ public partial class Barb : Projectile
             // Embed the barb within the surface it strikes (slightly).
             var embeddingOffset = Vector2.FromAngle(globalRot) * BarbLength * EmbeddedRatio;
             GlobalPosition = globalPos + embeddingOffset;
-            
 
-            // TODO: Adjust Z-layer to be just below the target (so that we don't render on top).
-            //       This can't be enabled right now because we don't have enough Z-layers defined (Ref: https://app.asana.com/0/0/1209778766176007).
-            //ZIndex = colliderNode.ZIndex - 1;
+            //Move to the first child so the barb renders underneath the target
+            colliderNode.MoveChild(this, 0);
         }
     }
 
