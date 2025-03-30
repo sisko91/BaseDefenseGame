@@ -23,7 +23,7 @@ collision_mask = 5
 script = ExtResource("1_ncsta")
 InitialSpeed = 1500.0
 Damage = 8.0
-KnockbackForce = 5.0
+KnockbackForce = 10.0
 DefaultResponseHint = ExtResource("3_dgsgp")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
