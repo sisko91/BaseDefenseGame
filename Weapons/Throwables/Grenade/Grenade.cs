@@ -88,6 +88,7 @@ public partial class Grenade : Projectile, IInstigated
             // Communicate the original instigator, so that characters receiving damage know who did it.
             explosion.Instigator = Instigator;
             explosion.GlobalPosition = GlobalPosition;
+            explosion.ZIndex = ZIndex;
             this.GetGameWorld().AddChild(explosion);
         }
     }

@@ -117,7 +117,9 @@ public partial class Building : Node2D
     private void OnBodyExitedRegion(Node2D body, BuildingRegion region)
     {
         Moveable m = body as Moveable;
-        if (m == null) {
+        //Some projectiles disable collisions as part of their functionality (e.g. grenades, barbs)
+        //This triggers an exit event, but we don't want to remove these from the region
+        if (m == null || m.CollisionLayer == 0) {
             return;
         }
 
