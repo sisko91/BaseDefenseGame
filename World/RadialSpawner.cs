@@ -92,7 +92,7 @@ public partial class RadialSpawner : Node2D
         }
 
         var instance = SpawnTemplate.Instantiate<Node2D>();
-        AddChild(instance);
+        AddChild(instance, true);
 
         // Calculate the angle as StartAngleDegrees + random % of the arc
         var angleRange = StopAngleDegrees - StartAngleDegrees;
