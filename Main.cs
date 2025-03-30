@@ -8,6 +8,7 @@ public partial class Main : Node
     private World world;
     // Cached reference to the player node instantiated below during scene startup.
     private Player player;
+    private PlayerCamera playerCamera;
 
     [Export]
     public bool bEnableDebugRendering = true;
@@ -49,6 +50,12 @@ public partial class Main : Node
         pauseMenu = GetNode<PauseMenu>("PauseMenu");
         // Refresh the game's pause state any time the pause menu is opened or closed.
         pauseMenu.VisibilityChanged += CheckAndUpdatePause;
+
+        playerCamera = new PlayerCamera();
+        playerCamera.PositionSmoothingEnabled = true;
+        playerCamera.DragHorizontalEnabled = true;
+        playerCamera.DragVerticalEnabled = true;
+        AddChild(playerCamera);
     }
 
     private void OnPlayerHealthChanged(Character character, float newHealth, float oldHealth)
@@ -66,6 +73,8 @@ public partial class Main : Node
         if(Input.IsActionJustPressed("pause_menu")) {
             pauseMenu.ToggleDisplay();
         }
+
+        playerCamera.GlobalPosition = player.GlobalPosition;
     }
 
     // Reviews current game state and determines if the main scene should be paused or unpaused.

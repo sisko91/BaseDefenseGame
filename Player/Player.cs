@@ -5,9 +5,6 @@ using System.Collections.Generic;
 
 public partial class Player : Character
 {
-    // Cached camera reference from the player.tscn.
-    public PlayerCamera Camera { get; private set; }
-
     #region Weapons
 
     // The default / starter weapons that the player always spawns with. May be empty.
@@ -87,9 +84,7 @@ public partial class Player : Character
 
         AddToGroup("Player", true);
 
-        Camera = GetNode<PlayerCamera>("Camera2D");
         WeaponRing = GetNode<WeaponRing>("WeaponRing");
-
         Weapons = new Godot.Collections.Array<Weapon>();
 
         foreach(var starterWeaponTemplate in StarterWeaponTemplates)

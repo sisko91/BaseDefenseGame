@@ -1,11 +1,10 @@
-[gd_scene load_steps=15 format=3 uid="uid://dy47gg8c687bv"]
+[gd_scene load_steps=14 format=3 uid="uid://dy47gg8c687bv"]
 
 [ext_resource type="Script" uid="uid://dsdu35x76daf1" path="res://Player/Player.cs" id="1_imx3i"]
 [ext_resource type="Shader" uid="uid://cfv027nbsnbss" path="res://Shaders/character.gdshader" id="1_od3ui"]
 [ext_resource type="PackedScene" uid="uid://dqdhhyjyrp2ri" path="res://Weapons/Pistol/pistol.tscn" id="2_psqbx"]
 [ext_resource type="PackedScene" uid="uid://dkbkf106r6qu2" path="res://Weapons/Scattergun/scatter_gun.tscn" id="2_rscqp"]
 [ext_resource type="Texture2D" uid="uid://doaffvj52e0h1" path="res://art/debug_texture_gradient.tres" id="2_s5van"]
-[ext_resource type="Script" uid="uid://cmbjm5w5tbppd" path="res://Player/PlayerCamera.cs" id="3_vrqgk"]
 [ext_resource type="Script" uid="uid://ct1byufijcefb" path="res://Player/WeaponRing.cs" id="4_q66cr"]
 [ext_resource type="PackedScene" uid="uid://csp5yukh5lbt0" path="res://Weapons/Throwables/player_thrower_weapon.tscn" id="5_00tjw"]
 [ext_resource type="PackedScene" uid="uid://bxgdmhnmvibqj" path="res://Weapons/Barber/barber_gun.tscn" id="5_apopc"]
@@ -42,13 +41,6 @@ metadata/_edit_group_ = true
 light_mask = 2
 use_parent_material = true
 texture = ExtResource("2_s5van")
-
-[node name="Camera2D" type="Camera2D" parent="."]
-process_callback = 0
-position_smoothing_enabled = true
-drag_horizontal_enabled = true
-drag_vertical_enabled = true
-script = ExtResource("3_vrqgk")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_vtle1")

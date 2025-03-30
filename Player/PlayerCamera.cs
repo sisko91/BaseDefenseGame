@@ -5,15 +5,12 @@ using System;
 public partial class PlayerCamera : Camera2D
 {
     // How fast the camera should zoom in or out. At 1.0, the camera zooms by a factor of 100% per /second/ of continuous zoom input.
-    [Export]
     public float CameraZoomRate = 10.0f;
 
     // The largest camera zoom factor permitted
-    [Export]
     public float CameraZoomMax = 2f;
 
     // The smallest camera zoom factor permitted
-    [Export]
     public float CameraZoomMin = 0.25f;
 
     private Vector2 targetZoom;

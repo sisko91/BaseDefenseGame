@@ -41,21 +41,12 @@ public partial class Barb : Projectile
         CollisionMask = 0;
 
         if(collision.GetCollider() is Node2D colliderNode) {
-            // Attach to the object the barb hit using the current location, rotation, etc.
-            var globalPos = GlobalPosition;
-            var globalRot = GlobalRotation;
-            var globalScale = GlobalScale;
-            GetParent()?.RemoveChild(this);
-            
-            colliderNode.AddChild(this);
-            GlobalRotation = globalRot;
-            GlobalScale = globalScale;
+            this.Reparent(colliderNode);
             // Embed the barb within the surface it strikes (slightly).
-            var embeddingOffset = Vector2.FromAngle(globalRot) * BarbLength * EmbeddedRatio;
-            GlobalPosition = globalPos + embeddingOffset;
+            var embeddingOffset = Vector2.FromAngle(GlobalRotation) * BarbLength * EmbeddedRatio;
+            GlobalPosition = GlobalPosition + embeddingOffset;
 
             //Move to the first child so the barb renders underneath the target
-            ZIndex = 0;
             colliderNode.MoveChild(this, 0);
         }
     }
@@ -81,14 +72,11 @@ public partial class Barb : Projectile
         if (explosion != null) {
             // Communicate the original instigator, so that characters receiving damage know who did it.
             explosion.Instigator = Instigator;
-            explosion.GlobalPosition = GlobalPosition;
             explosion.CollisionLayer = explosion.CollisionLayer << CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
             explosion.CollisionMask = explosion.CollisionMask << CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
 
-            explosion.ZIndex = ZIndex;
-            explosion.Visible = Visible;
-
-            this.GetGameWorld().AddChild(explosion);
+            GetParent().AddChild(explosion);
+            explosion.GlobalPosition = GlobalPosition;
         }
     }
 }

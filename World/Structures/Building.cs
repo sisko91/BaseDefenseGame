@@ -78,76 +78,90 @@ public partial class Building : Node2D
     private void OnBodyEnteredRegion(Node2D body, BuildingRegion region)
     {
         Moveable m = body as Moveable;
-        if (m == null) {
+        //Ignore bodies that are parented to this region, to avoid duplicate events during reparenting
+        if (m == null || m.GetParent() == region) {
             return;
         }
 
-        // We only want to look at events for the body's current elevation
-        if (m.CurrentElevationLevel != region.ElevationLevel) {
-            return;
-        }
-
-        entitiesInside.Add(body);
-        //Render above weather layer so we dont show clouds and stuff inside
-        var zIndex = region.InteriorRegion ? WEATHER_Z_LAYER + 1 : BUILDING_Z_LAYER;
-        body.ZIndex = zIndex;
-
-        m.CurrentRegion = region;
-        m.SetInside(region != null && region.InteriorRegion);
-
-        if (body is Player player)
+        // We only want to look at events for the body's current elevation, and only bodies that have not yet been reparented to this region
+        if (m.CurrentElevationLevel != region.ElevationLevel || m.GetParent() == region)
         {
-            // Set all regions on this elevation to be visible, and all above this elevation to be invisible.
-            foreach (var other in AllRegions)
+            return;
+        }
+
+        //Reparent has to be deferred since this is called from a physics process
+        //Wrapping the rest of the area change logic in this block to avoid reparent issues (e.g. reparent causes an additional enter/exit event on
+        //regions and stairs)
+        Callable.From(() => {
+            m.Reparent(region);
+
+            entitiesInside.Add(body);
+
+            m.CurrentRegion = region;
+            m.SetInside(region != null && region.InteriorRegion);
+
+            if (body is Player player)
             {
-                other.Visible = other.ElevationLevel == region.ElevationLevel || !region.InteriorRegion;
-                if (other.Visible) {
-                    other.ZIndex = zIndex;
+                // Set all regions on this elevation to be visible, and all above this elevation to be invisible.
+                foreach (var other in AllRegions)
+                {
+                    other.Visible = other.ElevationLevel == region.ElevationLevel || !region.InteriorRegion;
+                    if (other.Visible)
+                    {
+                        //Render above weather layer so we dont show clouds and stuff inside
+                        other.ZIndex = region.InteriorRegion ? WEATHER_Z_LAYER + 1 : BUILDING_Z_LAYER;
+                    }
                 }
-            }
 
-            UpdateAllNonPlayerBodies();
-        }
-        else
-        {
-            UpdateNonPlayerBody(m);
-        }
+                UpdateAllNonPlayerBodies();
+            }
+            else
+            {
+                UpdateNonPlayerBody(m);
+            }
+        }).CallDeferred();
     }
 
     private void OnBodyExitedRegion(Node2D body, BuildingRegion region)
     {
         Moveable m = body as Moveable;
         //Some projectiles disable collisions as part of their functionality (e.g. grenades, barbs)
-        //This triggers an exit event, but we don't want to remove these from the region
-        if (m == null || m.CollisionLayer == 0) {
+        //This triggers an exit event, but we don't want to remove these from the region. Same for expiring projectiles
+        if (m == null || m.CollisionLayer == 0 || m.IsQueuedForDeletion()) {
             return;
         }
 
-        // We only want to look at events for the body's current elevation
-        if (m.CurrentElevationLevel != region.ElevationLevel) {
+        // We only want to look at events for the body's current elevation, and only bodies that have been reparented to this region
+        if (m.CurrentElevationLevel != region.ElevationLevel || m.GetParent() != region) {
             return;
         }
 
-        entitiesInside.Remove(body);
-        body.ZIndex = BUILDING_Z_LAYER - 1;
-        if (!region.OverlapsBody(m)) {
-            m.CurrentRegion = null;
-            m.ChangeFloor(0);
-        }
+        Callable.From(() => {
+            m.Reparent(this.GetGameWorld());
 
-        m.SetInside(m.CurrentRegion != null && m.CurrentRegion.InteriorRegion);
-
-        if (body is Player player)
-        {
-            // If there's time left on the timer then we already (recently) scheduled an occupancy check to reset visibility.
-            if (visibilityResetTimer.TimeLeft <= 0)
+            entitiesInside.Remove(body);
+            if (!region.OverlapsBody(m))
             {
-                visibilityResetTimer.Start(0.25f);
+                m.CurrentRegion = null;
+                m.ChangeFloor(0);
             }
-            UpdateAllNonPlayerBodies();
-        } else {
-            UpdateNonPlayerBody(m);
-        }
+
+            m.SetInside(m.CurrentRegion != null && m.CurrentRegion.InteriorRegion);
+
+            if (body is Player player)
+            {
+                // If there's time left on the timer then we already (recently) scheduled an occupancy check to reset visibility.
+                if (visibilityResetTimer.TimeLeft <= 0)
+                {
+                    visibilityResetTimer.Start(0.25f);
+                }
+                UpdateAllNonPlayerBodies();
+            }
+            else
+            {
+                UpdateNonPlayerBody(m);
+            }
+        }).CallDeferred();
     }
 
     private void UpdateNonPlayerBody(Moveable body) {

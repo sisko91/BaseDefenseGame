@@ -22,6 +22,10 @@ public partial class Stairs : InteractionArea {
     }
 
     private void OnBodyEntered(Node2D body) {
+        if (body is Character c && c.GetParent() != OwningRegion) {
+            return;
+        }
+
         if (ignoreNextInteraction) {
             ignoreNextInteraction = false;
             return;
