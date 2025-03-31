@@ -78,8 +78,7 @@ public partial class Building : Node2D
     private void OnBodyEnteredRegion(Node2D body, BuildingRegion region)
     {
         Moveable m = body as Moveable;
-        //Ignore bodies that are parented to this region, to avoid duplicate events during reparenting
-        if (m == null || m.GetParent() == region) {
+        if (m == null || m.CollisionLayer == 0 || m.IsQueuedForDeletion()) {
             return;
         }
 
