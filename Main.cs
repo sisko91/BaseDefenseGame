@@ -56,6 +56,7 @@ public partial class Main : Node
         playerCamera.PositionSmoothingEnabled = true;
         playerCamera.DragHorizontalEnabled = true;
         playerCamera.DragVerticalEnabled = true;
+        playerCamera.Target = player;
         AddChild(playerCamera);
     }
 
@@ -74,8 +75,6 @@ public partial class Main : Node
         if(Input.IsActionJustPressed("pause_menu")) {
             pauseMenu.ToggleDisplay();
         }
-
-        playerCamera.GlobalPosition = player.GlobalPosition;
     }
 
     // Reviews current game state and determines if the main scene should be paused or unpaused.

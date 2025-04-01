@@ -13,6 +13,8 @@ public partial class PlayerCamera : Camera2D
     // The smallest camera zoom factor permitted
     public float CameraZoomMin = 0.25f;
 
+    public Node2D Target;
+
     private Vector2 targetZoom;
 
     // Called when the node enters the scene tree for the first time.
@@ -37,6 +39,11 @@ public partial class PlayerCamera : Camera2D
     public override void _Process(double delta)
     {
         HandleZoom(delta);
+
+        if (Target != null && IsInstanceValid(Target))
+        {
+            this.GlobalPosition = Target.GlobalPosition;
+        }
     }
 
     private void HandleZoom(double delta)
