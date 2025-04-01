@@ -1,15 +1,11 @@
-[gd_scene load_steps=22 format=3 uid="uid://h6mtv0wbug0t"]
+[gd_scene load_steps=20 format=3 uid="uid://h6mtv0wbug0t"]
 
 [ext_resource type="Script" uid="uid://drac3p47binwd" path="res://World/Structures/Building.cs" id="1_7ffef"]
 [ext_resource type="PackedScene" uid="uid://cw48c72a4tsvk" path="res://World/Structures/Testing/test_wall.tscn" id="1_e2nee"]
 [ext_resource type="Script" uid="uid://cbfqcsyk76tqo" path="res://World/Structures/BuildingRegion.cs" id="1_edy31"]
-[ext_resource type="Shader" uid="uid://dbq15bbjbsfyi" path="res://Shaders/building.gdshader" id="2_pvg10"]
 [ext_resource type="PackedScene" uid="uid://chpuk4qnqqxm4" path="res://World/Structures/Testing/test_door.tscn" id="5_e5hgi"]
 [ext_resource type="PackedScene" uid="uid://boifro8bbs3lu" path="res://World/Structures/Testing/test_stairs.tscn" id="6_k5khk"]
 [ext_resource type="PackedScene" uid="uid://dgkvalqk6hieg" path="res://World/wall.tscn" id="6_mexbq"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_pvg10"]
-shader = ExtResource("2_pvg10")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k1td7"]
 size = Vector2(480, 205)
@@ -40,9 +36,6 @@ gradient = SubResource("Gradient_oogqs")
 width = 448
 height = 56
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_4jyrl"]
-shader = ExtResource("2_pvg10")
-
 [sub_resource type="Gradient" id="Gradient_bacaw"]
 offsets = PackedFloat32Array(0.233766, 0.88961)
 colors = PackedColorArray(0.646717, 0.273671, 0.364432, 1, 0.604293, 0.371097, 0.396354, 1)
@@ -66,12 +59,15 @@ height = 256
 fill = 2
 fill_from = Vector2(0.5, 0.5)
 
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_pvg10"]
+polygon = PackedVector2Array(1, 233, 512, 233, 512, -23, 0, -24)
+
 [node name="TestBuilding" type="Node2D"]
 script = ExtResource("1_7ffef")
+BuildingHeight = 23
 
 [node name="Floor0" type="Area2D" parent="."]
 z_index = 1
-material = SubResource("ShaderMaterial_pvg10")
 collision_mask = 3
 script = ExtResource("1_edy31")
 
@@ -158,7 +154,6 @@ texture = SubResource("GradientTexture2D_tlued")
 
 [node name="Floor1" type="Area2D" parent="."]
 z_index = 1
-material = SubResource("ShaderMaterial_4jyrl")
 collision_layer = 16
 collision_mask = 48
 script = ExtResource("1_edy31")
@@ -316,3 +311,7 @@ offset_top = 233.0
 offset_right = 512.0
 offset_bottom = 256.0
 color = Color(0.23078, 0.175854, 0.116757, 1)
+
+[node name="LightOccluder2D" type="LightOccluder2D" parent="Roof"]
+occluder = SubResource("OccluderPolygon2D_pvg10")
+sdf_collision = false

@@ -7,6 +7,9 @@ using System.Linq;
 // A building has at least one interior region.
 public partial class Building : Node2D
 {
+    [Export]
+    public int BuildingHeight;
+
     private HashSet<Node2D> entitiesInside = new HashSet<Node2D>();
 
     private Godot.Collections.Array<BuildingRegion> _allRegions = null;
@@ -14,7 +17,7 @@ public partial class Building : Node2D
     public List<Door> Exits;
 
     private static int BUILDING_Z_LAYER = 1;
-    private static int WEATHER_Z_LAYER = 2;
+    private static int WEATHER_Z_LAYER = 3;
     public Godot.Collections.Array<BuildingRegion> AllRegions 
     { 
         get
@@ -139,10 +142,12 @@ public partial class Building : Node2D
             m.Reparent(this.GetGameWorld());
 
             entitiesInside.Remove(body);
+            //Fell off the roof
             if (!region.OverlapsBody(m))
             {
                 m.CurrentRegion = null;
                 m.ChangeFloor(0);
+                m.GlobalPosition = m.GlobalPosition + new Vector2(0, BuildingHeight);
             }
 
             m.SetInside(m.CurrentRegion != null && m.CurrentRegion.InteriorRegion);

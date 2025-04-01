@@ -26,25 +26,25 @@ public partial class Player : Character
 
     // Runtime list of weapon instances the player owns.
     public Godot.Collections.Array<Weapon> Weapons { get; private set; }
-    
+
     protected Weapon EquippedWeapon { get { return WeaponRing.EquippedWeapon; } }
-    protected Weapon NextWeapon { 
-        get 
+    protected Weapon NextWeapon {
+        get
         {
             var idx = Weapons.IndexOf(EquippedWeapon) + 1;
-            if(idx >= Weapons.Count)
+            if (idx >= Weapons.Count)
             {
                 idx = 0;
             }
             return Weapons[idx];
-        } 
+        }
     }
     protected Weapon PreviousWeapon
     {
         get
         {
             var idx = Weapons.IndexOf(EquippedWeapon) - 1;
-            if(idx < 0)
+            if (idx < 0)
             {
                 idx = Weapons.Count - 1;
             }
@@ -87,11 +87,11 @@ public partial class Player : Character
         WeaponRing = GetNode<WeaponRing>("WeaponRing");
         Weapons = new Godot.Collections.Array<Weapon>();
 
-        foreach(var starterWeaponTemplate in StarterWeaponTemplates)
+        foreach (var starterWeaponTemplate in StarterWeaponTemplates)
         {
             var starterWeapon = starterWeaponTemplate.Instantiate<Weapon>();
             Weapons.Add(starterWeapon);
-            if(WeaponRing.EquippedWeapon == null)
+            if (WeaponRing.EquippedWeapon == null)
             {
                 WeaponRing.Equip(starterWeapon);
             }
@@ -120,7 +120,15 @@ public partial class Player : Character
         }
 
         ghostSprites = new HashSet<Sprite2D>();
-    }
+
+        //The player's sprite and all shader effects are rendered in a viewport (this is not shown onscreen)
+        //This allows retrieving a flattened post-effect texture, which is used for generating a silhouette
+        GetPlayerSpriteSubviewport().GetNode<Sprite2D>("Sprite2D").Material = Material;
+        GetPlayerSpriteSubviewport().RenderTargetUpdateMode = SubViewport.UpdateMode.Always;
+
+        var silhouetteSprite = GetNode<Sprite2D>("Silhouette");
+        silhouetteSprite.Texture = GetSpriteCopy().Texture;
+    }       
 
     // Called every tick of the physics thread.
     public override void _PhysicsProcess(double delta)
@@ -137,7 +145,7 @@ public partial class Player : Character
 
     public override void _Input(InputEvent @event)
     {
-        switch(@event)
+        switch (@event)
         {
             // KB+M
             case InputEventKey:
@@ -145,7 +153,7 @@ public partial class Player : Character
                 if (@event is InputEventMouseMotion) {
                     // High-DPI mice (and maybe others) push zero-velocity events periodically and it interferes with gamepad use.
                     var motionEvent = @event as InputEventMouseMotion;
-                    if(motionEvent.Velocity.IsZeroApprox()) {
+                    if (motionEvent.Velocity.IsZeroApprox()) {
                         break;
                     }
                 }
@@ -169,7 +177,7 @@ public partial class Player : Character
             movement = Input.GetVector("player_move_left", "player_move_right", "player_move_up", "player_move_down");
             speed = MovementSpeed;
         }
-        
+
         Velocity = movement * speed * (float)delta;
 
         var collision = MoveAndCollide(Velocity);
@@ -181,10 +189,10 @@ public partial class Player : Character
 
     private void HandleAim(double delta)
     {
-        if(bUsingGamepad)
+        if (bUsingGamepad)
         {
             Vector2 aim = Input.GetVector("player_aim_left", "player_aim_right", "player_aim_up", "player_aim_down");
-            if(aim.IsZeroApprox())
+            if (aim.IsZeroApprox())
             {
                 // Just use the velocity instead when no aiming is provided.
                 // TODO: Lerp?
@@ -209,7 +217,7 @@ public partial class Player : Character
         if (Input.IsActionJustPressed("shoot")) {
             WeaponRing.EquippedWeapon?.PressFire();
         }
-        else if(Input.IsActionJustReleased("shoot"))
+        else if (Input.IsActionJustReleased("shoot"))
         {
             WeaponRing.EquippedWeapon?.ReleaseFire();
         }
@@ -219,8 +227,8 @@ public partial class Player : Character
             WeaponRing.Equip(Thrower);
             WeaponRing.EquippedWeapon?.PressFire();
         }
-        else if(Input.IsActionJustReleased("throw_grenade")) {
-            if(WeaponRing.EquippedWeapon == Thrower) {
+        else if (Input.IsActionJustReleased("throw_grenade")) {
+            if (WeaponRing.EquippedWeapon == Thrower) {
                 WeaponRing.EquippedWeapon?.ReleaseFire();
                 WeaponRing.Equip(WeaponRing.LastEquippedWeapon);
             }
@@ -236,7 +244,7 @@ public partial class Player : Character
             WeaponRing.Equip(PreviousWeapon);
         }
 
-        if(Input.IsActionJustPressed("player_confirm"))
+        if (Input.IsActionJustPressed("player_confirm"))
         {
             InteractWithNearestObject();
         }
@@ -258,12 +266,12 @@ public partial class Player : Character
             dashTimer.Start(DashDuration);
 
             SpawnDashGhost();
-            dashGhostTimer.Start(2f/60f); //spawn every 2 frames
+            dashGhostTimer.Start(2f / 60f); //spawn every 2 frames
         }
     }
 
     private void SpawnDashGhost() {
-        Sprite2D ghostSprite = (Sprite2D)GetNode<Sprite2D>("Sprite2D").Duplicate();
+        Sprite2D ghostSprite = GetSpriteCopy();
         ghostSprite.GlobalPosition = GlobalPosition;
         ghostSprite.ZIndex = ZIndex;
         var mat = new CanvasItemMaterial();
@@ -288,5 +296,16 @@ public partial class Player : Character
         foreach (var ghostSprite in ghostSprites) {
             ghostSprite.Hide();
         }
+    }
+
+    private Sprite2D GetSpriteCopy() {
+        Sprite2D sprite = new Sprite2D();
+        sprite.Texture = GetPlayerSpriteSubviewport().GetTexture();
+        return sprite;
+    }
+
+    private SubViewport GetPlayerSpriteSubviewport()
+    {
+        return GetNode<SubViewport>("SubViewport");
     }
 }

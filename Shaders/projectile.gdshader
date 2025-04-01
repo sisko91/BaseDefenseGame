@@ -8,8 +8,8 @@ void fragment()
 {
     vec4 color = texture(TEXTURE, UV);
 
-	if (is_inside) {
-		COLOR = color / day_night_color;
+	if (!is_inside) {
+		COLOR = color * day_night_color;
 	}
 }
 

@@ -84,6 +84,7 @@ fill_from = Vector2(0.5, 0.5)
 collision_layer = 2147483648
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+z_index = 1
 sprite_frames = SubResource("SpriteFrames_ero6e")
 autoplay = "default"
 frame_progress = 0.418024
@@ -97,7 +98,7 @@ shape = SubResource("CircleShape2D_w71os")
 position = Vector2(-0.0586529, 22.0525)
 energy = 3.0
 range_z_min = 0
-range_z_max = 0
+range_z_max = 1
 range_item_cull_mask = 3
 shadow_filter = 1
 shadow_filter_smooth = 3.0

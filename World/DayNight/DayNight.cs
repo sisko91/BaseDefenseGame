@@ -16,7 +16,6 @@ public partial class DayNight : Node
 
     public Color dayNightColor { get; private set; }
 
-    private CanvasModulate canvasModulate;
     public override void _Ready()
     {
         lightGradient = GD.Load<GradientTexture2D>("res://art/World/daynight.tres");
@@ -27,7 +26,6 @@ public partial class DayNight : Node
         AddChild(dayTimer);
 
         dayNightColor = new Color(0, 0, 0, 0);
-        canvasModulate = GetNode<CanvasModulate>("CanvasModulate");
     }
 
     public override void _Process(double delta)
@@ -37,6 +35,5 @@ public partial class DayNight : Node
         dayNightColor = lightGradient.Gradient.Sample((float)dayPercent);
 
         RenderingServer.GlobalShaderParameterSet("day_night_color", dayNightColor);
-        canvasModulate.Color = dayNightColor;
     }
 }

@@ -1,8 +1,9 @@
-[gd_scene load_steps=14 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=16 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
 [ext_resource type="Shader" uid="uid://cudyiyn8n3ntx" path="res://Shaders/cloud.gdshader" id="2_vxmty"]
+[ext_resource type="Shader" uid="uid://cwkbk8kbjdbbj" path="res://Shaders/background.gdshader" id="3_dghf1"]
 [ext_resource type="PackedScene" uid="uid://2ctjrem32j1v" path="res://NPC/shambler.tscn" id="6_a6glu"]
 [ext_resource type="PackedScene" uid="uid://h6mtv0wbug0t" path="res://World/Structures/Testing/test_building.tscn" id="6_lhns8"]
 [ext_resource type="Script" uid="uid://bnt0qsggcts86" path="res://World/RadialSpawner.cs" id="6_xi2eq"]
@@ -27,6 +28,9 @@ shader_parameter/noise_texture = SubResource("NoiseTexture2D_xy6ls")
 shader_parameter/density = 0.25
 shader_parameter/speed = Vector2(0.02, 0.01)
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_523qg"]
+shader = ExtResource("3_dghf1")
+
 [node name="World" type="Node2D"]
 script = ExtResource("1_tr0n8")
 RegionBounds = Vector2(6000, 6000)
@@ -39,7 +43,7 @@ repeat_times = 2
 
 [node name="ColorRect" type="ColorRect" parent="ParallaxBackground"]
 light_mask = 2
-z_index = 2
+z_index = 3
 texture_repeat = 3
 material = SubResource("ShaderMaterial_kx652")
 offset_left = -3072.0
@@ -50,10 +54,14 @@ metadata/_edit_use_anchors_ = true
 
 [node name="Background" type="Sprite2D" parent="."]
 texture_repeat = 2
+material = SubResource("ShaderMaterial_523qg")
 texture = ExtResource("2_rsvub")
 region_enabled = true
 region_rect = Rect2(0, 0, 6144, 6144)
 region_filter_clip_enabled = true
+
+[node name="Floor 0 Lights" type="SubViewport" parent="."]
+size = Vector2i(6000, 6000)
 
 [node name="TestBuilding" parent="." instance=ExtResource("6_lhns8")]
 position = Vector2(-566, -305)
@@ -74,6 +82,7 @@ color = Color(0.623529, 0.333333, 0, 1)
 metadata/_edit_use_anchors_ = true
 
 [node name="Shadow" type="ColorRect" parent="Overhang"]
+light_mask = 0
 z_as_relative = false
 offset_top = 150.0
 offset_right = 119.0
@@ -89,10 +98,7 @@ InnerRadius = 400.0
 OuterRadius = 500.0
 StartAngleDegrees = 270.0
 StopAngleDegrees = 90.0
-InitialCount = 2
-
-[node name="TestFireplace" parent="." instance=ExtResource("7_8h8jw")]
-position = Vector2(-1, 30)
+InitialCount = 0
 
 [node name="CrystalTarget" parent="." instance=ExtResource("7_8h8jj")]
 position = Vector2(-312, 146)
@@ -101,5 +107,9 @@ MaxHealth = 100.0
 
 [node name="DayNight" type="Node" parent="."]
 script = ExtResource("11_11lc6")
+dayStartTime = 0.65
 
-[node name="CanvasModulate" type="CanvasModulate" parent="DayNight"]
+[node name="Player" type="Node2D" parent="."]
+
+[node name="TestFireplace" parent="." instance=ExtResource("7_8h8jw")]
+position = Vector2(-2, 30)
