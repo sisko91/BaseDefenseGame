@@ -132,11 +132,11 @@ dash={
 
 [layer_names]
 
-2d_physics/layer_1="Player"
+2d_physics/layer_1="Character"
 2d_physics/layer_2="Projectiles"
 2d_physics/layer_3="Environment"
 2d_physics/layer_4="Interactions"
-2d_physics/layer_5="Floor1_Player"
+2d_physics/layer_5="Floor1_Character"
 2d_physics/layer_6="Floor1_Projectiles"
 2d_physics/layer_7="Floor1_Environment"
 2d_physics/layer_8="Floor1_Interactions"

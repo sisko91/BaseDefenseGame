@@ -11,6 +11,9 @@ public partial class Barber : Weapon
     [Export]
     public float FireCooldownSeconds = 0.25f;
 
+    [Export]
+    public float MaxRoundSpreadDegrees = 5.0f;
+
     private double lastFireTime = -1;
     private bool bFiring = false;
 
@@ -36,9 +39,12 @@ public partial class Barber : Weapon
         }
 
         lastFireTime = timeSeconds;
-        var barb = BarbTemplate.Instantiate<Projectile>();
-        barb.Start(GlobalPosition, GlobalRotation, Instigator);
-    }
+        var barb = BarbTemplate.Instantiate<Barb>();
+        var rot = GlobalRotation;
+        var offsetDeg = new Random().NextDouble() * MaxRoundSpreadDegrees * 2.0f - MaxRoundSpreadDegrees;
+        rot += (float) (offsetDeg * Math.PI / 180.0f);
+        barb.Start(GlobalPosition, rot, Instigator);
+    }   
 
     public override void _Process(double delta) {
         if(bFiring) {

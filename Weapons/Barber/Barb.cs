@@ -1,6 +1,8 @@
 using ExtensionMethods;
 using Godot;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 public partial class Barb : Projectile
 {
@@ -12,10 +14,16 @@ public partial class Barb : Projectile
     [Export]
     public PackedScene ExplosionTemplate { get; protected set; }
 
+    [Export]
+    public float SeekAngleDegress = 15;
+
     protected float BarbLength { get; private set; }
 
     // Returns true if the barb instance has stuck inside of something.
     public bool Stuck { get; private set; } = false;
+
+    private Area2D SeekRange;
+    private Node2D target = null;
 
     public Barb() {
         // Barbs stick into surfaces and shouldn't destroy when they collide with stuff.
@@ -27,6 +35,45 @@ public partial class Barb : Projectile
 
         var collider = GetNode<CollisionShape2D>("CollisionShape2D");
         BarbLength = collider.Shape.GetRect().Size.X;
+
+        SeekRange = GetNode<Area2D>("SeekRange");
+    }
+
+    public override void _Process(double delta)
+    {
+        base._Process(delta);
+
+        if (Stuck)
+        {
+            return;
+        }
+
+        if (target != null && IsInstanceValid(target))
+        {
+            //Seek to target
+            Vector2 direction = GlobalPosition.DirectionTo(target.GlobalPosition);
+            var desiredVelocity = direction * InitialSpeed;
+            Velocity = Velocity.Lerp(desiredVelocity, 0.1f);
+            return;
+        }
+
+        List<Node2D> bodies = SeekRange.GetOverlappingBodies().OrderBy(node => GlobalPosition.DistanceTo(node.GlobalPosition)).ToList();
+        foreach (Node2D body in bodies) {
+            if (body is Player)
+            {
+                continue;
+            }
+
+            Vector2 direction = GlobalPosition.DirectionTo(body.GlobalPosition);
+            var turnAngle = Velocity.AngleTo(direction);
+            //Only lock on to targets within a cone of the direction of travel
+            if (Math.Abs(turnAngle) < SeekAngleDegress * Math.PI / 180.0f)
+            {
+                //TODO: Try raycast, only seek to unobstructed targets
+                target = body;
+                break;
+            }
+        }
     }
 
     protected override void OnCollide(KinematicCollision2D collision) {
