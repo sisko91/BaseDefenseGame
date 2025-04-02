@@ -59,7 +59,8 @@ public partial class Grenade : Projectile, IInstigated
         CollisionLayer = 0;
         CollisionMask = 0;
 
-        // TODO: Set z-order to be ground level so that characters can walk over the bomb and will render above it.
+        // Set z-order to be ground level so that characters can walk over the bomb and will render above it
+        ZIndex = ZIndex - 1;
     }
 
     protected void Bounce(KinematicCollision2D collision) {

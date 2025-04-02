@@ -53,6 +53,7 @@ offset_bottom = 3072.0
 metadata/_edit_use_anchors_ = true
 
 [node name="Background" type="Sprite2D" parent="."]
+z_index = -1
 texture_repeat = 2
 material = SubResource("ShaderMaterial_523qg")
 texture = ExtResource("2_rsvub")
@@ -98,7 +99,7 @@ InnerRadius = 400.0
 OuterRadius = 500.0
 StartAngleDegrees = 270.0
 StopAngleDegrees = 90.0
-InitialCount = 2
+InitialCount = 20
 
 [node name="CrystalTarget" parent="." instance=ExtResource("7_8h8jj")]
 position = Vector2(-312, 146)

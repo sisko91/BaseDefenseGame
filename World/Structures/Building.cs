@@ -96,6 +96,7 @@ public partial class Building : Node2D
         //regions and stairs)
         Callable.From(() => {
             m.Reparent(region);
+            m.ZIndex += 1; //Provide a "background" layer hide things behind the player/enemies
 
             entitiesInside.Add(body);
 
@@ -147,6 +148,7 @@ public partial class Building : Node2D
             {
                 m.Reparent(this.GetGameWorld());
             }
+            m.ZIndex -= 1;
 
             entitiesInside.Remove(body);
             //Fell off the roof
