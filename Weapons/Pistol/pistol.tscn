@@ -9,8 +9,9 @@ colors = PackedColorArray(0.28, 0.28, 0.28, 1, 0, 0, 0, 1)
 gradient = SubResource("Gradient_l3iqi")
 width = 64
 
-[node name="DebugWeapon" type="Node2D"]
+[node name="Pistol" type="Node2D"]
 script = ExtResource("1_wm8q8")
+FireCooldownSeconds = 0.1
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(1, 16)

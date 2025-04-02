@@ -15,7 +15,7 @@ public partial class Barb : Projectile
     public PackedScene ExplosionTemplate { get; protected set; }
 
     [Export]
-    public float SeekAngleDegress = 15;
+    public float SeekAngleDegrees = 30;
 
     protected float BarbLength { get; private set; }
 
@@ -67,7 +67,7 @@ public partial class Barb : Projectile
             Vector2 direction = GlobalPosition.DirectionTo(body.GlobalPosition);
             var turnAngle = Velocity.AngleTo(direction);
             //Only lock on to targets within a cone of the direction of travel
-            if (Math.Abs(turnAngle) < SeekAngleDegress * Math.PI / 180.0f)
+            if (Math.Abs(turnAngle) < SeekAngleDegrees / 2 * Math.PI / 180.0f)
             {
                 //TODO: Try raycast, only seek to unobstructed targets
                 target = body;

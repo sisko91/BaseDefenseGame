@@ -18,6 +18,8 @@ fill_to = Vector2(0.8, 1)
 script = ExtResource("1_k1l77")
 BarbTemplate = ExtResource("2_nm7di")
 FireCooldownSeconds = 0.1
+ClipSize = 10
+EnableAutofire = true
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(0.75, 1)
