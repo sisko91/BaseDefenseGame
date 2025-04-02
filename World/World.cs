@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public partial class World : Node2D
 {
@@ -9,11 +10,11 @@ public partial class World : Node2D
     public Vector2 RegionBounds { get; set; }
 
     // All Player nodes currently in the scene.
-    public Godot.Collections.Array<Node> Players
+    public List<Player> Players
     {
         get
         {
-            return GetTree().GetNodesInGroup("Player");
+            return GetTree().GetNodesInGroup("Player").Cast<Player>().ToList();
         }
     }
 
@@ -42,11 +43,12 @@ public partial class World : Node2D
         }
     }
 
-    public Node2D PlayerNode
+    //Holds the player 
+    public Node2D PlayerContainerNode
     {
         get
         {
-            return GetNode<Node2D>("Player");
+            return GetNode<Node2D>("PlayerContainer");
         }
     }
 

@@ -74,6 +74,8 @@ public partial class Building : Node2D
             region.BodyEntered += (Node2D body) => OnBodyEnteredRegion(body, region);
             region.BodyExited += (Node2D body) => OnBodyExitedRegion(body, region);
 
+            region.AreaEntered += (Area2D area) => OnAreaEnteredRegion(area, region);
+
             Exits.AddRange(region.GetExits());
         }
     }
@@ -116,6 +118,13 @@ public partial class Building : Node2D
                     }
                 }
 
+                foreach (Area2D area in region.GetOverlappingAreas())
+                {
+                    if (area is Explosion)
+                    {
+                        area.Show();
+                    }
+                }
                 UpdateAllNonPlayerBodies();
             }
             else
@@ -142,7 +151,7 @@ public partial class Building : Node2D
         Callable.From(() => {
             if (m is Player)
             {
-                m.Reparent(this.GetGameWorld().PlayerNode);
+                m.Reparent(this.GetGameWorld().PlayerContainerNode);
             }
             else
             {
@@ -168,6 +177,14 @@ public partial class Building : Node2D
                 {
                     visibilityResetTimer.Start(0.25f);
                 }
+
+                foreach (Area2D area in region.GetOverlappingAreas())
+                {
+                    if (area is Explosion)
+                    {
+                        area.Hide();
+                    }
+                }
                 UpdateAllNonPlayerBodies();
             }
             else
@@ -175,6 +192,20 @@ public partial class Building : Node2D
                 UpdateNonPlayerBody(m);
             }
         }).CallDeferred();
+    }
+
+    private void OnAreaEnteredRegion(Area2D area, BuildingRegion region)
+    {
+        bool playerInsideRegion = this.GetGameWorld().Players[0].CurrentRegion == region;
+        if (area is Explosion)
+        {
+            //Kind of hacky, but an easy way to detect if a point is in the building
+            var regionGround = region.GetNode<Sprite2D>("Ground").GetRect();
+            var regionBoundary = new Rect2(ToGlobal(regionGround.Position), regionGround.Size);
+            bool explosionInsideRegion = regionBoundary.HasPoint(area.GlobalPosition);
+
+            area.Visible = explosionInsideRegion == playerInsideRegion ;
+        }
     }
 
     private void UpdateNonPlayerBody(Moveable body) {
