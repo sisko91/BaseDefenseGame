@@ -122,7 +122,14 @@ public partial class Barb : Projectile
             explosion.CollisionLayer = explosion.CollisionLayer << CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
             explosion.CollisionMask = explosion.CollisionMask << CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
 
-            GetParent().AddChild(explosion);
+            var parent = GetParent();
+            if (Stuck)
+            {
+                //Don't parent barb explosions to the thing barbs are stuck in - if it dies, the explosions die
+                parent = parent.GetParent();
+            }
+
+            parent.AddChild(explosion);
             explosion.GlobalPosition = GlobalPosition;
         }
     }
