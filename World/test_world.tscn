@@ -107,7 +107,7 @@ MaxHealth = 100.0
 
 [node name="DayNight" type="Node" parent="."]
 script = ExtResource("11_11lc6")
-dayStartTime = 0.65
+FreezeTime = true
 
 [node name="Player" type="Node2D" parent="."]
 
