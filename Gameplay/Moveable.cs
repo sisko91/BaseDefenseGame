@@ -2,7 +2,7 @@ using Godot;
 using System;
 
 //Common functionality for any moveable object that implements CharacterBody2D (like projectiles and characters)
-public partial class Moveable : CharacterBody2D {
+public partial class Moveable : CharacterBody2D, IEntity {
 
     // The entity's current elevation in the world. Defaults to 0 which is ground level. This is updated by Buildings when
     // entities enter their regions

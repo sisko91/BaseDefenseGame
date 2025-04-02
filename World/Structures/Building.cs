@@ -118,13 +118,6 @@ public partial class Building : Node2D
                     }
                 }
 
-                foreach (Area2D area in region.GetOverlappingAreas())
-                {
-                    if (area is Explosion)
-                    {
-                        area.Show();
-                    }
-                }
                 UpdateAllNonPlayerBodies();
             }
             else
@@ -178,13 +171,6 @@ public partial class Building : Node2D
                     visibilityResetTimer.Start(0.25f);
                 }
 
-                foreach (Area2D area in region.GetOverlappingAreas())
-                {
-                    if (area is Explosion)
-                    {
-                        area.Hide();
-                    }
-                }
                 UpdateAllNonPlayerBodies();
             }
             else
@@ -196,41 +182,43 @@ public partial class Building : Node2D
 
     private void OnAreaEnteredRegion(Area2D area, BuildingRegion region)
     {
-        bool playerInsideRegion = this.GetGameWorld().Players[0].CurrentRegion == region;
-        if (area is Explosion)
+        if (area is Explosion exp)
         {
-            //Kind of hacky, but an easy way to detect if a point is in the building
+            //Kind of hacky, but an easy way to detect if a point is in the building. We want to check if the center of the explosion
+            //is in the region, not if it just overlaps
             var regionGround = region.GetNode<Sprite2D>("Ground").GetRect();
             var regionBoundary = new Rect2(ToGlobal(regionGround.Position), regionGround.Size);
             bool explosionInsideRegion = regionBoundary.HasPoint(area.GlobalPosition);
+            exp.CurrentRegion = explosionInsideRegion ? region : null;
 
-            area.Visible = explosionInsideRegion == playerInsideRegion ;
+            UpdateNonPlayerBody(exp);
         }
     }
 
-    private void UpdateNonPlayerBody(Moveable body) {
-        var playerNodes = GetTree().GetNodesInGroup("Player").Cast<Player>().ToArray();
-        if (playerNodes.Length < 1) {
+    private void UpdateNonPlayerBody(IEntity body) {
+        if (this.GetGameWorld().Players.Count == 0)
+        {
             return;
         }
+        BuildingRegion playerRegion = this.GetGameWorld().Players[0].CurrentRegion;
 
-        Player player = playerNodes[0];
-        bool playerOutside = player.CurrentRegion == null || !player.CurrentRegion.InteriorRegion;
+        bool playerOutside = playerRegion == null || !playerRegion.InteriorRegion;
         bool bodyOutside = body.CurrentRegion == null || !body.CurrentRegion.InteriorRegion;
 
-        if (body.CurrentRegion == player.CurrentRegion || playerOutside && bodyOutside) {
-            body.Show();
+        if (body.CurrentRegion == playerRegion || playerOutside && bodyOutside) {
+            ((Node2D)body).Show();
         } else {
-            body.Hide();
+            ((Node2D)body).Hide();
         }
     }
 
     private void UpdateAllNonPlayerBodies() {
         var nodes = GetTree().GetNodesInGroup("Projectiles");
         nodes.AddRange(GetTree().GetNodesInGroup("Hostile"));
+        nodes.AddRange(GetTree().GetNodesInGroup("Explosions"));
 
         foreach (Node2D node in nodes) {
-            UpdateNonPlayerBody(node as Moveable);
+            UpdateNonPlayerBody(node as IEntity);
         }
     }
 

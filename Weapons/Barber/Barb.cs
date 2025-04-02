@@ -129,6 +129,7 @@ public partial class Barb : Projectile
                 parent = parent.GetParent();
             }
 
+            explosion.Visible = Visible;
             parent.AddChild(explosion);
             explosion.GlobalPosition = GlobalPosition;
         }

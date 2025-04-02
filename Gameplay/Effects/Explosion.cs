@@ -2,10 +2,13 @@ using ExtensionMethods;
 using Godot;
 using Godot.Collections;
 
-public partial class Explosion : Area2D, IInstigated, IImpactMaterial
+public partial class Explosion : Area2D, IInstigated, IImpactMaterial, IEntity
 {
     // Instigator property satisfies IInstigated interface.
     public Character Instigator { get; set; }
+    
+    //Satisfy the IEntity interface
+    public BuildingRegion CurrentRegion { get; set; }
 
     // The outer-most distance that the blast will cover, in world units.
     [Export]
@@ -61,6 +64,8 @@ public partial class Explosion : Area2D, IInstigated, IImpactMaterial
     // The raycaster node spawned for this explosion, used to check line-of-sight for calculating blast force on targets behind walls and other obstructions.
     protected RayCast2D Raycaster { get; private set; }
 
+    public string GroupName = "Explosions";
+
     public override void _Ready() {
         base._Ready();
 
@@ -100,6 +105,9 @@ public partial class Explosion : Area2D, IInstigated, IImpactMaterial
                 particles.Emitting = true;
             }
         }
+
+        CurrentRegion = null;
+        AddToGroup("Explosions");
     }
 
     private void Explosion_BodyEntered(Node2D body) {
