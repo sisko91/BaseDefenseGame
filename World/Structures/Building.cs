@@ -139,7 +139,14 @@ public partial class Building : Node2D
         }
 
         Callable.From(() => {
-            m.Reparent(this.GetGameWorld());
+            if (m is Player)
+            {
+                m.Reparent(this.GetGameWorld().PlayerNode);
+            }
+            else
+            {
+                m.Reparent(this.GetGameWorld());
+            }
 
             entitiesInside.Remove(body);
             //Fell off the roof
