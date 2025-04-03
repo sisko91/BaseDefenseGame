@@ -97,8 +97,11 @@ public partial class Building : Node2D
         //Wrapping the rest of the area change logic in this block to avoid reparent issues (e.g. reparent causes an additional enter/exit event on
         //regions and stairs)
         Callable.From(() => {
+            if (m.GetParent() is not BuildingRegion)
+            {
+                m.ZIndex += 1; //Provide a "background" layer hide things behind the player/enemies
+            }
             m.Reparent(region);
-            m.ZIndex += 1; //Provide a "background" layer hide things behind the player/enemies
 
             entitiesInside.Add(body);
 
@@ -142,6 +145,8 @@ public partial class Building : Node2D
         }
 
         Callable.From(() => {
+            m.ZIndex -= 1;
+
             if (m is Player)
             {
                 m.Reparent(this.GetGameWorld().PlayerContainerNode);
@@ -150,7 +155,6 @@ public partial class Building : Node2D
             {
                 m.Reparent(this.GetGameWorld());
             }
-            m.ZIndex -= 1;
 
             entitiesInside.Remove(body);
             //Fell off the roof
