@@ -1,0 +1,128 @@
+[gd_scene load_steps=14 format=3 uid="uid://blio7x08xw4te"]
+
+[ext_resource type="Texture2D" uid="uid://u1volqeqe1y4" path="res://art/NPCs/Herbalist/Idle Adding.png" id="1_igakq"]
+[ext_resource type="Script" uid="uid://diqhn05s0g7u4" path="res://NPC/Scenes/Merchant.cs" id="1_uet4w"]
+[ext_resource type="Script" uid="uid://bolljvejit73e" path="res://Gameplay/InteractionArea.cs" id="3_x2sq7"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uet4w"]
+atlas = ExtResource("1_igakq")
+region = Rect2(0, 0, 25, 30)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x2sq7"]
+atlas = ExtResource("1_igakq")
+region = Rect2(25, 0, 25, 30)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kgmmw"]
+atlas = ExtResource("1_igakq")
+region = Rect2(50, 0, 25, 30)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2mgmv"]
+atlas = ExtResource("1_igakq")
+region = Rect2(75, 0, 25, 30)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_exo85"]
+atlas = ExtResource("1_igakq")
+region = Rect2(100, 0, 25, 30)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ayvk8"]
+atlas = ExtResource("1_igakq")
+region = Rect2(125, 0, 25, 30)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5tc6m"]
+atlas = ExtResource("1_igakq")
+region = Rect2(150, 0, 25, 30)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_k3qio"]
+atlas = ExtResource("1_igakq")
+region = Rect2(175, 0, 25, 30)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_yg02f"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uet4w")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x2sq7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kgmmw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2mgmv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_exo85")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ayvk8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5tc6m")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_k3qio")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_kgmmw"]
+radius = 16.0
+height = 34.0
+
+[node name="Merchant" type="CharacterBody2D"]
+script = ExtResource("1_uet4w")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_yg02f")
+autoplay = "default"
+frame_progress = 0.297527
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+visible = false
+scale = Vector2(0.686429, 1.05117)
+polygon = PackedVector2Array(-13.1113, 14.2698, 13.1113, 14.2698, 16.025, 12.3672, 16.025, 9.51321, 18.9386, 7.61057, 18.9386, 0.951321, 16.025, -0.951321, -14.5681, -0.951321, -18.9386, 0.951321, -18.9386, 7.61057, -16.025, 10.4645, -16.025, 12.3672)
+
+[node name="InteractionZone" type="Area2D" parent="." node_paths=PackedStringArray("InteractionPrompt")]
+collision_layer = 128
+collision_mask = 16
+script = ExtResource("3_x2sq7")
+InteractionPrompt = NodePath("TextPrompt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionZone"]
+position = Vector2(0, 5)
+shape = SubResource("CapsuleShape2D_kgmmw")
+
+[node name="TextPrompt" type="Control" parent="InteractionZone"]
+visible = false
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -19.0
+offset_top = -15.0
+offset_right = 21.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextLabel" type="Label" parent="InteractionZone/TextPrompt"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.495
+anchor_top = -0.181
+anchor_right = 0.495
+anchor_bottom = -0.181
+offset_left = -35.8
+offset_top = -4.76
+offset_right = 105.2
+offset_bottom = 18.24
+scale = Vector2(0.507525, 0.415211)
+text = "Come, have a look"
+horizontal_alignment = 1
+
+[connection signal="Interacted" from="InteractionZone" to="." method="OnInteract"]

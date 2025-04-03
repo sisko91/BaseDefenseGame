@@ -30,6 +30,9 @@ public partial class Moveable : CharacterBody2D, IEntity {
     }
 
     public void SetInside(bool inside) {
-        Material.Set("shader_parameter/is_inside", inside);
+        if (Material != null)
+        {
+            Material.Set("shader_parameter/is_inside", inside);
+        }
     }
 }

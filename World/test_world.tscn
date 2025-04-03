@@ -1,14 +1,16 @@
-[gd_scene load_steps=16 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=18 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
 [ext_resource type="Shader" uid="uid://cudyiyn8n3ntx" path="res://Shaders/cloud.gdshader" id="2_vxmty"]
 [ext_resource type="Shader" uid="uid://cwkbk8kbjdbbj" path="res://Shaders/background.gdshader" id="3_dghf1"]
-[ext_resource type="PackedScene" uid="uid://2ctjrem32j1v" path="res://NPC/shambler.tscn" id="6_a6glu"]
+[ext_resource type="Texture2D" uid="uid://oe3re6tn0ddh" path="res://art/World/woodfloor.png" id="6_11lc6"]
+[ext_resource type="PackedScene" uid="uid://2ctjrem32j1v" path="res://NPC/Scenes/shambler.tscn" id="6_a6glu"]
 [ext_resource type="PackedScene" uid="uid://h6mtv0wbug0t" path="res://World/Structures/Testing/test_building.tscn" id="6_lhns8"]
 [ext_resource type="Script" uid="uid://bnt0qsggcts86" path="res://World/RadialSpawner.cs" id="6_xi2eq"]
 [ext_resource type="PackedScene" uid="uid://dys3a163srv0l" path="res://Gameplay/crystal_target.tscn" id="7_8h8jj"]
 [ext_resource type="PackedScene" uid="uid://ca1u833dx2dax" path="res://World/Structures/Testing/test_fireplace.tscn" id="7_8h8jw"]
+[ext_resource type="PackedScene" uid="uid://blio7x08xw4te" path="res://NPC/Scenes/merchant.tscn" id="7_8ojdi"]
 [ext_resource type="Script" uid="uid://bunp1yq3jjjv7" path="res://World/DayNight/DayNight.cs" id="11_11lc6"]
 [ext_resource type="Script" uid="uid://7x2lypek5o4l" path="res://Gameplay/CrystalTarget.cs" id="11_dghf1"]
 
@@ -67,6 +69,21 @@ size = Vector2i(6000, 6000)
 [node name="TestBuilding" parent="." instance=ExtResource("6_lhns8")]
 position = Vector2(-566, -305)
 
+[node name="Ground" parent="TestBuilding/Floor1" index="1"]
+position = Vector2(33, 34)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("6_11lc6")
+region_rect = Rect2(0, 0, 1792, 768)
+
+[node name="Wall" parent="TestBuilding/Floor1" index="8"]
+position = Vector2(112, 192)
+
+[node name="Merchant" parent="TestBuilding/Floor1" index="14" instance=ExtResource("7_8ojdi")]
+position = Vector2(257, 66)
+scale = Vector2(2, 2)
+collision_layer = 16
+collision_mask = 16
+
 [node name="TestBuilding2" parent="." instance=ExtResource("6_lhns8")]
 position = Vector2(58, -305)
 
@@ -113,3 +130,5 @@ script = ExtResource("11_11lc6")
 
 [node name="TestFireplace" parent="." instance=ExtResource("7_8h8jw")]
 position = Vector2(-2, 30)
+
+[editable path="TestBuilding"]

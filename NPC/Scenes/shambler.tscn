@@ -1,22 +1,22 @@
 [gd_scene load_steps=15 format=3 uid="uid://2ctjrem32j1v"]
 
-[ext_resource type="Shader" uid="uid://cfv027nbsnbss" path="res://Shaders/character.gdshader" id="1_byv15"]
-[ext_resource type="Script" uid="uid://c2u67ufhm0qxl" path="res://NPC/NonPlayerCharacter.cs" id="1_s50ym"]
-[ext_resource type="Script" uid="uid://ehohhro0kwsq" path="res://NPC/AI/Brain.cs" id="2_i25h3"]
-[ext_resource type="PackedScene" uid="uid://bjk4qjwt7h3d2" path="res://UI/floating_health_bar.tscn" id="2_l0ij1"]
-[ext_resource type="Script" uid="uid://2ajhnisvj48l" path="res://Gameplay/BodySensor.cs" id="4_h3xoj"]
-[ext_resource type="PackedScene" uid="uid://bc2ju5qbw3goj" path="res://Gameplay/Effects/Impacts/impact_character_default.tscn" id="4_v0p2n"]
+[ext_resource type="Shader" uid="uid://cfv027nbsnbss" path="res://Shaders/character.gdshader" id="1_mvkqo"]
+[ext_resource type="Script" uid="uid://c2u67ufhm0qxl" path="res://NPC/NonPlayerCharacter.cs" id="2_y8uwp"]
+[ext_resource type="Script" uid="uid://ehohhro0kwsq" path="res://NPC/AI/Brain.cs" id="3_kbqjp"]
+[ext_resource type="PackedScene" uid="uid://bc2ju5qbw3goj" path="res://Gameplay/Effects/Impacts/impact_character_default.tscn" id="4_biodx"]
+[ext_resource type="PackedScene" uid="uid://bjk4qjwt7h3d2" path="res://UI/floating_health_bar.tscn" id="5_sndew"]
+[ext_resource type="Script" uid="uid://2ajhnisvj48l" path="res://Gameplay/BodySensor.cs" id="6_t0u02"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_byv15"]
 resource_local_to_scene = true
-shader = ExtResource("1_byv15")
+shader = ExtResource("1_mvkqo")
 shader_parameter/is_hit = false
 shader_parameter/is_inside = false
 shader_parameter/time_scale = 20.0
 shader_parameter/gb_ceil = 0.75
 
 [sub_resource type="Resource" id="Resource_qedxc"]
-script = ExtResource("2_i25h3")
+script = ExtResource("3_kbqjp")
 CanOpenDoors = false
 AggroResetRange = 500.0
 
@@ -51,14 +51,14 @@ radius = 128.0
 material = SubResource("ShaderMaterial_byv15")
 collision_mask = 2147483655
 motion_mode = 1
-script = ExtResource("1_s50ym")
+script = ExtResource("2_y8uwp")
 Brain = SubResource("Resource_qedxc")
 MovementSpeed = 30.0
 ImpactResponseTable = Dictionary[int, PackedScene]({
-0: ExtResource("4_v0p2n")
+0: ExtResource("4_biodx")
 })
 
-[node name="FloatingHealthBar" parent="." instance=ExtResource("2_l0ij1")]
+[node name="FloatingHealthBar" parent="." instance=ExtResource("5_sndew")]
 position = Vector2(-20, -36)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -85,7 +85,7 @@ texture = SubResource("GradientTexture2D_mdfs5")
 
 [node name="NearbyBodySensor" type="Area2D" parent="."]
 collision_mask = 5
-script = ExtResource("4_h3xoj")
+script = ExtResource("6_t0u02")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NearbyBodySensor"]
 shape = SubResource("CircleShape2D_vtmmg")
