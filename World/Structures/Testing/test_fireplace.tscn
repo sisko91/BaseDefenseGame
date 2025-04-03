@@ -1,6 +1,11 @@
-[gd_scene load_steps=14 format=3 uid="uid://ca1u833dx2dax"]
+[gd_scene load_steps=16 format=3 uid="uid://ca1u833dx2dax"]
 
+[ext_resource type="Script" uid="uid://yujf5d0q5ei2" path="res://World/Structures/Testing/TestFireplace.cs" id="1_aesgg"]
 [ext_resource type="Texture2D" uid="uid://clkxb6ouoibhk" path="res://art/World/CampFire.png" id="1_mt2j4"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ero6e"]
+atlas = ExtResource("1_mt2j4")
+region = Rect2(0, 0, 50, 86)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_aesgg"]
 atlas = ExtResource("1_mt2j4")
@@ -38,6 +43,14 @@ region = Rect2(400, 0, 50, 86)
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_ero6e")
+}],
+"loop": true,
+"name": &"off",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_aesgg")
 }, {
 "duration": 1.0,
@@ -62,7 +75,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_1umy8")
 }],
 "loop": true,
-"name": &"default",
+"name": &"on",
 "speed": 10.0
 }]
 
@@ -82,12 +95,13 @@ fill_from = Vector2(0.5, 0.5)
 
 [node name="TestFireplace" type="StaticBody2D"]
 collision_layer = 2147483648
+script = ExtResource("1_aesgg")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 z_index = 1
 sprite_frames = SubResource("SpriteFrames_ero6e")
-autoplay = "default"
-frame_progress = 0.418024
+animation = &"on"
+autoplay = "on"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 visible = false
@@ -97,6 +111,7 @@ shape = SubResource("CircleShape2D_w71os")
 [node name="PointLight2D" type="PointLight2D" parent="."]
 position = Vector2(-0.0586529, 22.0525)
 energy = 3.0
+blend_mode = 2
 range_z_min = -1
 range_z_max = 1
 range_item_cull_mask = 3

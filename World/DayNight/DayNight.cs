@@ -33,17 +33,24 @@ public partial class DayNight : Node
 
     public override void _Process(double delta)
     {
-        if (FreezeTime) {
+        DayNightColor = LightGradient.Gradient.Sample((float)GetDayTime());
+        RenderingServer.GlobalShaderParameterSet("day_night_color", DayNightColor);
+
+        if (FreezeTime)
+        {
             DayTimer.Paused = true;
             return;
-        } else if (DayTimer.Paused) {
+        }
+        else if (DayTimer.Paused)
+        {
             DayTimer.Paused = false;
         }
+    }
 
+    //0 = midnight, 0.5 = noon, 1 = midnight
+    public double GetDayTime()
+    {
         var dayPercent = 1 - DayTimer.TimeLeft / DayTimer.WaitTime;
-        dayPercent = (dayPercent + DayStartTime) % 1;
-        DayNightColor = LightGradient.Gradient.Sample((float)dayPercent);
-
-        RenderingServer.GlobalShaderParameterSet("day_night_color", DayNightColor);
+        return (dayPercent + DayStartTime) % 1;
     }
 }

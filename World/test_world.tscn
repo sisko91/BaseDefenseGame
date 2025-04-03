@@ -99,7 +99,7 @@ InnerRadius = 400.0
 OuterRadius = 500.0
 StartAngleDegrees = 270.0
 StopAngleDegrees = 90.0
-InitialCount = 2
+InitialCount = 0
 
 [node name="CrystalTarget" parent="." instance=ExtResource("7_8h8jj")]
 position = Vector2(-312, 146)
@@ -108,7 +108,6 @@ MaxHealth = 100.0
 
 [node name="DayNight" type="Node" parent="."]
 script = ExtResource("11_11lc6")
-FreezeTime = true
 
 [node name="PlayerContainer" type="Node2D" parent="."]
 
