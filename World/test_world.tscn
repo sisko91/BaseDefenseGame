@@ -5,12 +5,12 @@
 [ext_resource type="Shader" uid="uid://cudyiyn8n3ntx" path="res://Shaders/cloud.gdshader" id="2_vxmty"]
 [ext_resource type="Shader" uid="uid://cwkbk8kbjdbbj" path="res://Shaders/background.gdshader" id="3_dghf1"]
 [ext_resource type="Texture2D" uid="uid://oe3re6tn0ddh" path="res://art/World/woodfloor.png" id="6_11lc6"]
-[ext_resource type="PackedScene" uid="uid://2ctjrem32j1v" path="res://NPC/Scenes/shambler.tscn" id="6_a6glu"]
+[ext_resource type="PackedScene" uid="uid://2ctjrem32j1v" path="res://NPC/Shambler/shambler.tscn" id="6_a6glu"]
 [ext_resource type="PackedScene" uid="uid://h6mtv0wbug0t" path="res://World/Structures/Testing/test_building.tscn" id="6_lhns8"]
 [ext_resource type="Script" uid="uid://bnt0qsggcts86" path="res://World/RadialSpawner.cs" id="6_xi2eq"]
 [ext_resource type="PackedScene" uid="uid://dys3a163srv0l" path="res://Gameplay/crystal_target.tscn" id="7_8h8jj"]
 [ext_resource type="PackedScene" uid="uid://ca1u833dx2dax" path="res://World/Structures/Testing/test_fireplace.tscn" id="7_8h8jw"]
-[ext_resource type="PackedScene" uid="uid://blio7x08xw4te" path="res://NPC/Scenes/merchant.tscn" id="7_8ojdi"]
+[ext_resource type="PackedScene" uid="uid://blio7x08xw4te" path="res://NPC/Merchant/merchant.tscn" id="7_8ojdi"]
 [ext_resource type="Script" uid="uid://bunp1yq3jjjv7" path="res://World/DayNight/DayNight.cs" id="11_11lc6"]
 [ext_resource type="Script" uid="uid://7x2lypek5o4l" path="res://Gameplay/CrystalTarget.cs" id="11_dghf1"]
 
@@ -62,9 +62,6 @@ texture = ExtResource("2_rsvub")
 region_enabled = true
 region_rect = Rect2(0, 0, 6144, 6144)
 region_filter_clip_enabled = true
-
-[node name="Floor 0 Lights" type="SubViewport" parent="."]
-size = Vector2i(6000, 6000)
 
 [node name="TestBuilding" parent="." instance=ExtResource("6_lhns8")]
 position = Vector2(-566, -305)

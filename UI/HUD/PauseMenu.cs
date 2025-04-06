@@ -17,8 +17,15 @@ public partial class PauseMenu : CanvasLayer
     }
 
     public PauseMenu() {
-        // Only run _Process() when the tree is otherwise paused.
-        this.ProcessMode = ProcessModeEnum.WhenPaused;
+        this.ProcessMode = ProcessModeEnum.Always;
+    }
+
+    public override void _Input(InputEvent @event)
+    {
+        base._Input(@event);
+        if (@event.IsActionPressed("pause_menu")) {
+            ToggleDisplay();
+        }
     }
 
     // Convenience toggle for binding to buttons in the UI.

@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://fsemlkislawf"]
+[gd_scene load_steps=7 format=3 uid="uid://fsemlkislawf"]
 
 [ext_resource type="Script" uid="uid://djo07ped2qw88" path="res://Main.cs" id="1_yq6fc"]
 [ext_resource type="PackedScene" uid="uid://bapcmf72ww8v3" path="res://World/test_world.tscn" id="2_f1mpy"]
 [ext_resource type="PackedScene" uid="uid://dy47gg8c687bv" path="res://Player/player.tscn" id="2_y848n"]
 [ext_resource type="PackedScene" uid="uid://h8frpggagysk" path="res://UI/HUD/hud.tscn" id="3_ipp5o"]
 [ext_resource type="PackedScene" uid="uid://bwskh2c74a37q" path="res://UI/HUD/pause_menu.tscn" id="3_lquwl"]
+[ext_resource type="PackedScene" uid="uid://b04mgna5y8q6l" path="res://UI/MerchantUI/MerchantUI.tscn" id="6_7mycd"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_yq6fc")
@@ -17,5 +18,8 @@ visible = false
 [node name="World" parent="." instance=ExtResource("2_f1mpy")]
 process_mode = 1
 
-[node name="Hud" parent="." instance=ExtResource("3_ipp5o")]
+[node name="HUD" parent="." instance=ExtResource("3_ipp5o")]
 process_mode = 1
+
+[node name="MerchantUI" parent="HUD" instance=ExtResource("6_7mycd")]
+visible = false
