@@ -8,6 +8,8 @@ public partial class DebugLineRenderer : Control
         // Ensure DebugDraw fills the entire screen
         Size = GetViewportRect().Size;
         SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        FocusMode = FocusModeEnum.None; //Dont steal focus from other controls. This should never be focused
+        MouseFilter = MouseFilterEnum.Ignore; //Dont eat mouse clicks
     }
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)

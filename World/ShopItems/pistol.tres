@@ -6,6 +6,5 @@
 [resource]
 script = ExtResource("2_dekc3")
 Weapon = ExtResource("1_nuilg")
-Name = "Pistol"
 Description = "A simple pistol"
 Price = 50
