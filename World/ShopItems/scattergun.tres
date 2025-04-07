@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=3 format=3 uid="uid://wi0ppwstcfuk"]
+
+[ext_resource type="PackedScene" uid="uid://dkbkf106r6qu2" path="res://Weapons/Scattergun/scatter_gun.tscn" id="1_pndi6"]
+[ext_resource type="Script" uid="uid://c0hlh7r5i001w" path="res://NPC/Merchant/ShopItem.cs" id="2_ldbx6"]
+
+[resource]
+script = ExtResource("2_ldbx6")
+Weapon = ExtResource("1_pndi6")
+Name = "Scattergun"
+Description = "Up-close supremacy"
+Price = 200

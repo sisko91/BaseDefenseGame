@@ -78,6 +78,7 @@ subpixel_positioning = 0
 
 [node name="Merchant" type="CharacterBody2D"]
 script = ExtResource("1_7kxip")
+ShopItems = Array[Resource]([])
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_yg02f")
@@ -122,4 +123,5 @@ theme_override_font_sizes/font_size = 10
 text = "Come, have a look"
 horizontal_alignment = 1
 
+[connection signal="CharacterExited" from="InteractionZone" to="." method="OnCharacterCannotInteract"]
 [connection signal="Interacted" from="InteractionZone" to="." method="OnInteract"]

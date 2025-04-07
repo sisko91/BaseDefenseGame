@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=3 format=3 uid="uid://eurmfqo548j4"]
+
+[ext_resource type="PackedScene" uid="uid://dqdhhyjyrp2ri" path="res://Weapons/Pistol/pistol.tscn" id="1_nuilg"]
+[ext_resource type="Script" uid="uid://c0hlh7r5i001w" path="res://NPC/Merchant/ShopItem.cs" id="2_dekc3"]
+
+[resource]
+script = ExtResource("2_dekc3")
+Weapon = ExtResource("1_nuilg")
+Name = "Pistol"
+Description = "A simple pistol"
+Price = 50

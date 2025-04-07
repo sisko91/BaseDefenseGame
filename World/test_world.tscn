@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=21 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
@@ -11,6 +11,9 @@
 [ext_resource type="PackedScene" uid="uid://dys3a163srv0l" path="res://Gameplay/crystal_target.tscn" id="7_8h8jj"]
 [ext_resource type="PackedScene" uid="uid://ca1u833dx2dax" path="res://World/Structures/Testing/test_fireplace.tscn" id="7_8h8jw"]
 [ext_resource type="PackedScene" uid="uid://blio7x08xw4te" path="res://NPC/Merchant/merchant.tscn" id="7_8ojdi"]
+[ext_resource type="Resource" uid="uid://eurmfqo548j4" path="res://World/ShopItems/pistol.tres" id="8_lquev"]
+[ext_resource type="Resource" uid="uid://wi0ppwstcfuk" path="res://World/ShopItems/scattergun.tres" id="9_hjxpo"]
+[ext_resource type="Resource" uid="uid://b77gn5emtpi6g" path="res://World/ShopItems/barber.tres" id="10_cdkb4"]
 [ext_resource type="Script" uid="uid://bunp1yq3jjjv7" path="res://World/DayNight/DayNight.cs" id="11_11lc6"]
 [ext_resource type="Script" uid="uid://7x2lypek5o4l" path="res://Gameplay/CrystalTarget.cs" id="11_dghf1"]
 
@@ -80,6 +83,7 @@ position = Vector2(257, 66)
 scale = Vector2(2, 2)
 collision_layer = 16
 collision_mask = 16
+ShopItems = Array[Resource]([ExtResource("8_lquev"), ExtResource("9_hjxpo"), ExtResource("10_cdkb4")])
 
 [node name="TestBuilding2" parent="." instance=ExtResource("6_lhns8")]
 position = Vector2(58, -305)

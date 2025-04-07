@@ -1,0 +1,11 @@
+[gd_resource type="Resource" load_steps=3 format=3 uid="uid://b77gn5emtpi6g"]
+
+[ext_resource type="PackedScene" uid="uid://bxgdmhnmvibqj" path="res://Weapons/Barber/barber_gun.tscn" id="1_rf8cu"]
+[ext_resource type="Script" uid="uid://c0hlh7r5i001w" path="res://NPC/Merchant/ShopItem.cs" id="2_c17ka"]
+
+[resource]
+script = ExtResource("2_c17ka")
+Weapon = ExtResource("1_rf8cu")
+Name = "Barber"
+Description = "Auto-fire a burst of needles with short-range homing. Great for poking holes in your enemies"
+Price = 300

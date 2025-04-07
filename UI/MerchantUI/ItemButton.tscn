@@ -6,6 +6,7 @@
 
 [node name="ItemButton" type="Button"]
 custom_minimum_size = Vector2(550, 75)
+focus_mode = 0
 theme = ExtResource("1_ay26w")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
