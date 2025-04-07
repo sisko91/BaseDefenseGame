@@ -1,78 +1,114 @@
-[gd_scene load_steps=3 format=3 uid="uid://bwskh2c74a37q"]
+[gd_scene load_steps=4 format=3 uid="uid://bwskh2c74a37q"]
 
 [ext_resource type="Script" uid="uid://b7iwicjde5u15" path="res://UI/HUD/PauseMenu.cs" id="1_ojko3"]
 [ext_resource type="Script" uid="uid://c4txsp5yy6sq7" path="res://UI/HUD/OptionsMenu.cs" id="2_7amsf"]
+[ext_resource type="Theme" uid="uid://caojc3dn4y8ny" path="res://art/theme.tres" id="2_qbfmn"]
 
 [node name="PauseMenu" type="CanvasLayer"]
 script = ExtResource("1_ojko3")
 
-[node name="PauseOverview" type="HBoxContainer" parent="."]
+[node name="PauseControl" type="Control" parent="."]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("2_qbfmn")
+
+[node name="MainMenu" type="PanelContainer" parent="PauseControl"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 2
+offset_left = 420.0
+offset_top = 280.0
+offset_right = 1020.0
+offset_bottom = 680.0
+focus_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PauseControl/MainMenu"]
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="PauseControl/MainMenu/HBoxContainer"]
+layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PauseControl/MainMenu/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 alignment = 1
 
-[node name="PanelContainer" type="PanelContainer" parent="PauseOverview"]
-layout_mode = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="PauseOverview/PanelContainer"]
-layout_mode = 2
-size_flags_vertical = 4
-alignment = 1
-
-[node name="ResumeButton" type="Button" parent="PauseOverview/PanelContainer/VBoxContainer"]
+[node name="ResumeButton" type="Button" parent="PauseControl/MainMenu/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 text = "Resume
 "
 
-[node name="OptionsButton" type="Button" parent="PauseOverview/PanelContainer/VBoxContainer"]
+[node name="OptionsButton" type="Button" parent="PauseControl/MainMenu/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 text = "Options
 "
 
-[node name="QuitButton" type="Button" parent="PauseOverview/PanelContainer/VBoxContainer"]
+[node name="QuitButton" type="Button" parent="PauseControl/MainMenu/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 text = "Quit Game"
 
-[node name="OptionsPage" type="TabContainer" parent="."]
-anchors_preset = -1
-anchor_left = 0.55
-anchor_top = 0.2
-anchor_right = 0.8
-anchor_bottom = 0.8
+[node name="Spacer2" type="Control" parent="PauseControl/MainMenu/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="OptionsPage" type="TabContainer" parent="PauseControl"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -231.0
+offset_right = 300.0
+offset_bottom = 200.0
 grow_horizontal = 2
 grow_vertical = 2
+focus_mode = 2
 current_tab = 1
+tab_focus_mode = 0
 script = ExtResource("2_7amsf")
 
-[node name="Options" type="VBoxContainer" parent="OptionsPage"]
+[node name="Options" type="VBoxContainer" parent="PauseControl/OptionsPage"]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="Dev" type="VBoxContainer" parent="OptionsPage"]
+[node name="Dev" type="HBoxContainer" parent="PauseControl/OptionsPage"]
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="DrawSteeringToggle" type="CheckButton" parent="OptionsPage/Dev"]
+[node name="VBoxContainer" type="VBoxContainer" parent="PauseControl/OptionsPage/Dev"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DrawSteeringToggle" type="CheckButton" parent="PauseControl/OptionsPage/Dev/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Draw Context-Aware Steering Vectors?"
-alignment = 2
 
-[node name="DrawNavToggle" type="CheckButton" parent="OptionsPage/Dev"]
+[node name="DrawNavToggle" type="CheckButton" parent="PauseControl/OptionsPage/Dev/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Draw Navigation Vectors?"
-alignment = 2
 
-[node name="DrawCollisionBodyToggle" type="CheckButton" parent="OptionsPage/Dev"]
+[node name="DrawCollisionBodyToggle" type="CheckButton" parent="PauseControl/OptionsPage/Dev/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Draw Collision Body Radius?"
-alignment = 2
 
-[connection signal="pressed" from="PauseOverview/PanelContainer/VBoxContainer/ResumeButton" to="." method="ToggleDisplay"]
-[connection signal="pressed" from="PauseOverview/PanelContainer/VBoxContainer/OptionsButton" to="." method="ToggleOptionsPage"]
-[connection signal="pressed" from="PauseOverview/PanelContainer/VBoxContainer/QuitButton" to="." method="QuitGame"]
+[node name="Spacer" type="Control" parent="PauseControl/OptionsPage/Dev"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[connection signal="pressed" from="PauseControl/MainMenu/HBoxContainer/VBoxContainer/ResumeButton" to="." method="ToggleDisplay"]
+[connection signal="pressed" from="PauseControl/MainMenu/HBoxContainer/VBoxContainer/OptionsButton" to="PauseControl/OptionsPage" method="show"]
+[connection signal="pressed" from="PauseControl/MainMenu/HBoxContainer/VBoxContainer/QuitButton" to="." method="QuitGame"]

@@ -53,9 +53,6 @@ public partial class Main : Node
         pauseMenu.VisibilityChanged += CheckAndUpdatePause;
 
         playerCamera = new PlayerCamera();
-        playerCamera.PositionSmoothingEnabled = true;
-        playerCamera.DragHorizontalEnabled = true;
-        playerCamera.DragVerticalEnabled = true;
         playerCamera.Target = player;
         AddChild(playerCamera);
     }

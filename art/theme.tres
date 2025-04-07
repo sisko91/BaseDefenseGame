@@ -1,0 +1,27 @@
+[gd_resource type="Theme" load_steps=5 format=3 uid="uid://caojc3dn4y8ny"]
+
+[ext_resource type="FontFile" uid="uid://dotuigj660xcu" path="res://art/Fonts/Cantarell/Cantarell-Regular.ttf" id="1_mp86n"]
+[ext_resource type="Texture2D" uid="uid://1gosdyyvov1e" path="res://art/panel.png" id="2_61x1g"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_6p2vo"]
+texture = ExtResource("2_61x1g")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 10.0
+texture_margin_bottom = 10.0
+modulate_color = Color(1, 1, 1, 0.666667)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_61x1g"]
+texture = ExtResource("2_61x1g")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 10.0
+texture_margin_bottom = 10.0
+
+[resource]
+Button/colors/font_color = Color(0.87451, 0.87451, 0.87451, 0.666667)
+Button/font_sizes/font_size = 26
+Button/fonts/font = ExtResource("1_mp86n")
+Label/fonts/font = ExtResource("1_mp86n")
+PanelContainer/styles/panel = SubResource("StyleBoxTexture_6p2vo")
+TabContainer/styles/panel = SubResource("StyleBoxTexture_61x1g")

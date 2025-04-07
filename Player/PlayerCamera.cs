@@ -33,6 +33,10 @@ public partial class PlayerCamera : Camera2D
         LimitRight = (int)this.GetGameWorld().RegionBounds.X / 2;
         LimitLeft = -(int)this.GetGameWorld().RegionBounds.X / 2;
         LimitSmoothed = true;
+
+        PositionSmoothingEnabled = true;
+        DragHorizontalEnabled = true;
+        DragVerticalEnabled = true;
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.

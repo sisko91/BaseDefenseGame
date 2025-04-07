@@ -20,6 +20,7 @@ process_mode = 1
 
 [node name="HUD" parent="." instance=ExtResource("3_ipp5o")]
 process_mode = 1
+script = null
 
 [node name="MerchantUI" parent="HUD" instance=ExtResource("6_7mycd")]
 visible = false

@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://chpuk4qnqqxm4"]
+[gd_scene load_steps=6 format=3 uid="uid://chpuk4qnqqxm4"]
 
 [ext_resource type="Script" uid="uid://bolljvejit73e" path="res://Gameplay/InteractionArea.cs" id="1_1smnp"]
 [ext_resource type="Script" uid="uid://b0k4rorbjvnri" path="res://World/Structures/Door.cs" id="1_42k6d"]
+[ext_resource type="Theme" uid="uid://caojc3dn4y8ny" path="res://art/theme.tres" id="3_v417n"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pvkm4"]
 size = Vector2(128, 24)
@@ -63,6 +64,7 @@ offset_right = 20.0
 offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("3_v417n")
 
 [node name="TextLabel" type="Label" parent="InteractionArea/TextPrompt"]
 layout_mode = 0

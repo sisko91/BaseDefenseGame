@@ -14,6 +14,6 @@ public partial class Merchant : Moveable
 
     public void OnInteract(InteractionArea area, Character character)
     {
-        merchantUI.Load();
+        merchantUI.Show();
     }
 }

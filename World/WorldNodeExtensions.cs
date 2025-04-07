@@ -11,9 +11,9 @@ namespace ExtensionMethods
             return GetSceneTree().Root.GetNode<World>("Main/World");
         }
 
-        public static HUD GetGameHUD(this Node node)
+        public static CanvasLayer GetGameHUD(this Node node)
         {
-            return GetSceneTree().Root.GetNode<HUD>("Main/HUD");
+            return GetSceneTree().Root.GetNode<CanvasLayer>("Main/HUD");
         }
 
         public static SceneTree GetSceneTree()

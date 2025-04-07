@@ -1,8 +1,9 @@
-[gd_scene load_steps=15 format=3 uid="uid://blio7x08xw4te"]
+[gd_scene load_steps=16 format=3 uid="uid://blio7x08xw4te"]
 
 [ext_resource type="Script" uid="uid://diqhn05s0g7u4" path="res://NPC/Merchant/Merchant.cs" id="1_7kxip"]
 [ext_resource type="Texture2D" uid="uid://u1volqeqe1y4" path="res://art/NPCs/Herbalist/Idle Adding.png" id="2_ok5p4"]
 [ext_resource type="Script" uid="uid://bolljvejit73e" path="res://Gameplay/InteractionArea.cs" id="3_utw2h"]
+[ext_resource type="Theme" uid="uid://caojc3dn4y8ny" path="res://art/theme.tres" id="4_ok5p4"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_uet4w"]
 atlas = ExtResource("2_ok5p4")
@@ -112,6 +113,7 @@ offset_bottom = -2.0
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(1.00916, 1)
+theme = ExtResource("4_ok5p4")
 
 [node name="TextLabel" type="Label" parent="InteractionZone/TextPrompt"]
 layout_mode = 2
