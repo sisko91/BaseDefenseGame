@@ -1,7 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://b04mgna5y8q6l"]
+[gd_scene load_steps=5 format=3 uid="uid://b04mgna5y8q6l"]
 
 [ext_resource type="Script" uid="uid://co3ow5wcdvmp8" path="res://UI/MerchantUI/MerchantUI.cs" id="1_1q8yu"]
 [ext_resource type="Theme" uid="uid://caojc3dn4y8ny" path="res://art/theme.tres" id="1_c7jdl"]
+[ext_resource type="PackedScene" uid="uid://bu2se5vau68jw" path="res://UI/MerchantUI/ItemButton.tscn" id="3_nveh5"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_nveh5"]
 
 [node name="MerchantUI" type="PanelContainer"]
 anchors_preset = 8
@@ -17,3 +20,61 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_c7jdl")
 script = ExtResource("1_1q8yu")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ShopLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Shop"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/HBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Items" type="VBoxContainer" parent="VBoxContainer/HBoxContainer/ScrollContainer/MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ItemButton" parent="VBoxContainer/HBoxContainer/ScrollContainer/MarginContainer/Items" instance=ExtResource("3_nveh5")]
+layout_mode = 2
+focus_mode = 0
+
+[node name="ItemButton2" parent="VBoxContainer/HBoxContainer/ScrollContainer/MarginContainer/Items" instance=ExtResource("3_nveh5")]
+layout_mode = 2
+focus_mode = 0
+
+[node name="ItemButton3" parent="VBoxContainer/HBoxContainer/ScrollContainer/MarginContainer/Items" instance=ExtResource("3_nveh5")]
+layout_mode = 2
+focus_mode = 0
+
+[node name="PanelContainer" type="PanelContainer" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxTexture_nveh5")
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/HBoxContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_top = 20
+
+[node name="ItemDescription" type="Label" parent="VBoxContainer/HBoxContainer/PanelContainer/MarginContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(550, 700)
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_font_sizes/font_size = 32
+text = "A very cool item more text to see what happens when it goes past the edge of the screen"
+autowrap_mode = 2
+clip_text = true
+text_overrun_behavior = 3

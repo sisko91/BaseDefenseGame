@@ -134,7 +134,6 @@ public partial class Player : Character
     public override void _PhysicsProcess(double delta)
     {
         HandleMovement(delta);
-        HandleAction(delta);
     }
 
     // Called every rendered frame.
@@ -213,43 +212,38 @@ public partial class Player : Character
         Velocity = Velocity.Slide(collision.GetNormal());
     }
 
-    private void HandleAction(double delta) {
-        if (Input.IsActionJustPressed("shoot")) {
+    //"For gameplay input, Node._unhandled_input() is generally a better fit, because it allows the GUI to intercept the events"
+    //https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html
+    public override void _UnhandledInput(InputEvent @event) {
+        if (@event.IsActionPressed("shoot") && !@event.IsEcho()) {
             WeaponRing.EquippedWeapon?.PressFire();
-        }
-        else if (Input.IsActionJustReleased("shoot"))
-        {
+        } else if (@event.IsActionReleased("shoot")) {
             WeaponRing.EquippedWeapon?.ReleaseFire();
         }
 
-        if (Input.IsActionJustPressed("throw_grenade"))
-        {
+        if (@event.IsActionPressed("throw_grenade") && !@event.IsEcho()) {
             WeaponRing.Equip(Thrower);
             WeaponRing.EquippedWeapon?.PressFire();
-        }
-        else if (Input.IsActionJustReleased("throw_grenade")) {
+        } else if (@event.IsActionReleased("throw_grenade")) {
             if (WeaponRing.EquippedWeapon == Thrower) {
                 WeaponRing.EquippedWeapon?.ReleaseFire();
                 WeaponRing.Equip(WeaponRing.LastEquippedWeapon);
-            }
-            else {
+            } else {
                 GD.PushError($"Thrower should be equipped but was: {WeaponRing.EquippedWeapon}");
             }
         }
 
-        if (Input.IsActionJustPressed("cycle_weapon_forward")) {
+        if (@event.IsActionPressed("cycle_weapon_forward") && !@event.IsEcho()) {
             WeaponRing.Equip(NextWeapon);
-        }
-        else if (Input.IsActionJustPressed("cycle_weapon_back")) {
+        } else if (@event.IsActionPressed("cycle_weapon_back") && !@event.IsEcho()) {
             WeaponRing.Equip(PreviousWeapon);
         }
 
-        if (Input.IsActionJustPressed("player_confirm"))
-        {
+        if (@event.IsActionPressed("player_confirm") && !@event.IsEcho()) {
             InteractWithNearestObject();
         }
 
-        if (Input.IsActionJustPressed("dash")) {
+        if (@event.IsActionPressed("dash") && !@event.IsEcho()) {
             Dash();
         }
     }

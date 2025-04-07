@@ -21,6 +21,12 @@ public partial class MerchantUI : Control
             AcceptEvent();
             Hide();
         }
+
+        //Steal mouse input while open - the player can still move, but cant shoot
+        //Otherwise they shoot when they click buttons, which is jank
+        if (@event is InputEventMouseButton) {
+            AcceptEvent();
+        }
     }
 
     private void UpdateFocus()

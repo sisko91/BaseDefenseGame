@@ -1,0 +1,50 @@
+[gd_scene load_steps=4 format=3 uid="uid://bu2se5vau68jw"]
+
+[ext_resource type="Theme" uid="uid://caojc3dn4y8ny" path="res://art/theme.tres" id="1_ay26w"]
+[ext_resource type="Texture2D" uid="uid://b81hiig0xdgiv" path="res://icon.svg" id="2_gwx20"]
+[ext_resource type="Texture2D" uid="uid://ckovn2u4j081x" path="res://art/World/coin.png" id="3_gwx20"]
+
+[node name="ItemButton" type="Button"]
+custom_minimum_size = Vector2(550, 75)
+theme = ExtResource("1_ay26w")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 550.0
+offset_bottom = 75.0
+theme_override_constants/separation = 4
+
+[node name="MarginContainer2" type="MarginContainer" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="ItemTexture" type="TextureRect" parent="HBoxContainer/MarginContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+texture = ExtResource("2_gwx20")
+expand_mode = 2
+
+[node name="ItemName" type="Label" parent="HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 32
+text = "Item name goes here"
+clip_text = true
+text_overrun_behavior = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("3_gwx20")
+stretch_mode = 3
+
+[node name="ItemPrice" type="Label" parent="HBoxContainer/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "999"
