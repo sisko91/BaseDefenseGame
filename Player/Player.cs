@@ -266,7 +266,6 @@ public partial class Player : Character
 
     private void SpawnDashGhost() {
         Sprite2D ghostSprite = GetSpriteCopy();
-        ghostSprite.GlobalPosition = GlobalPosition;
         ghostSprite.ZIndex = ZIndex;
         var mat = new CanvasItemMaterial();
         mat.BlendMode = CanvasItemMaterial.BlendModeEnum.Mix;
@@ -280,7 +279,9 @@ public partial class Player : Character
         };
 
         ghostSprites.Add(ghostSprite);
-        this.GetGameWorld().AddChild(ghostSprite);
+        GetParent().AddChild(ghostSprite);
+        ghostSprite.GlobalPosition = GlobalPosition;
+        ghostSprite.GlobalRotation = GlobalRotation;
     }
 
     public override void ChangeFloor(int targetFloor) {
