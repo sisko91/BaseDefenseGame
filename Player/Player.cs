@@ -25,7 +25,7 @@ public partial class Player : Character
     public WeaponRing WeaponRing { get; private set; }
 
     // Runtime list of weapon instances the player owns.
-    public Godot.Collections.Array<Weapon> Weapons { get; private set; }
+    public Godot.Collections.Array<Weapon> Weapons { get; set; }
 
     protected Weapon EquippedWeapon { get { return WeaponRing.EquippedWeapon; } }
     protected Weapon NextWeapon {

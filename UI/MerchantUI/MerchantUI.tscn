@@ -49,15 +49,12 @@ layout_mode = 2
 
 [node name="ItemButton" parent="VBoxContainer/HBoxContainer/ScrollContainer/MarginContainer/Items" instance=ExtResource("3_nveh5")]
 layout_mode = 2
-focus_mode = 0
 
 [node name="ItemButton2" parent="VBoxContainer/HBoxContainer/ScrollContainer/MarginContainer/Items" instance=ExtResource("3_nveh5")]
 layout_mode = 2
-focus_mode = 0
 
 [node name="ItemButton3" parent="VBoxContainer/HBoxContainer/ScrollContainer/MarginContainer/Items" instance=ExtResource("3_nveh5")]
 layout_mode = 2
-focus_mode = 0
 
 [node name="PanelContainer" type="PanelContainer" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2

@@ -7,9 +7,6 @@ public partial class ShopItem : Resource
     public PackedScene Weapon;
 
     [Export]
-    public string Name;
-
-    [Export]
     public string Description;
 
     [Export]

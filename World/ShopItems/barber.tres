@@ -7,5 +7,5 @@
 script = ExtResource("2_c17ka")
 Weapon = ExtResource("1_rf8cu")
 Name = "Barber"
-Description = "Auto-fire a burst of needles with short-range homing. Great for poking holes in your enemies"
+Description = "Auto-fire a burst of barbs with short-range homing. Great for poking holes in your enemies"
 Price = 300
