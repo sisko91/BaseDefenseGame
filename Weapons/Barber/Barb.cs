@@ -119,7 +119,10 @@ public partial class Barb : Projectile
         if (explosion != null) {
             // Communicate the original instigator, so that characters receiving damage know who did it.
             explosion.Instigator = Instigator;
-            explosion.CollisionLayer = explosion.CollisionLayer << CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
+
+            //Ignore collisions until the explosion is placed in the desired position, otherwise it can trigger area entered events twice
+            var collisionLayer = explosion.CollisionLayer << CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
+            explosion.CollisionLayer = 0;
             explosion.CollisionMask = explosion.CollisionMask << CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
 
             var parent = GetParent();
@@ -132,6 +135,7 @@ public partial class Barb : Projectile
             explosion.Visible = Visible;
             parent.AddChild(explosion);
             explosion.GlobalPosition = GlobalPosition;
+            explosion.CollisionLayer = collisionLayer;
         }
     }
 }
