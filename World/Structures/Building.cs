@@ -17,7 +17,7 @@ public partial class Building : Node2D
     public List<Door> Exits;
 
     private static int BUILDING_Z_LAYER = 1;
-    private static int WEATHER_Z_LAYER = 3;
+    private static int WEATHER_Z_LAYER = 10;
     public Godot.Collections.Array<BuildingRegion> AllRegions 
     { 
         get

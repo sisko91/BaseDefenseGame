@@ -48,7 +48,7 @@ repeat_times = 2
 
 [node name="ColorRect" type="ColorRect" parent="ParallaxBackground"]
 light_mask = 2
-z_index = 3
+z_index = 10
 texture_repeat = 3
 material = SubResource("ShaderMaterial_kx652")
 offset_left = -3072.0
