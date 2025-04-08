@@ -82,23 +82,21 @@ public partial class Building : Node2D
 
     private void OnBodyEnteredRegion(Node2D body, BuildingRegion region)
     {
-        Moveable m = body as Moveable;
-        if (m == null || m.CollisionLayer == 0 || m.IsQueuedForDeletion()) {
-            return;
-        }
-
-        // We only want to look at events for the body's current elevation, and only bodies that have not yet been reparented to this region
-        if (m.CurrentElevationLevel != region.ElevationLevel || m.GetParent() == region)
-        {
-            return;
-        }
-
         //Reparent has to be deferred since this is called from a physics process
         //Wrapping the rest of the area change logic in this block to avoid reparent issues (e.g. reparent causes an additional enter/exit event on
         //regions and stairs)
         Callable.From(() => {
-            if (m.GetParent() is not BuildingRegion)
-            {
+            Moveable m = body as Moveable;
+            if (m == null || m.CollisionLayer == 0 || m.IsQueuedForDeletion()) {
+                return;
+            }
+
+            // We only want to look at events for the body's current elevation, and only bodies that have not yet been reparented to this region
+            if (m.CurrentElevationLevel != region.ElevationLevel || m.GetParent() == region) {
+                return;
+            }
+
+            if (m.GetParent() is not BuildingRegion) {
                 m.ZIndex += 1; //Provide a "background" layer hide things behind the player/enemies
             }
             m.Reparent(region);
