@@ -55,6 +55,7 @@ offset_left = -3072.0
 offset_top = -3072.0
 offset_right = 3072.0
 offset_bottom = 3072.0
+mouse_filter = 2
 metadata/_edit_use_anchors_ = true
 
 [node name="Background" type="Sprite2D" parent="."]
@@ -97,6 +98,7 @@ position = Vector2(-58, -244)
 light_mask = 2
 offset_right = 119.0
 offset_bottom = 26.0
+mouse_filter = 2
 color = Color(0.623529, 0.333333, 0, 1)
 metadata/_edit_use_anchors_ = true
 
@@ -106,6 +108,7 @@ z_as_relative = false
 offset_top = 150.0
 offset_right = 119.0
 offset_bottom = 176.0
+mouse_filter = 2
 color = Color(0.25, 0.133333, 0, 1)
 metadata/_edit_use_anchors_ = true
 

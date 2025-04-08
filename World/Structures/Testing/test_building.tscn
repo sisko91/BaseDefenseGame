@@ -285,12 +285,14 @@ TargetStairs = NodePath("../../Floor1/StairsFloor1Up")
 offset_top = -24.0
 offset_right = 512.0
 offset_bottom = -14.0
+mouse_filter = 2
 color = Color(0.352156, 0.261893, 0.161308, 1)
 
 [node name="LeftPerimeter" type="ColorRect" parent="Roof"]
 offset_top = -14.0
 offset_right = 10.0
 offset_bottom = 224.0
+mouse_filter = 2
 color = Color(0.352156, 0.261893, 0.161308, 1)
 
 [node name="RightPerimeter" type="ColorRect" parent="Roof"]
@@ -298,18 +300,21 @@ offset_left = 502.0
 offset_top = -14.0
 offset_right = 512.0
 offset_bottom = 224.0
+mouse_filter = 2
 color = Color(0.352156, 0.261893, 0.161308, 1)
 
 [node name="BottomPerimeter" type="ColorRect" parent="Roof"]
 offset_top = 223.0
 offset_right = 512.0
 offset_bottom = 233.0
+mouse_filter = 2
 color = Color(0.352156, 0.261893, 0.161308, 1)
 
 [node name="Facade" type="ColorRect" parent="Roof"]
 offset_top = 233.0
 offset_right = 512.0
 offset_bottom = 256.0
+mouse_filter = 2
 color = Color(0.23078, 0.175854, 0.116757, 1)
 
 [node name="LightOccluder2D" type="LightOccluder2D" parent="Roof"]

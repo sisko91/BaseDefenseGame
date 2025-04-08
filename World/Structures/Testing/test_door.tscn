@@ -18,6 +18,7 @@ offset_left = -64.0
 offset_top = -12.0
 offset_right = 64.0
 offset_bottom = 12.0
+mouse_filter = 2
 color = Color(0.29, 0.29, 0.29, 1)
 
 [node name="Blockage" type="StaticBody2D" parent="."]
@@ -36,6 +37,7 @@ offset_right = 64.0
 offset_bottom = 12.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 color = Color(0.185041, 0.113696, 0.0831003, 1)
 
 [node name="BlockageShape" type="CollisionShape2D" parent="Blockage"]
@@ -64,6 +66,7 @@ offset_right = 20.0
 offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme = ExtResource("3_v417n")
 
 [node name="TextLabel" type="Label" parent="InteractionArea/TextPrompt"]
