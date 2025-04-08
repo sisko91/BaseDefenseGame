@@ -29,6 +29,10 @@ window/stretch/mode="viewport"
 
 project/assembly_name="BaseDefenseGame"
 
+[gui]
+
+theme/custom="uid://caojc3dn4y8ny"
+
 [input]
 
 camera_zoom_in={

@@ -1,7 +1,17 @@
-[gd_resource type="Theme" load_steps=5 format=3 uid="uid://caojc3dn4y8ny"]
+[gd_resource type="Theme" load_steps=8 format=3 uid="uid://caojc3dn4y8ny"]
 
 [ext_resource type="FontFile" uid="uid://dotuigj660xcu" path="res://art/Fonts/Cantarell/Cantarell-Regular.ttf" id="1_mp86n"]
 [ext_resource type="Texture2D" uid="uid://1gosdyyvov1e" path="res://art/panel.png" id="2_61x1g"]
+
+[sub_resource type="Gradient" id="Gradient_61x1g"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 0, 0, 0.666667)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_6p2vo"]
+gradient = SubResource("Gradient_61x1g")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_yvc8h"]
+texture = SubResource("GradientTexture2D_6p2vo")
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_6p2vo"]
 texture = ExtResource("2_61x1g")
@@ -21,6 +31,7 @@ texture_margin_bottom = 10.0
 [resource]
 Button/font_sizes/font_size = 26
 Button/fonts/font = ExtResource("1_mp86n")
+Button/styles/normal = SubResource("StyleBoxTexture_yvc8h")
 Label/fonts/font = ExtResource("1_mp86n")
 MarginContainer/constants/margin_bottom = 4
 MarginContainer/constants/margin_left = 4
