@@ -19,7 +19,6 @@ texture_margin_right = 10.0
 texture_margin_bottom = 10.0
 
 [resource]
-Button/colors/font_color = Color(0.87451, 0.87451, 0.87451, 0.666667)
 Button/font_sizes/font_size = 26
 Button/fonts/font = ExtResource("1_mp86n")
 Label/fonts/font = ExtResource("1_mp86n")
