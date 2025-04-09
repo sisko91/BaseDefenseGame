@@ -1,5 +1,6 @@
 using ExtensionMethods;
 using Godot;
+using System;
 
 public partial class Grenade : Projectile, IInstigated
 {
@@ -55,8 +56,8 @@ public partial class Grenade : Projectile, IInstigated
         // This will cause the grenade to rapidly decrease velocity.
         CurrentBounce = MaxBounces;
 
-        // Disable collision
-        CollisionLayer = 0;
+        // Disable collision with almost everything. Put in the interactions layer so explosions can detect this grenade
+        CollisionLayer = (uint)Math.Pow(2, CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR + CollisionConfig.INTERACTIONS_LAYER - 1);
         CollisionMask = 0;
 
         // Set z-order to be ground level so that characters can walk over the bomb and will render above it

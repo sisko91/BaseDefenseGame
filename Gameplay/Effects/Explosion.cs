@@ -1,6 +1,7 @@
 using ExtensionMethods;
 using Godot;
 using Godot.Collections;
+using System.Collections.Generic;
 
 public partial class Explosion : Area2D, IInstigated, IImpactMaterial, IEntity
 {
@@ -49,12 +50,15 @@ public partial class Explosion : Area2D, IInstigated, IImpactMaterial, IEntity
 
     // ImpactResponseTable satisfies IImpactMaterial.
     // Explosions cannot be impacted by other things, so this always returns an empty table.
-    public Dictionary<IImpactMaterial.MaterialType, PackedScene> ImpactResponseTable => [];
+    public Godot.Collections.Dictionary<IImpactMaterial.MaterialType, PackedScene> ImpactResponseTable => [];
 
     // All character bodies detected in the vicinity of the explosion.
     public Godot.Collections.Array<Character> NearbyCharacters { get; private set; }
     // All character bodies already damaged by this explosion.
     public Godot.Collections.Array<Character> DamagedCharacters { get; private set; }
+
+    //Projectiles that are affected by explosions
+    public List<Projectile> NearbyProjectiles { get; private set; }
 
     public double SpawnEpochSeconds { get; private set; }
 
@@ -72,6 +76,7 @@ public partial class Explosion : Area2D, IInstigated, IImpactMaterial, IEntity
         // Set up to detect bodies in radius.
         NearbyCharacters = new Godot.Collections.Array<Character>();
         DamagedCharacters = new Godot.Collections.Array<Character>();
+        NearbyProjectiles = new List<Projectile>();
         BodyEntered += Explosion_BodyEntered;
         BodyExited += Explosion_BodyExited;
 
@@ -113,6 +118,10 @@ public partial class Explosion : Area2D, IInstigated, IImpactMaterial, IEntity
     private void Explosion_BodyEntered(Node2D body) {
         if (body is Character character) {
             NearbyCharacters.Add(character);
+        }
+
+        if (body is Projectile p && p.DestroyedByExplosions) {
+            NearbyProjectiles.Add(p);
         }
     }
 
@@ -160,7 +169,7 @@ public partial class Explosion : Area2D, IInstigated, IImpactMaterial, IEntity
                     if (Raycaster.GetCollider() != null) {
                         //this.DrawDebugLine(GlobalPosition, Raycaster.GetCollisionPoint(), new Color(1, 1, 0));
                         //GD.Print($"Hit {((Node)Raycaster.GetCollider()).Name}");
-                        if (Raycaster.GetCollider() is not Character) {
+                        if (Raycaster.GetCollider() is not Moveable) {
                             continue; // block damage to tested character
                         }
                     }
@@ -173,6 +182,20 @@ public partial class Explosion : Area2D, IInstigated, IImpactMaterial, IEntity
                     character.TryRegisterImpact(hr, this, CalculateBlastStrength(distance, BaseDamage, MinimumDamage));
                     DamagedCharacters.Add(character);
                 }
+            }   
+
+            for (int i = NearbyProjectiles.Count - 1; i >= 0; i--) {
+                Projectile p = NearbyProjectiles[i];
+                Raycaster.TargetPosition = (p.GlobalPosition - Raycaster.GlobalPosition);
+                Raycaster.ForceRaycastUpdate();
+                if (Raycaster.GetCollider() != null) {
+                    if (Raycaster.GetCollider() is not Moveable) {
+                        continue;
+                    }
+                }
+
+                p.ForceExpire();
+                NearbyProjectiles.RemoveAt(i);
             }
         }
     }

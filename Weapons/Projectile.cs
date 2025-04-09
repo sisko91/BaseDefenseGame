@@ -39,12 +39,17 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
     [Export]
     public PackedScene DefaultResponseHint { get; protected set; } = null;
 
+    [Export]
+    public bool DestroyedByExplosions = false;
+
     // ImpactResponseTable satisfies IImpactMaterial interface.
     // Note this should somewhat rarely be populated for projectiles. These are *responses* so it only matters if the projectile itself
     // can be impacted by other things.
     public Dictionary<IImpactMaterial.MaterialType, PackedScene> ImpactResponseTable { get; protected set; } = [];
 
     public string AllProjectilesGroup = "Projectiles";
+
+    private Timer ProjectileTimer;
 
     public override void _Ready() {
         AddToGroup(AllProjectilesGroup, true);
@@ -64,14 +69,21 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
             CollisionMask = CollisionMask << c.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
         }
 
-        if(LifetimeSeconds > 0) {
-            var timer = this.GetGameWorld().GetTree().CreateTimer(LifetimeSeconds);
-            timer.Timeout += OnLifetimeExpired;
-        }
+        ProjectileTimer = new Timer();
+        ProjectileTimer.OneShot = true;
+        ProjectileTimer.WaitTime = LifetimeSeconds;
+        ProjectileTimer.Timeout += OnLifetimeExpired;
+        AddChild(ProjectileTimer);
 
         this.GetGameWorld().AddChild(this);
+        ProjectileTimer.Start();
 
         OnStart();
+    }
+
+    public void ForceExpire() {
+        ProjectileTimer.Stop();
+        ProjectileTimer.EmitSignal("timeout");
     }
 
     public override void _PhysicsProcess(double delta)

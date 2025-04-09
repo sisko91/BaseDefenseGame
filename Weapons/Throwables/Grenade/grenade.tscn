@@ -22,6 +22,7 @@ ExplosionTemplate = ExtResource("3_bkle0")
 InitialSpeed = 400.0
 Damage = 10.0
 KnockbackForce = 10.0
+DestroyedByExplosions = true
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 use_parent_material = true
