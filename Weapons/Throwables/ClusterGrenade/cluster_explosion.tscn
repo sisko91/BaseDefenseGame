@@ -1,0 +1,179 @@
+[gd_scene load_steps=30 format=3 uid="uid://cx72gfel4op3s"]
+
+[ext_resource type="Script" uid="uid://c4omck4eu2wr3" path="res://Gameplay/Effects/Explosion.cs" id="1_wbt87"]
+
+[sub_resource type="Curve" id="Curve_5wmjb"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.754386, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_rhid6"]
+texture_mode = 1
+curve = SubResource("Curve_5wmjb")
+
+[sub_resource type="Gradient" id="Gradient_wbt87"]
+colors = PackedColorArray(0.823529, 0.772549, 0.184314, 1, 1, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_diujn"]
+gradient = SubResource("Gradient_wbt87")
+
+[sub_resource type="Curve" id="Curve_e11g6"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.997076, 0.496532), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_q6ok8"]
+curve = SubResource("Curve_e11g6")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_lr4k6"]
+particle_flag_disable_z = true
+emission_shape = 6
+emission_ring_axis = Vector3(0, 0, 1)
+emission_ring_height = 1.0
+emission_ring_radius = 1.0
+emission_ring_inner_radius = 0.0
+emission_ring_cone_angle = 90.0
+spread = 180.0
+initial_velocity_min = 494.05
+initial_velocity_max = 1000.0
+gravity = Vector3(0, 0, 0)
+scale_min = 5.0
+scale_max = 20.0
+scale_curve = SubResource("CurveTexture_q6ok8")
+color_ramp = SubResource("GradientTexture1D_diujn")
+alpha_curve = SubResource("CurveTexture_rhid6")
+turbulence_enabled = true
+
+[sub_resource type="Gradient" id="Gradient_l6ema"]
+colors = PackedColorArray(1, 1, 0, 1, 0.560784, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_rhid6"]
+gradient = SubResource("Gradient_l6ema")
+
+[sub_resource type="Gradient" id="Gradient_01c11"]
+colors = PackedColorArray(1, 1, 1, 1, 0.370364, 0.370365, 0.370364, 0.498039)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_llblg"]
+gradient = SubResource("Gradient_01c11")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_nuj3v"]
+lifetime_randomness = 0.21
+particle_flag_disable_z = true
+spread = 180.0
+initial_velocity_min = 20.0
+initial_velocity_max = 100.0
+gravity = Vector3(0, 0, 0)
+scale_min = 5.0
+scale_max = 100.0
+color_ramp = SubResource("GradientTexture1D_llblg")
+color_initial_ramp = SubResource("GradientTexture1D_rhid6")
+
+[sub_resource type="Gradient" id="Gradient_gcudm"]
+colors = PackedColorArray(1, 0, 0, 1, 0.821858, 0.632813, 7.70092e-07, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_q6ok8"]
+gradient = SubResource("Gradient_gcudm")
+
+[sub_resource type="Gradient" id="Gradient_jqxp2"]
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_a8tr5"]
+gradient = SubResource("Gradient_jqxp2")
+
+[sub_resource type="Curve" id="Curve_7ejf2"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.997076, 0.143353), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_diujn"]
+curve = SubResource("Curve_7ejf2")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_tnn4q"]
+particle_flag_disable_z = true
+spread = 180.0
+initial_velocity_min = 500.0
+initial_velocity_max = 1000.0
+gravity = Vector3(0, 0, 0)
+scale_min = 5.0
+scale_max = 10.0
+scale_curve = SubResource("CurveTexture_diujn")
+color_ramp = SubResource("GradientTexture1D_a8tr5")
+color_initial_ramp = SubResource("GradientTexture1D_q6ok8")
+
+[sub_resource type="Curve" id="Curve_6iihq"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.502924, 0.233526), 0.0, 0.0, 0, 0, Vector2(1, 0.000578046), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_llblg"]
+texture_mode = 1
+curve = SubResource("Curve_6iihq")
+
+[sub_resource type="Gradient" id="Gradient_mclnj"]
+colors = PackedColorArray(0.408329, 0.408329, 0.408329, 1, 0.306923, 0.306923, 0.306923, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_7yikd"]
+gradient = SubResource("Gradient_mclnj")
+
+[sub_resource type="Gradient" id="Gradient_nxrbi"]
+colors = PackedColorArray(0.753984, 0.753984, 0.753984, 1, 0.0431373, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_r4d3o"]
+gradient = SubResource("Gradient_nxrbi")
+
+[sub_resource type="Curve" id="Curve_jdwgf"]
+_limits = [0.0, 5.0, 0.0, 1.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.997076, 2.03179), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_bug05"]
+curve = SubResource("Curve_jdwgf")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_88bt0"]
+particle_flag_disable_z = true
+emission_shape = 1
+emission_sphere_radius = 100.0
+spread = 180.0
+initial_velocity_min = 15.0
+initial_velocity_max = 30.0
+gravity = Vector3(0, 0, 0)
+scale_min = 18.95
+scale_max = 38.95
+scale_curve = SubResource("CurveTexture_bug05")
+color_ramp = SubResource("GradientTexture1D_r4d3o")
+color_initial_ramp = SubResource("GradientTexture1D_7yikd")
+alpha_curve = SubResource("CurveTexture_llblg")
+
+[node name="ClusterExplosion" type="Area2D"]
+collision_layer = 2
+collision_mask = 15
+script = ExtResource("1_wbt87")
+MaximumRadius = 200.0
+ExpansionDuration = 0.1
+BaseDamage = 75.0
+
+[node name="FireRingParticles" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 100
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_lr4k6")
+
+[node name="FlameBallParticles" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 15
+lifetime = 0.3
+one_shot = true
+explosiveness = 0.6
+process_material = SubResource("ParticleProcessMaterial_nuj3v")
+
+[node name="DebrisParticles" type="GPUParticles2D" parent="."]
+emitting = false
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_tnn4q")
+
+[node name="SmokeParticles" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 16
+one_shot = true
+explosiveness = 0.83
+process_material = SubResource("ParticleProcessMaterial_88bt0")

@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://7b88r4ojjsxb"]
+
+[ext_resource type="Texture2D" uid="uid://cmxxxmnboybqa" path="res://art/Grenade/runeBlack_slab_036.png" id="1_42lai"]
+[ext_resource type="Script" uid="uid://d0850qsfrix55" path="res://Weapons/Throwables/ClusterGrenade/ClusterGrenade.cs" id="1_hsh4a"]
+[ext_resource type="PackedScene" uid="uid://cx72gfel4op3s" path="res://Weapons/Throwables/ClusterGrenade/cluster_explosion.tscn" id="2_87u5y"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_l01dr"]
+radius = 9.0
+
+[node name="ClusterGrenade" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1_hsh4a")
+ExplosionTemplate = ExtResource("2_87u5y")
+InitialSpeed = 400.0
+Damage = 0.0
+DestroyedByExplosions = true
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(1, 0.02, 0.02, 1)
+use_parent_material = true
+scale = Vector2(0.33, 0.33)
+texture = ExtResource("1_42lai")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
+shape = SubResource("CapsuleShape2D_l01dr")
