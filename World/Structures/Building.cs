@@ -190,10 +190,10 @@ public partial class Building : Node2D
         {
             //Kind of hacky, but an easy way to detect if a point is in the building. We want to check if the center of the explosion
             //is in the region, not if it just overlaps
-            var regionGround = region.GetNode<Sprite2D>("Ground").GetRect();
-            var regionBoundary = new Rect2(ToGlobal(regionGround.Position), regionGround.Size);
+            var regionGroundSprite = region.GetNode<Sprite2D>("Ground");
+            var regionBoundary = new Rect2(ToGlobal(regionGroundSprite.Position), regionGroundSprite.GetRect().Size * regionGroundSprite.Scale);
             bool explosionInsideRegion = regionBoundary.HasPoint(area.GlobalPosition);
-            exp.CurrentRegion = explosionInsideRegion ? region : null;
+            exp.CurrentRegion = explosionInsideRegion ? region : exp.CurrentRegion;
 
             UpdateNonPlayerBody(exp);
         }

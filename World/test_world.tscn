@@ -71,7 +71,7 @@ region_filter_clip_enabled = true
 position = Vector2(-566, -305)
 
 [node name="Ground" parent="TestBuilding/Floor1" index="1"]
-position = Vector2(33, 34)
+position = Vector2(33, 32)
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("6_11lc6")
 region_rect = Rect2(0, 0, 1792, 768)
@@ -120,7 +120,7 @@ InnerRadius = 400.0
 OuterRadius = 500.0
 StartAngleDegrees = 270.0
 StopAngleDegrees = 90.0
-InitialCount = 2
+InitialCount = 0
 
 [node name="CrystalTarget" parent="." instance=ExtResource("7_8h8jj")]
 position = Vector2(-312, 146)
@@ -129,6 +129,8 @@ MaxHealth = 100.0
 
 [node name="DayNight" type="Node" parent="."]
 script = ExtResource("11_11lc6")
+DayStartTime = 0.0
+FreezeTime = true
 
 [node name="PlayerContainer" type="Node2D" parent="."]
 

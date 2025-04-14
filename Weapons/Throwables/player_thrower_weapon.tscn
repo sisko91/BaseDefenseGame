@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://csp5yukh5lbt0"]
 
 [ext_resource type="Script" uid="uid://dqx8s5h4k4lt1" path="res://Weapons/Throwables/Thrower.cs" id="1_2q5e8"]
-[ext_resource type="PackedScene" uid="uid://7b88r4ojjsxb" path="res://Weapons/Throwables/ClusterGrenade/cluster_grenade.tscn" id="2_cnb4g"]
+[ext_resource type="PackedScene" uid="uid://dpc7ivx4ytc2m" path="res://Weapons/Throwables/Grenade/grenade.tscn" id="2_cnb4g"]
 
 [sub_resource type="Gradient" id="Gradient_2q5e8"]
 offsets = PackedFloat32Array(0, 0.65, 0.680556, 0.708333)

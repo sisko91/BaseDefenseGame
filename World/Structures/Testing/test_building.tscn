@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://h6mtv0wbug0t"]
+[gd_scene load_steps=23 format=3 uid="uid://h6mtv0wbug0t"]
 
 [ext_resource type="Script" uid="uid://drac3p47binwd" path="res://World/Structures/Building.cs" id="1_7ffef"]
 [ext_resource type="PackedScene" uid="uid://cw48c72a4tsvk" path="res://World/Structures/Testing/test_wall.tscn" id="1_e2nee"]
@@ -36,6 +36,18 @@ gradient = SubResource("Gradient_oogqs")
 width = 448
 height = 56
 
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_8qk5p"]
+polygon = PackedVector2Array(0, 233, 512, 233, 512, 224, 0, 224)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_pvg10"]
+polygon = PackedVector2Array(0, -24, 512, -24, 512, -14, 0, -14)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_4jyrl"]
+polygon = PackedVector2Array(502, -14, 502, 224, 512, 224, 512, -14)
+
+[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_j0jsy"]
+polygon = PackedVector2Array(0, -14, 10, -14, 10, 224, 0, 224)
+
 [sub_resource type="Gradient" id="Gradient_bacaw"]
 offsets = PackedFloat32Array(0.233766, 0.88961)
 colors = PackedColorArray(0.646717, 0.273671, 0.364432, 1, 0.604293, 0.371097, 0.396354, 1)
@@ -59,9 +71,6 @@ height = 256
 fill = 2
 fill_from = Vector2(0.5, 0.5)
 
-[sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_pvg10"]
-polygon = PackedVector2Array(1, 233, 512, 233, 512, -23, 0, -24)
-
 [node name="TestBuilding" type="Node2D"]
 script = ExtResource("1_7ffef")
 BuildingHeight = 23
@@ -80,11 +89,10 @@ shape = SubResource("RectangleShape2D_k1td7")
 texture_repeat = 2
 use_parent_material = true
 position = Vector2(-1.90735e-06, 24)
-scale = Vector2(1, 0.90625)
 texture = SubResource("GradientTexture2D_qtn0d")
 centered = false
 region_enabled = true
-region_rect = Rect2(0, 0, 512, 256)
+region_rect = Rect2(0, 0, 512, 210)
 
 [node name="TopWall0" parent="Floor0" instance=ExtResource("1_e2nee")]
 use_parent_material = true
@@ -152,6 +160,18 @@ use_parent_material = true
 position = Vector2(256, 4)
 texture = SubResource("GradientTexture2D_tlued")
 
+[node name="OccluderBottom" type="LightOccluder2D" parent="Floor0"]
+occluder = SubResource("OccluderPolygon2D_8qk5p")
+
+[node name="OccluderTop" type="LightOccluder2D" parent="Floor0"]
+occluder = SubResource("OccluderPolygon2D_pvg10")
+
+[node name="OccluderRight" type="LightOccluder2D" parent="Floor0"]
+occluder = SubResource("OccluderPolygon2D_4jyrl")
+
+[node name="OccluderLeft" type="LightOccluder2D" parent="Floor0"]
+occluder = SubResource("OccluderPolygon2D_j0jsy")
+
 [node name="Floor1" type="Area2D" parent="."]
 z_index = 1
 collision_layer = 16
@@ -166,12 +186,11 @@ shape = SubResource("RectangleShape2D_k1td7")
 [node name="Ground" type="Sprite2D" parent="Floor1"]
 texture_repeat = 2
 use_parent_material = true
-position = Vector2(9, 32)
-scale = Vector2(0.964844, 0.84375)
+position = Vector2(0, 24)
 texture = SubResource("GradientTexture2D_r8dof")
 centered = false
 region_enabled = true
-region_rect = Rect2(0, 0, 512, 256)
+region_rect = Rect2(0, 0, 512, 210)
 
 [node name="TopWall0" parent="Floor1" instance=ExtResource("1_e2nee")]
 use_parent_material = true
@@ -208,7 +227,6 @@ use_parent_material = true
 position = Vector2(128, 240)
 collision_layer = 64
 collision_mask = 112
-metadata/_edit_group_ = true
 
 [node name="BottomWall1" parent="Floor1" instance=ExtResource("1_e2nee")]
 use_parent_material = true
@@ -218,13 +236,13 @@ collision_mask = 112
 
 [node name="Wall" parent="Floor1" instance=ExtResource("6_mexbq")]
 use_parent_material = true
-position = Vector2(257, 190)
+position = Vector2(257, 192)
 collision_layer = 64
 collision_mask = 112
 
 [node name="StairsFloor1Down" parent="Floor1" node_paths=PackedStringArray("TargetStairs") instance=ExtResource("6_k5khk")]
 use_parent_material = true
-position = Vector2(448, 191)
+position = Vector2(448, 192)
 collision_layer = 128
 collision_mask = 16
 TargetStairs = NodePath("../../Floor0/StairsFloor0")
@@ -253,6 +271,18 @@ use_parent_material = true
 position = Vector2(256, 4)
 texture = SubResource("GradientTexture2D_tlued")
 
+[node name="OccluderBottom" type="LightOccluder2D" parent="Floor1"]
+occluder = SubResource("OccluderPolygon2D_8qk5p")
+
+[node name="OccluderTop" type="LightOccluder2D" parent="Floor1"]
+occluder = SubResource("OccluderPolygon2D_pvg10")
+
+[node name="OccluderRight" type="LightOccluder2D" parent="Floor1"]
+occluder = SubResource("OccluderPolygon2D_4jyrl")
+
+[node name="OccluderLeft" type="LightOccluder2D" parent="Floor1"]
+occluder = SubResource("OccluderPolygon2D_j0jsy")
+
 [node name="Roof" type="Area2D" parent="."]
 z_index = 1
 use_parent_material = true
@@ -268,8 +298,7 @@ shape = SubResource("RectangleShape2D_chivl")
 
 [node name="Ground" type="Sprite2D" parent="Roof"]
 texture_repeat = 2
-position = Vector2(0, -14)
-scale = Vector2(1, 0.925781)
+position = Vector2(0, -23)
 texture = SubResource("GradientTexture2D_n21n1")
 centered = false
 region_enabled = true
@@ -317,6 +346,18 @@ offset_bottom = 256.0
 mouse_filter = 2
 color = Color(0.23078, 0.175854, 0.116757, 1)
 
-[node name="LightOccluder2D" type="LightOccluder2D" parent="Roof"]
+[node name="OccluderBottom" type="LightOccluder2D" parent="Roof"]
+occluder = SubResource("OccluderPolygon2D_8qk5p")
+sdf_collision = false
+
+[node name="OccluderTop" type="LightOccluder2D" parent="Roof"]
 occluder = SubResource("OccluderPolygon2D_pvg10")
+sdf_collision = false
+
+[node name="OccluderRight" type="LightOccluder2D" parent="Roof"]
+occluder = SubResource("OccluderPolygon2D_4jyrl")
+sdf_collision = false
+
+[node name="OccluderLeft" type="LightOccluder2D" parent="Roof"]
+occluder = SubResource("OccluderPolygon2D_j0jsy")
 sdf_collision = false
