@@ -52,7 +52,7 @@ namespace AI
 
             protected override void OnActivate()
             {
-                GD.Print($"{Owner?.Name}->Attacking enemy ({Brain.EnemyTarget.Name})");
+                GD.Print($"{Owner?.Name}-> [MELEE] Attacking enemy ({Brain.EnemyTarget.Name})");
             }
 
             public override void Update(double deltaTime)

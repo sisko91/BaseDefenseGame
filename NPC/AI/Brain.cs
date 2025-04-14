@@ -54,8 +54,7 @@ public partial class Brain : Resource
             Danger.Add(0);
         }
 
-        // Redefine AI action set.
-        //actions = [new AI.Actions.MoveToTargetAction(), new AI.Actions.MeleeAttackEnemyAction()];
+        // Initialize AI Action set.
         if(actions == null) {
             actions = new Godot.Collections.Array<AI.Action>();
         }
@@ -80,29 +79,31 @@ public partial class Brain : Resource
             currentAction = null;
         }
 
-        if(currentAction == null)
-        {
-            // Find the highest-scoring action.
-            float currentActionScore = currentAction == null ? 0 : currentAction.CalculateScore();
-            foreach (var candidate in actions)
-            {
-                if(currentAction == candidate)
-                {
-                    //continue; // don't pick the same action twice in a row if possible.
-                }
-
-                float candidateScore = candidate.CalculateScore();
-                //GD.Print($"\t[{candidateScore}]{candidate.GetType().Name}");
-                if (candidateScore > currentActionScore)
-                {
-                    currentAction = candidate;
-                    currentActionScore = candidateScore;
-                }
+        var nextAction = currentAction;
+        // Find the highest-scoring action.
+        float nextActionScore = currentAction == null ? 0 : currentAction.CalculateScore();
+        foreach (var candidate in actions) {
+            if (currentAction == candidate) {
+                //continue; // don't pick the same action twice in a row if possible.
             }
-            if(currentActionScore == 0)
-            {
-                // if none of the actions score anything at all, don't run anything at all.
-                currentAction = null;
+
+            float candidateScore = candidate.CalculateScore();
+            //GD.Print($"\t[{candidateScore}]{candidate.GetType().Name}");
+            if (candidateScore > nextActionScore) {
+                nextAction = candidate;
+                nextActionScore = candidateScore;
+            }
+        }
+        if (nextActionScore == 0) {
+            // if none of the actions score anything at all, don't run anything at all.
+            nextAction = null;
+        }
+
+        // If we're changing actions and there's a current action in progress, we can't swap without interrupting first.
+        bool changingActions = nextAction != null && nextAction != currentAction;
+        if (changingActions) {
+            if (currentAction == null || currentAction.TryInterrupt()) {
+                currentAction = nextAction;
             }
         }
 

@@ -219,6 +219,10 @@ namespace AI
             private bool InInteractRange(Vector2 origin, Vector2 target) {
                 return origin.DistanceTo(target) < 10;
             }
+
+            protected override bool CanInterrupt() {
+                return true;
+            }
         }
     }
 }

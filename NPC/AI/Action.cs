@@ -63,6 +63,21 @@ namespace AI
 
         }
 
+        // TryInterrupt attempts to interrupt an action that is currently active. The action gets to decide if it is ultimately interruptible or not.
+        // Actions are un-interruptible by default. Override protected bool CanInterrupt() to change this.
+        public virtual bool TryInterrupt() {
+            bool success = CanInterrupt();
+            GD.Print($"{GetType()} {(success ? "Interrupted" : "Refused Interrupt")}");
+            if(success) {
+                Deactivate();
+            }
+            return success;
+        }
+
+        protected virtual bool CanInterrupt() {
+            return false;
+        }
+
         // Updates this Action and the AI associated with it.
         public virtual void Update(double deltaTime)
         {
