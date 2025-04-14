@@ -27,7 +27,8 @@ public partial class Brain : Resource
     private Vector2 lastNavPathDirection = Vector2.Zero;
 
     // All actions this Brain has to select from.
-    private Godot.Collections.Array<AI.Action> actions;
+    [Export]
+    protected Godot.Collections.Array<AI.Action> actions;
 
     // The currently-selected AI action this brain is executing.
     private AI.Action currentAction;
@@ -54,7 +55,10 @@ public partial class Brain : Resource
         }
 
         // Redefine AI action set.
-        actions = [new AI.Actions.MoveToTargetAction(), new AI.Actions.AttackEnemyTargetAction()];
+        //actions = [new AI.Actions.MoveToTargetAction(), new AI.Actions.MeleeAttackEnemyAction()];
+        if(actions == null) {
+            actions = new Godot.Collections.Array<AI.Action>();
+        }
         foreach (var action in actions) {
             action.Initialize(this);
         }

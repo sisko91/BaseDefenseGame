@@ -5,19 +5,9 @@ namespace AI
 {
     namespace Actions
     {
-        public partial class AttackEnemyTargetAction : AI.Action, IInstigated
+        [GlobalClass]
+        public partial class MeleeAttackEnemyAction : AI.Action
         {
-            // Instigator property satisfies IInstigated interface.
-            public Character Instigator {
-                get {
-                    return Owner;
-                }
-                set {
-                    // AI actions are always instigated by their owner, and the instigator cannot be overridden.
-                    throw new NotSupportedException();
-                }
-            }
-
             // TODO: Placeholder
             public static float MeleeAttackDamage = 30.0f;
 
@@ -26,7 +16,7 @@ namespace AI
 
             private double lastAttackTime = -1;
 
-            public AttackEnemyTargetAction() : base()
+            public MeleeAttackEnemyAction() : base()
             {
                 // This action halts movement for the NPC while they attack.
                 PausesMotionWhileActive = true;

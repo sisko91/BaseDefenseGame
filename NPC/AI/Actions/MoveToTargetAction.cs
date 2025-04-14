@@ -7,6 +7,7 @@ namespace AI
 {
     namespace Actions
     {
+        [GlobalClass]
         public partial class MoveToTargetAction : AI.Action
         {
             Dictionary<Tuple<BuildingRegion, BuildingRegion>, List<Stairs>> StairsPathCache;

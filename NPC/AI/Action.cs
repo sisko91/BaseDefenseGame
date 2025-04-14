@@ -3,7 +3,8 @@ using Godot;
 namespace AI
 {
     // Actions are scored by the AI Brain and activated to issue commands to NonPlayerCharacters.
-    public partial class Action : RefCounted
+    [GlobalClass]
+    public partial class Action : Resource
     {
         // The Brain controlling the NPC.
         public Brain Brain { get; private set; }
@@ -20,7 +21,14 @@ namespace AI
         public bool IsActive { get; private set; }
 
         // If true, this action pauses the brain's updates to velocity when activated, until deactivated.
+        [ExportCategory("Action")]
+        [Export]
         public bool PausesMotionWhileActive { get; protected set; } = false;
+
+        public Action() : base() {
+            // All actions must be LocalToScene because they are typically assigned via the editor and are instanced 1x per Brain.
+            ResourceLocalToScene = true;
+        }
 
         public virtual void Initialize(Brain brain)
         {
