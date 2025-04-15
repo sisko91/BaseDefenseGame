@@ -6,15 +6,10 @@ namespace AI
     namespace Actions
     {
         [GlobalClass]
-        public partial class MeleeAttackAction : AI.Action
+        public partial class MeleeAttackAction : AI.Actions.AttackAction
         {
             // TODO: Placeholder
             public static float MeleeAttackDamage = 30.0f;
-
-            // TODO: Placeholder
-            public static float MeleeAttackCooldown = 1.0f;
-
-            private double lastAttackTime = -1;
 
             public MeleeAttackAction() : base()
             {
@@ -29,20 +24,14 @@ namespace AI
 
             public override float CalculateScore()
             {
-                if(Brain.EnemyTarget == null)
-                {
-                    return 0;
+                var baseScore = base.CalculateScore();
+                if(baseScore <= 0) {
+                    return baseScore;
                 }
                 float meleeAttackRange = GetMeleeAttackRange();
-                if(Brain.EnemyTarget.GlobalPosition.DistanceSquaredTo(Owner.GlobalPosition) > (meleeAttackRange * meleeAttackRange))
-                {
+                if (Brain.EnemyTarget.GlobalPosition.DistanceSquaredTo(Owner.GlobalPosition) > (meleeAttackRange * meleeAttackRange)) {
                     // Out of range.
-                    return 0;
-                }
-
-                if (lastAttackTime > 0 && GetTimeSeconds() - MeleeAttackCooldown < lastAttackTime)
-                {
-                    // Premature
+                    // TODO: Move this into AttackAction?
                     return 0;
                 }
 
@@ -50,33 +39,12 @@ namespace AI
                 return 1.25f;
             }
 
-            protected override void OnActivate()
+            protected override void PrepareAttack()
             {
-                GD.Print($"{Owner?.Name}-> [MELEE] Attacking enemy ({Brain.EnemyTarget.Name})");
+                GD.Print($"{Owner?.Name}-> [Prepare(Melee)] Attacking enemy ({Brain.EnemyTarget.Name})");
             }
 
-            public override void Update(double deltaTime)
-            {
-                if(Brain.EnemyTarget == null)
-                {
-                    Deactivate();
-                    return;
-                }
-
-                float meleeAttackRange = GetMeleeAttackRange();
-                if (Brain.EnemyTarget.GlobalPosition.DistanceSquaredTo(Owner.GlobalPosition) > (meleeAttackRange * meleeAttackRange))
-                {
-                    // Out of range.
-                    Deactivate();
-                    return;
-                }
-
-                if (lastAttackTime > 0 && GetTimeSeconds() - MeleeAttackCooldown < lastAttackTime)
-                {
-                    // Not time to attack again yet.
-                    return;
-                }
-
+            protected override void ExecuteAttack() {
                 // TODO: We should be implementing a melee weapon that they use that does this correctly (for some definition of correct).
                 var hr = new HitResult();
                 // Impact location is the midpoint between the two characters meleeing. The normal points from attacker -> target.
@@ -84,12 +52,6 @@ namespace AI
                 hr.ImpactNormal = (Brain.EnemyTarget.GlobalPosition - Owner.GlobalPosition);
                 Brain.EnemyTarget.TryRegisterImpact(hr, Owner, MeleeAttackDamage);
                 GD.Print("Hiyah!");
-                lastAttackTime = GetTimeSeconds();
-            }
-
-            private double GetTimeSeconds()
-            {
-                return Time.GetTicksUsec() / 1000000.0;
             }
 
             private float GetMeleeAttackRange()

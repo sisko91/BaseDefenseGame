@@ -4,7 +4,7 @@ namespace AI
 {
     // Actions are scored by the AI Brain and activated to issue commands to NonPlayerCharacters.
     [GlobalClass]
-    public partial class Action : Resource
+    public abstract partial class Action : Resource
     {
         // The Brain controlling the NPC.
         public Brain Brain { get; private set; }

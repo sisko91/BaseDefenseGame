@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://dhjipnr7f4joy"]
+[gd_scene load_steps=14 format=3 uid="uid://dhjipnr7f4joy"]
 
 [ext_resource type="Script" uid="uid://7bd5jukoswn7" path="res://Gameplay/Effects/ProjectileSpray.cs" id="1_md0l2"]
 
@@ -23,22 +23,53 @@ colors = PackedColorArray(1, 1, 1, 1, 0.903598, 0.903598, 0.903598, 1, 0.462291,
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_giiqe"]
 gradient = SubResource("Gradient_nnwlx")
 
+[sub_resource type="Curve" id="Curve_t4kqy"]
+_data = [Vector2(0, 0.227723), 0.0, 0.0, 0, 0, Vector2(0.353774, 1), 0.0, 0.0, 0, 0, Vector2(0.747642, 0.490999), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_ha8bb"]
+curve = SubResource("Curve_t4kqy")
+
+[sub_resource type="Curve" id="Curve_f3ylw"]
+_limits = [0.0, 500.0, 0.0, 1.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.495283, 500), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_nnwlx"]
+curve = SubResource("Curve_f3ylw")
+
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_t4kqy"]
 lifetime_randomness = 0.2
 particle_flag_disable_z = true
 spread = 15.0
 initial_velocity_min = 200.0
 initial_velocity_max = 200.0
+angular_velocity_min = -1.60933e-05
+angular_velocity_max = -1.60933e-05
 orbit_velocity_min = 9.49949e-08
 orbit_velocity_max = 9.49949e-08
+velocity_limit_curve = SubResource("CurveTexture_nnwlx")
 gravity = Vector3(0, 0, 0)
+linear_accel_min = -2.23517e-06
+linear_accel_max = -2.23517e-06
+radial_accel_min = -2.23517e-06
+radial_accel_max = -2.23517e-06
+damping_min = 24.493
+damping_max = 100.0
 scale_min = 10.0
 scale_max = 10.0
+scale_curve = SubResource("CurveTexture_ha8bb")
 color_ramp = SubResource("GradientTexture1D_giiqe")
 color_initial_ramp = SubResource("GradientTexture1D_f3ylw")
 alpha_curve = SubResource("CurveTexture_t4kqy")
+turbulence_noise_scale = 1.288
+turbulence_initial_displacement_min = 1.49012e-06
+turbulence_initial_displacement_max = 1.49012e-06
 
-[node name="ShamblerVomitAttack" type="Node2D"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_t4kqy"]
+radius = 100.0
+
+[node name="ShamblerVomitAttack" type="Area2D"]
 script = ExtResource("1_md0l2")
 
 [node name="GPUParticles2D" type="GPUParticles2D" parent="."]
@@ -48,3 +79,6 @@ explosiveness = 0.1
 randomness = 0.3
 trail_lifetime = 0.1
 process_material = SubResource("ParticleProcessMaterial_t4kqy")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_t4kqy")

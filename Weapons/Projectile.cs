@@ -68,7 +68,7 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
             CollisionLayer = CollisionLayer << c.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
             CollisionMask = CollisionMask << c.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
         }
-
+        
         ProjectileTimer = new Timer();
         ProjectileTimer.OneShot = true;
         ProjectileTimer.WaitTime = LifetimeSeconds;
@@ -84,6 +84,19 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
     public void ForceExpire() {
         ProjectileTimer.Stop();
         ProjectileTimer.EmitSignal("timeout");
+    }
+
+    // Like AddCollisionExceptionWith() but auto-expires the exception after a short duration.
+    public void AddTemporaryCollisionException(PhysicsBody2D otherBody, float duration = 0.2f) {
+        AddCollisionExceptionWith(otherBody);
+
+        var timer = new Timer {
+            WaitTime = duration,
+            OneShot = true,
+            Autostart = true
+        };
+        AddChild(timer);
+        timer.Timeout += () => RemoveCollisionExceptionWith(otherBody);
     }
 
     public override void _PhysicsProcess(double delta)
@@ -102,7 +115,6 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
         // Override in children.
     }
 
-    // TODO: Maybe we should just have this base type detect certain things, and have explicit OnCollideNPC(), OnCollidePlayer(), etc.?
     protected virtual void OnCollide(KinematicCollision2D collision)
     {
         var hr = new HitResult(collision, KnockbackForce);

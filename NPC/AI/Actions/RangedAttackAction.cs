@@ -5,7 +5,7 @@ namespace AI
 {
     namespace Actions {
         [GlobalClass]
-        public partial class RangedAttackAction : AI.Action
+        public partial class RangedAttackAction : AI.Actions.AttackAction
         {
             [ExportCategory("Attack")]
             // The scene to instantiate for each attack.
@@ -15,18 +15,6 @@ namespace AI
             // Local position offset for the attack instance spawned from the template. Offset is relative to the AI Owner.
             [Export]
             public Vector2 AttackInstanceSpawnOffset { get; set; } = Vector2.Zero;
-
-            // How often this attack is allowed to score > 0.
-            [Export]
-            public float AttackCooldownSeconds = 4.0f;
-
-            // Maximum range that this attack may be used from. This range is tested from the centerpoint of both the attacker and enemy target bodies.
-            [Export]
-            public float MaxAttackRange { get; protected set; } = 200.0f;
-
-            // How long this attack takes to perform. After this duration has elapsed the cooldown timer starts (i.e. total time between attacks is AttackCooldownSeconds + AttackTimeSeconds).
-            [Export]
-            public float AttackTimeSeconds = 0.8f;
 
             [ExportCategory("Scoring")]
 
@@ -47,8 +35,6 @@ namespace AI
             // The raycaster node spawned for this attack, used to check line-of-sight for scoring on targets behind walls and other obstructions.
             protected RayCast2D Raycaster { get; private set; }
 
-            private double lastAttackTime = -1;
-
             public RangedAttackAction() : base() {
                 PausesMotionWhileActive = true;
             }
@@ -66,13 +52,12 @@ namespace AI
             }
 
             public override float CalculateScore() {
-                if(Brain.EnemyTarget == null) {
-                    return 0;
+                float baseScore = base.CalculateScore();
+                // The base AttackAction will score 0 if we can't use the attack right now (on cooldown, out of range, etc.)
+                if(baseScore <= 0) {
+                    return baseScore;
                 }
-                if(!CanAttackNow(Brain.EnemyTarget)) {
-                    return 0;
-                }
-                if(!IsAimedAtTarget(Brain.EnemyTarget)) {
+                if (!IsAimedAtTarget(Brain.EnemyTarget)) {
                     return 0;
                 }
                 if (IncludeTraceTest && !HasTraceLOS(Brain.EnemyTarget)) {
@@ -81,18 +66,6 @@ namespace AI
 
                 // HACK: Returning > 1.25 so that it will score higher than other attacks e.g. Melee attacks whenever this is ready.
                 return 1.5f;
-            }
-
-            public bool CanAttackNow(Node2D targetNode) {
-                return IsOffCooldown() && IsInAttackRange(targetNode);
-            }
-
-            protected bool IsInAttackRange(Node2D targetNode) {
-                return targetNode.GlobalPosition.DistanceSquaredTo(Owner.GlobalPosition) <= (MaxAttackRange * MaxAttackRange);
-            }
-
-            protected bool IsOffCooldown() {
-                return (lastAttackTime <= 0 || GetTimeSeconds() - AttackCooldownSeconds > lastAttackTime);
             }
 
             protected bool IsAimedAtTarget(Node2D targetNode) {
@@ -104,27 +77,30 @@ namespace AI
                 }
                 return false;
             }
-
-            protected double GetTimeSeconds() {
-                return Time.GetTicksUsec() / 1000000.0;
-            }
-
             protected bool HasTraceLOS(Node2D targetNode) {
+                // TODO: Do this for real.
                 return true;
             }
 
-            protected override void OnActivate() {
-                GD.Print($"{Owner?.Name}-> [RANGED] Attacking enemy ({Brain.EnemyTarget.Name})");
-                var rangedAttackInstance = AttackInstanceTemplate?.Instantiate<Node2D>();
+            protected override void PrepareAttack() {
+                // Do nothing during prepare by default. Children can override this.
+                GD.Print($"{Owner?.Name}-> [Prepare(Ranged)] Attacking enemy ({Brain.EnemyTarget.Name})");
+            }
+
+            // HACK:
+            private Node2D rangedAttackInstance = null;
+            protected override void ExecuteAttack() {
+                rangedAttackInstance = AttackInstanceTemplate?.Instantiate<Node2D>();
+                if (rangedAttackInstance is IInstigated instigated) {
+                    instigated.Instigator = Owner;
+                }
                 Owner.AddChild(rangedAttackInstance);
                 rangedAttackInstance.Position = AttackInstanceSpawnOffset;
+            }
 
-                var attackTimer = Owner.GetTree().CreateTimer(AttackTimeSeconds, processAlways: false);
-                attackTimer.Timeout += () => {
-                    Owner.RemoveChild(rangedAttackInstance);
-                    lastAttackTime = GetTimeSeconds();
-                    Deactivate();
-                };
+            protected override void OnDeactivate() {
+                // HACK:
+                Owner?.RemoveChild(rangedAttackInstance);
             }
         }
 
