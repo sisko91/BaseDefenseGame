@@ -5,7 +5,7 @@ namespace AI
 {
     namespace Actions {
         [GlobalClass]
-        public partial class RangedAttackEnemyAction : AI.Action
+        public partial class RangedAttackAction : AI.Action
         {
             [ExportCategory("Attack")]
             // The scene to instantiate for each attack.
@@ -49,7 +49,7 @@ namespace AI
 
             private double lastAttackTime = -1;
 
-            public RangedAttackEnemyAction() : base() {
+            public RangedAttackAction() : base() {
                 PausesMotionWhileActive = true;
             }
 

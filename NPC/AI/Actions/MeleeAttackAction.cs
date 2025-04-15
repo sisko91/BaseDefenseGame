@@ -6,7 +6,7 @@ namespace AI
     namespace Actions
     {
         [GlobalClass]
-        public partial class MeleeAttackEnemyAction : AI.Action
+        public partial class MeleeAttackAction : AI.Action
         {
             // TODO: Placeholder
             public static float MeleeAttackDamage = 30.0f;
@@ -16,7 +16,7 @@ namespace AI
 
             private double lastAttackTime = -1;
 
-            public MeleeAttackEnemyAction() : base()
+            public MeleeAttackAction() : base()
             {
                 // This action halts movement for the NPC while they attack.
                 PausesMotionWhileActive = true;
