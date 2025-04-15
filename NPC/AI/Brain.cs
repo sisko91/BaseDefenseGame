@@ -222,22 +222,31 @@ public partial class Brain : Resource
         }
 
         Owner.Knockback = Owner.Knockback.Lerp(Vector2.Zero, 0.4f);
+        Owner.RotationGoal = GetRotationGoal();
+    }
+
+    private float GetRotationGoal() {
+        var current = Owner.RotationGoal;
+
+        if(currentAction != null && currentAction.IsActive && currentAction.PausesMotionWhileActive) {
+            // Maintain current angle while the action is active.
+            // TODO: Separate the notions here. There are skills which lock the current rotation and skills which lock the current
+            //       *target* of the rotation (but want to keep facing that target while they are active).
+            return current;
+        }
+
+        // Look at the enemy if they exist and are nearby.
+        if (EnemyTarget != null && EnemyTarget is Player player && Owner.NearbyBodySensor.Players.Contains(player)) {
+            return Owner.GlobalPosition.DirectionTo(player.GlobalPosition).Angle();
+        }
+
+        // look along the nav path if stuck
+        if (Owner.GetRealVelocity().Length() < 0.1f * Owner.MovementSpeed) {
+            return lastNavPathDirection.Angle();
+        }
 
         // Orient to face the direction the NPC is moving by default.
-        var lookAngle = Owner.Velocity.Angle();
-        // Look at the enemy if they exist and are nearby.
-        if(EnemyTarget != null && EnemyTarget is Player player && Owner.NearbyBodySensor.Players.Contains(player))
-        {
-            lookAngle = Owner.GlobalPosition.DirectionTo(player.GlobalPosition).Angle();
-        }
-        // otherwise look along the nav path if stuck
-        else if (Owner.GetRealVelocity().Length() < 0.1f * Owner.MovementSpeed)
-        {
-            lookAngle = lastNavPathDirection.Angle();
-        }
-
-        // Set the NPC to rotate towards the look angle we just decided.
-        Owner.RotationGoal = lookAngle;
+        return Owner.Velocity.Angle();
     }
 
     public void ClearNavigationTarget()

@@ -1,0 +1,50 @@
+[gd_scene load_steps=9 format=3 uid="uid://dhjipnr7f4joy"]
+
+[ext_resource type="Script" uid="uid://7bd5jukoswn7" path="res://Gameplay/Effects/ProjectileSpray.cs" id="1_md0l2"]
+
+[sub_resource type="Curve" id="Curve_md0l2"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.502358, 0.321332), 0.0, 0.0, 0, 0, Vector2(1, 0.309631), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_t4kqy"]
+texture_mode = 1
+curve = SubResource("Curve_md0l2")
+
+[sub_resource type="Gradient" id="Gradient_ha8bb"]
+colors = PackedColorArray(0, 1, 0, 1, 0.508199, 0.3068, 1.92523e-07, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_f3ylw"]
+gradient = SubResource("Gradient_ha8bb")
+
+[sub_resource type="Gradient" id="Gradient_nnwlx"]
+offsets = PackedFloat32Array(0, 0.542714, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.903598, 0.903598, 0.903598, 1, 0.462291, 0.462291, 0.462291, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_giiqe"]
+gradient = SubResource("Gradient_nnwlx")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_t4kqy"]
+lifetime_randomness = 0.2
+particle_flag_disable_z = true
+spread = 15.0
+initial_velocity_min = 200.0
+initial_velocity_max = 200.0
+orbit_velocity_min = 9.49949e-08
+orbit_velocity_max = 9.49949e-08
+gravity = Vector3(0, 0, 0)
+scale_min = 10.0
+scale_max = 10.0
+color_ramp = SubResource("GradientTexture1D_giiqe")
+color_initial_ramp = SubResource("GradientTexture1D_f3ylw")
+alpha_curve = SubResource("CurveTexture_t4kqy")
+
+[node name="ShamblerVomitAttack" type="Node2D"]
+script = ExtResource("1_md0l2")
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+amount = 60
+lifetime = 0.7
+explosiveness = 0.1
+randomness = 0.3
+trail_lifetime = 0.1
+process_material = SubResource("ParticleProcessMaterial_t4kqy")

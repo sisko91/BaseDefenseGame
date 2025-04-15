@@ -12,14 +12,29 @@ namespace AI
             [Export]
             public PackedScene AttackInstanceTemplate { get; set; } = null;
 
-            [ExportCategory("Scoring")]
-            // Maximum range that this attack may be used from. This range is tested from the centerpoint of both the attacker and enemy target bodies.
+            // Local position offset for the attack instance spawned from the template. Offset is relative to the AI Owner.
             [Export]
-            public float MaxAttackRange { get; protected set; } = 200.0f;
+            public Vector2 AttackInstanceSpawnOffset { get; set; } = Vector2.Zero;
 
             // How often this attack is allowed to score > 0.
             [Export]
             public float AttackCooldownSeconds = 4.0f;
+
+            // Maximum range that this attack may be used from. This range is tested from the centerpoint of both the attacker and enemy target bodies.
+            [Export]
+            public float MaxAttackRange { get; protected set; } = 200.0f;
+
+            // How long this attack takes to perform. After this duration has elapsed the cooldown timer starts (i.e. total time between attacks is AttackCooldownSeconds + AttackTimeSeconds).
+            [Export]
+            public float AttackTimeSeconds = 0.8f;
+
+            [ExportCategory("Scoring")]
+
+            // Determines how strongly the action needs to be aligned with / aimed at the target enemy in order for the aim test to pass.
+            // An AimTolerance of -1 means that the target must be *exactly* behind the NPC in order to attack. An AimTolerance of 1 means *exactly* in front of.
+            // An AimTolerance of 0 means *exactly* perpendicular to (the left/right of) the NPC. Generally speaking a value of 0.9 means "you must be ~90% aimed at the target". 
+            [Export]
+            public float AimTolerance = 0.9f;
 
             // Whether the attack requires a line-of-sight test to pass before scoring > 0.
             [Export]
@@ -57,6 +72,9 @@ namespace AI
                 if(!CanAttackNow(Brain.EnemyTarget)) {
                     return 0;
                 }
+                if(!IsAimedAtTarget(Brain.EnemyTarget)) {
+                    return 0;
+                }
                 if (IncludeTraceTest && !HasTraceLOS(Brain.EnemyTarget)) {
                     return 0;
                 }
@@ -77,6 +95,16 @@ namespace AI
                 return (lastAttackTime <= 0 || GetTimeSeconds() - AttackCooldownSeconds > lastAttackTime);
             }
 
+            protected bool IsAimedAtTarget(Node2D targetNode) {
+                var lookVec = Vector2.FromAngle(Owner.GlobalRotation);
+                var dirVec = (targetNode.GlobalPosition - Owner.GlobalPosition).Normalized();
+                var dot = lookVec.Dot(dirVec);
+                if (dot > AimTolerance) {
+                    return true;
+                }
+                return false;
+            }
+
             protected double GetTimeSeconds() {
                 return Time.GetTicksUsec() / 1000000.0;
             }
@@ -87,8 +115,16 @@ namespace AI
 
             protected override void OnActivate() {
                 GD.Print($"{Owner?.Name}-> [RANGED] Attacking enemy ({Brain.EnemyTarget.Name})");
-                lastAttackTime = GetTimeSeconds();
-                Deactivate();
+                var rangedAttackInstance = AttackInstanceTemplate?.Instantiate<Node2D>();
+                Owner.AddChild(rangedAttackInstance);
+                rangedAttackInstance.Position = AttackInstanceSpawnOffset;
+
+                var attackTimer = Owner.GetTree().CreateTimer(AttackTimeSeconds, processAlways: false);
+                attackTimer.Timeout += () => {
+                    Owner.RemoveChild(rangedAttackInstance);
+                    lastAttackTime = GetTimeSeconds();
+                    Deactivate();
+                };
             }
         }
 

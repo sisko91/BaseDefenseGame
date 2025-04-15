@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://2ctjrem32j1v"]
+[gd_scene load_steps=22 format=3 uid="uid://2ctjrem32j1v"]
 
 [ext_resource type="Shader" uid="uid://cfv027nbsnbss" path="res://Shaders/character.gdshader" id="1_mvkqo"]
 [ext_resource type="Script" uid="uid://c2u67ufhm0qxl" path="res://NPC/NonPlayerCharacter.cs" id="2_y8uwp"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://bc2ju5qbw3goj" path="res://Gameplay/Effects/Impacts/impact_character_default.tscn" id="4_biodx"]
 [ext_resource type="Script" uid="uid://gqukfksere7u" path="res://NPC/AI/Actions/RangedAttackEnemyAction.cs" id="4_j7bkh"]
 [ext_resource type="Script" uid="uid://yfwjfdbs81n8" path="res://NPC/AI/Actions/MoveToTargetAction.cs" id="5_12p5w"]
+[ext_resource type="PackedScene" uid="uid://dhjipnr7f4joy" path="res://NPC/Shambler/shambler_vomit_attack.tscn" id="5_j7bkh"]
 [ext_resource type="PackedScene" uid="uid://bjk4qjwt7h3d2" path="res://UI/floating_health_bar.tscn" id="5_sndew"]
 [ext_resource type="Script" uid="uid://2ajhnisvj48l" path="res://Gameplay/BodySensor.cs" id="6_t0u02"]
 
@@ -21,7 +22,7 @@ shader_parameter/gb_ceil = 0.75
 [sub_resource type="Resource" id="Resource_v3cfa"]
 resource_local_to_scene = true
 script = ExtResource("3_y33um")
-PausesMotionWhileActive = false
+PausesMotionWhileActive = true
 metadata/_custom_type_script = "uid://brld2kj8jx7gm"
 
 [sub_resource type="Resource" id="Resource_dbb6b"]
@@ -32,11 +33,15 @@ metadata/_custom_type_script = "uid://yfwjfdbs81n8"
 
 [sub_resource type="Resource" id="Resource_y33um"]
 script = ExtResource("4_j7bkh")
-MaxAttackRange = 200.0
+AttackInstanceTemplate = ExtResource("5_j7bkh")
+AttackInstanceSpawnOffset = Vector2(25, 0)
 AttackCooldownSeconds = 4.0
+MaxAttackRange = 200.0
+AttackTimeSeconds = 2.5
+AimTolerance = 0.9
 IncludeTraceTest = true
 TraceCollisionMask = 0
-PausesMotionWhileActive = false
+PausesMotionWhileActive = true
 metadata/_custom_type_script = "uid://gqukfksere7u"
 
 [sub_resource type="Resource" id="Resource_qedxc"]

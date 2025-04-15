@@ -67,7 +67,7 @@ namespace AI
         // Actions are un-interruptible by default. Override protected bool CanInterrupt() to change this.
         public virtual bool TryInterrupt() {
             bool success = CanInterrupt();
-            GD.Print($"{GetType()} {(success ? "Interrupted" : "Refused Interrupt")}");
+            //GD.Print($"{GetType()} {(success ? "Interrupted" : "Refused Interrupt")}");
             if(success) {
                 Deactivate();
             }

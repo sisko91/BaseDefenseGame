@@ -69,6 +69,7 @@ namespace AI
 
                 // Abort any time the target changes because that probably warrants a reconsideration.
                 if (Brain.EnemyTarget != originalEnemy) {
+                    //GD.Print($"{Owner?.Name}->{GetType().Name} target has changed");
                     Deactivate();
                     return;
                 }
@@ -154,6 +155,7 @@ namespace AI
                     }
                     else {
                         //No path
+                        //GD.Print($"{Owner?.Name}->{GetType().Name} no path to stairs");
                         Deactivate();
                     }
                 }
