@@ -28,7 +28,7 @@ public partial class Explosion : AreaEffect, IImpactMaterial
     // ImpactMaterialType satisfies IImpactMaterial.
     // Explosions are generally of impact type "Explosion".
     [Export]
-    public IImpactMaterial.MaterialType ImpactMaterialType { get; protected set; } = IImpactMaterial.MaterialType.Explosion;
+    public IImpactMaterial.ImpactType ImpactSourceType { get; protected set; } = IImpactMaterial.ImpactType.Blast;
 
     // DefaultResponseHit satisfies IImpactMaterial.
     [Export]
@@ -36,7 +36,7 @@ public partial class Explosion : AreaEffect, IImpactMaterial
 
     // ImpactResponseTable satisfies IImpactMaterial.
     // Explosions cannot be impacted by other things, so this always returns an empty table.
-    public Godot.Collections.Dictionary<IImpactMaterial.MaterialType, PackedScene> ImpactResponseTable => [];
+    public Godot.Collections.Dictionary<IImpactMaterial.ImpactType, PackedScene> ImpactResponseTable => [];
 
     // All character bodies already damaged by this explosion.
     public Godot.Collections.Array<Character> DamagedCharacters { get; private set; }

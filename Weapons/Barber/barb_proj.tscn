@@ -34,7 +34,7 @@ LifetimeSeconds = 4.0
 DestroyOnNextCollision = false
 Damage = 5.0
 KnockbackForce = 1.0
-ImpactMaterialType = 0
+ImpactSourceType = 2
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 use_parent_material = true

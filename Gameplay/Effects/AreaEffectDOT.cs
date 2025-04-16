@@ -6,7 +6,7 @@ public partial class AreaEffectDOT : AreaEffect, IImpactMaterial
     [ExportCategory("Impact")]
     // ImpactMaterialType satisfies IImpactMaterial.
     [Export]
-    public IImpactMaterial.MaterialType ImpactMaterialType { get; protected set; } = IImpactMaterial.MaterialType.Bullet;
+    public IImpactMaterial.ImpactType ImpactSourceType { get; protected set; } = IImpactMaterial.ImpactType.Default;
 
     [Export]
     // DefaultResponseHit satisfies IImpactMaterial.
@@ -14,7 +14,7 @@ public partial class AreaEffectDOT : AreaEffect, IImpactMaterial
 
     // ImpactResponseTable satisfies IImpactMaterial.
     // Instanced effects like AreaEffect cannot be impacted by other things, so this always returns an empty table.
-    public Godot.Collections.Dictionary<IImpactMaterial.MaterialType, PackedScene> ImpactResponseTable => [];
+    public Godot.Collections.Dictionary<IImpactMaterial.ImpactType, PackedScene> ImpactResponseTable => [];
 
     // How often, in seconds, between consecutive damage ticks applied to characters within the cone.
     [Export]

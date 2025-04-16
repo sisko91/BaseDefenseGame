@@ -92,7 +92,8 @@ Brain = SubResource("Resource_qedxc")
 MovementSpeed = 30.0
 ImpactResponseTable = Dictionary[int, PackedScene]({
 0: ExtResource("4_biodx"),
-2: ExtResource("4_biodx")
+2: ExtResource("4_biodx"),
+3: ExtResource("4_biodx")
 })
 
 [node name="FloatingHealthBar" parent="." instance=ExtResource("5_sndew")]

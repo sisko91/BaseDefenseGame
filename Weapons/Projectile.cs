@@ -33,7 +33,7 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
 
     // ImpactMaterialType satisfies IImpactMaterial interface.
     [Export]
-    public IImpactMaterial.MaterialType ImpactMaterialType { get; protected set; } = IImpactMaterial.MaterialType.Bullet;
+    public IImpactMaterial.ImpactType ImpactSourceType { get; protected set; } = IImpactMaterial.ImpactType.Bullet;
 
     // DefaultResponseHint satisfies IImpactMaterial interface.
     [Export]
@@ -45,7 +45,7 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
     // ImpactResponseTable satisfies IImpactMaterial interface.
     // Note this should somewhat rarely be populated for projectiles. These are *responses* so it only matters if the projectile itself
     // can be impacted by other things.
-    public Dictionary<IImpactMaterial.MaterialType, PackedScene> ImpactResponseTable { get; protected set; } = [];
+    public Dictionary<IImpactMaterial.ImpactType, PackedScene> ImpactResponseTable { get; protected set; } = [];
 
     public string AllProjectilesGroup = "Projectiles";
 

@@ -61,9 +61,9 @@ public partial class Character : Moveable, IImpactMaterial
 
     #region Interface: IImpactMaterial
 
-    // ImpactMaterialType satisfies IImpactMaterial interface.
+    // ImpactSourceType satisfies IImpactMaterial interface.
     [Export]
-    public IImpactMaterial.MaterialType ImpactMaterialType { get; protected set; } = IImpactMaterial.MaterialType.Human;
+    public IImpactMaterial.ImpactType ImpactSourceType { get; protected set; } = IImpactMaterial.ImpactType.Default;
 
     // DefaultResponseHint satisfies IImpactMaterial interface. For characters this should typically be null unless the character
     // ever impacts other things directly (such as one character being the source of an impact to another character, which is unlikely
@@ -72,7 +72,7 @@ public partial class Character : Moveable, IImpactMaterial
 
     // ImpactResponseTable satisfies IImpactMaterial interface.
     [Export]
-    public Dictionary<IImpactMaterial.MaterialType, PackedScene> ImpactResponseTable { get; protected set; } = [];
+    public Dictionary<IImpactMaterial.ImpactType, PackedScene> ImpactResponseTable { get; protected set; } = [];
 
     #endregion
 
