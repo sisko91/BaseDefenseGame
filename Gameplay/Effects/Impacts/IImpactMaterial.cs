@@ -72,8 +72,7 @@ public static class IImpactMaterialExtensions
 
         if (impactScene?.Instantiate() is Impact impact) {
             recipient.AddChild(impact);
-            impact.GlobalPosition = hitResult.ImpactLocation;
-            impact.GlobalRotation = (hitResult.ImpactNormal * -1).Angle(); // reverse the normal as it will point inward toward the character hit.
+            impact.Initialize(hitResult);
         }
         else {
             GD.PushWarning($"ImpactMaterial for {recipient.Name} does not include a valid response for source {sourceMaterial} (material type: {sourceMaterial?.ImpactMaterialType})");
