@@ -122,7 +122,7 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
         // In order for this to be useful as a HitResult, the normal needs to be reversed to point in the direction of impact.
         hr.ImpactNormal *= -1;
         if(collision.GetCollider() is Node collidedWith) {
-            collidedWith.TryRegisterImpact(hr, this, Damage);
+            this.TryRegisterImpact(collidedWith, hr, Damage);
         }
 
         if(DestroyOnNextCollision) {

@@ -31,6 +31,7 @@ public partial class Explosion : AreaEffect, IImpactMaterial
     public IImpactMaterial.MaterialType ImpactMaterialType { get; protected set; } = IImpactMaterial.MaterialType.Explosion;
 
     // DefaultResponseHit satisfies IImpactMaterial.
+    [Export]
     public PackedScene DefaultResponseHint { get; protected set; } = null;
 
     // ImpactResponseTable satisfies IImpactMaterial.
@@ -142,7 +143,7 @@ public partial class Explosion : AreaEffect, IImpactMaterial
                     hr.ImpactNormal = (character.GlobalPosition - GlobalPosition).Normalized();
                     // TODO: Add a knockback force for the explosion if we decide the damage is too much to use for it.
                     hr.KnockbackForce = CalculateBlastStrength(distance, BaseDamage, MinimumDamage);
-                    character.TryRegisterImpact(hr, this, CalculateBlastStrength(distance, BaseDamage, MinimumDamage));
+                    this.TryRegisterImpact(character, hr, CalculateBlastStrength(distance, BaseDamage, MinimumDamage));
                     DamagedCharacters.Add(character);
                 }
             }   

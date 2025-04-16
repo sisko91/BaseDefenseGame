@@ -21,10 +21,10 @@ color_initial_ramp = SubResource("GradientTexture1D_w4t2o")
 turbulence_enabled = true
 turbulence_noise_strength = 1.1
 
-[node name="ImpactCharacterDefault" type="Node2D" node_paths=PackedStringArray("ParticleFX")]
+[node name="ImpactCharacterDefault" type="Node2D" node_paths=PackedStringArray("ParticleSystems")]
 script = ExtResource("1_t30q3")
 CleanupLifetime = 0.6
-ParticleFX = NodePath("BloodParticles")
+ParticleSystems = [NodePath("BloodParticles")]
 metadata/_custom_type_script = "uid://bdlpabjq7i1yw"
 
 [node name="BloodParticles" type="GPUParticles2D" parent="."]

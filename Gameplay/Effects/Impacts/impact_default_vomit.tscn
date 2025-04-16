@@ -1,0 +1,49 @@
+[gd_scene load_steps=9 format=3 uid="uid://hbyva082052j"]
+
+[ext_resource type="Script" uid="uid://bdlpabjq7i1yw" path="res://Gameplay/Effects/Impacts/Impact.cs" id="1_8n2pv"]
+
+[sub_resource type="Curve" id="Curve_8n2pv"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.256976), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_jmo4j"]
+texture_mode = 1
+curve = SubResource("Curve_8n2pv")
+
+[sub_resource type="Gradient" id="Gradient_uxkvn"]
+colors = PackedColorArray(0, 1, 0, 1, 0.574202, 0.314592, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_jbgcj"]
+gradient = SubResource("Gradient_uxkvn")
+
+[sub_resource type="Gradient" id="Gradient_gm6gc"]
+colors = PackedColorArray(1, 1, 1, 1, 0.306923, 0.306923, 0.306923, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_lrqx0"]
+gradient = SubResource("Gradient_gm6gc")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_jmo4j"]
+particle_flag_disable_z = true
+spread = 130.0
+initial_velocity_min = 45.0
+initial_velocity_max = 45.0
+gravity = Vector3(0, 0, 0)
+damping_min = 45.0
+damping_max = 80.0
+scale_min = 5.0
+scale_max = 10.0
+color_ramp = SubResource("GradientTexture1D_lrqx0")
+color_initial_ramp = SubResource("GradientTexture1D_jbgcj")
+alpha_curve = SubResource("CurveTexture_jmo4j")
+
+[node name="ImpactDefaultVomit" type="Node2D" node_paths=PackedStringArray("ParticleSystems")]
+script = ExtResource("1_8n2pv")
+ParticleSystems = [NodePath("SplashParticles")]
+
+[node name="SplashParticles" type="GPUParticles2D" parent="."]
+emitting = false
+lifetime = 0.67
+one_shot = true
+explosiveness = 0.85
+randomness = 0.74
+process_material = SubResource("ParticleProcessMaterial_jmo4j")

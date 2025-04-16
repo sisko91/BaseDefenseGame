@@ -20,10 +20,10 @@ color = Color(1, 1, 0, 1)
 color_initial_ramp = SubResource("GradientTexture1D_w4t2o")
 turbulence_noise_strength = 1.1
 
-[node name="ImpactDefaultBullet" type="Node2D" node_paths=PackedStringArray("ParticleFX")]
+[node name="ImpactDefaultBullet" type="Node2D" node_paths=PackedStringArray("ParticleSystems")]
 script = ExtResource("1_38j1k")
 CleanupLifetime = 0.6
-ParticleFX = NodePath("SparkParticles")
+ParticleSystems = [NodePath("SparkParticles")]
 metadata/_custom_type_script = "uid://bdlpabjq7i1yw"
 
 [node name="SparkParticles" type="GPUParticles2D" parent="."]

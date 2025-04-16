@@ -12,7 +12,8 @@ public interface IImpactMaterial
         Default = 0, // Pseudo-material, should not be assigned to objects or returned from ImpactMaterialType. This is only used in the editor and for internal lookups.
         Human = 1,
         Bullet = 2,
-        Explosion = 3, 
+        Explosion = 3,
+        Vomit = 4,
     }
 
     // Implementations must provide a MaterialType identifier.
@@ -28,40 +29,54 @@ public interface IImpactMaterial
 public static class IImpactMaterialExtensions
 {
     // Attempts to resolve two impacting materials using their exposed interfaces to select an appropriate Impact response scene to use. May return null.
-    public static PackedScene SelectImpactScene(this IImpactMaterial recipient, IImpactMaterial source, bool useDefaultAsFallback = true) {
+    public static PackedScene SelectImpactScene(this IImpactMaterial recipient, IImpactMaterial source) {
+        var selected = source != null ? recipient.SelectImpactScene(source.ImpactMaterialType) : null;
+        /*if(selected == null) {
+            var recipientName = ((Node)recipient).Name;
+            GD.PushWarning($"ImpactMaterial for {recipientName} does not include a valid response for source {source} (material type: {source?.ImpactMaterialType})");
+        }*/
+        return selected;
+    }
+
+    // Attempts to resolve how a specific impact material type interacts with this impact material in order to select an appropriate Impact response scene to use. May return null.
+    public static PackedScene SelectImpactScene(this IImpactMaterial recipient, IImpactMaterial.MaterialType sourceType) {
         var table = recipient.ImpactResponseTable;
-        // Option 1: Impact FX registered for this source and recipient.
-        if (source != null && table.TryGetValue(source.ImpactMaterialType, out var packedFX)) {
+        if (table.TryGetValue(sourceType, out var packedFX)) {
             return packedFX;
         }
-        else if (useDefaultAsFallback) {
-            // Option 2: Impact FX registered for the Default source and this recipient.
-            if (table.TryGetValue(IImpactMaterial.MaterialType.Default, out var defaultSourceFX)) {
-                return defaultSourceFX;
-            }
-        }
-        var recipientName = ((Node)recipient).Name;
-        GD.PushWarning($"ImpactMaterial for {recipientName} does not include a valid response for source {source} (material type: {source?.ImpactMaterialType})");
+        //var recipientName = ((Node)recipient).Name;
+        //GD.PushWarning($"ImpactMaterial for {recipientName} does not include a valid response for source material type: {sourceType})");
         return null;
     }
 
     // Attempts to register an impact against a node in the game. The node may or may not implement the necessary interfaces to facilitate a valid impact. Returns false
     // when the impact was unsuccessful (i.e. likely the recipient doesn't know how to respond).
-    public static bool TryRegisterImpact(this Node recipient, HitResult hitResult, IImpactMaterial sourceMaterial, float impactDamage) {
+    public static bool TryRegisterImpact(this IImpactMaterial sourceMaterial, Node recipient, HitResult hitResult, float impactDamage) {
         PackedScene impactScene = null;
-        if(recipient is IImpactMaterial recipientMaterial) {
-            impactScene = recipientMaterial.SelectImpactScene(sourceMaterial);
+        var recipientMaterial = recipient as IImpactMaterial;
+        // Option 1: The receiver is also an impact material and (ideally) has a registered impact response for the source material type.
+        if (recipientMaterial != null) {
+            impactScene = recipientMaterial.SelectImpactScene(sourceMaterial.ImpactMaterialType);
             //GD.Print($"Using recipient for response: {impactScene?.ResourcePath}");
         }
-        if(impactScene == null) {
+        // Option 2: Use this material's default response scene if it exists.
+        if (impactScene == null) {
             //GD.Print($"Using default response hint: {sourceMaterial?.DefaultResponseHint?.ResourcePath}");
             impactScene = sourceMaterial.DefaultResponseHint; // Default response for anything this source hits, may be null.
+        }
+        // Option 3: If the recipient is a valid impact material, fall back to any general default response in its table.
+        if(impactScene == null && recipientMaterial != null) {
+            //GD.Print($"Using recipient's default response: {impactScene?.ResourcePath}");
+            impactScene = recipientMaterial.SelectImpactScene(IImpactMaterial.MaterialType.Default);
         }
 
         if (impactScene?.Instantiate() is Impact impact) {
             recipient.AddChild(impact);
             impact.GlobalPosition = hitResult.ImpactLocation;
             impact.GlobalRotation = (hitResult.ImpactNormal * -1).Angle(); // reverse the normal as it will point inward toward the character hit.
+        }
+        else {
+            GD.PushWarning($"ImpactMaterial for {recipient.Name} does not include a valid response for source {sourceMaterial} (material type: {sourceMaterial?.ImpactMaterialType})");
         }
 
         // Characters receive hits on valid impacts.

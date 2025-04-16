@@ -20,7 +20,7 @@ MovementSpeed = 0.0
 MaxHealth = 500.0
 ImpactMaterialType = 0
 ImpactResponseTable = Dictionary[int, PackedScene]({
-2: ExtResource("2_fcuk1")
+0: ExtResource("2_fcuk1")
 })
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
