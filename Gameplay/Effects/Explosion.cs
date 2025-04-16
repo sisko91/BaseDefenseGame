@@ -3,18 +3,8 @@ using Godot;
 using Godot.Collections;
 using System.Collections.Generic;
 
-public partial class Explosion : Area2D, IInstigated, IImpactMaterial, IEntity
+public partial class Explosion : AreaEffect, IImpactMaterial
 {
-    // Instigator property satisfies IInstigated interface.
-    public Character Instigator { get; set; }
-    
-    //Satisfy the IEntity interface
-    public BuildingRegion CurrentRegion { get; set; }
-
-    // The outer-most distance that the blast will cover, in world units.
-    [Export]
-    public float MaximumRadius { get; set; } = 100.0f;
-
     [Export]
     public float InitialRadius { get; set; } = 10.0f;
 
@@ -22,12 +12,7 @@ public partial class Explosion : Area2D, IInstigated, IImpactMaterial, IEntity
     [Export]
     public float ExpansionDuration { get; set; } = 0.5f;
 
-    // How long in seconds before this explosion is removed from the scene and all effects are halted.
-    [Export]
-    public float CleanupLifetime = 3.0f;
-
     [ExportCategory("Impact")]
-
     // The maximum damage to characters that the explosion will do close to its epicenter. As distance from the epicenter is increased, the blast does less damage.
     [Export]
     public float BaseDamage { get; set; } = 50.0f;
@@ -52,15 +37,11 @@ public partial class Explosion : Area2D, IInstigated, IImpactMaterial, IEntity
     // Explosions cannot be impacted by other things, so this always returns an empty table.
     public Godot.Collections.Dictionary<IImpactMaterial.MaterialType, PackedScene> ImpactResponseTable => [];
 
-    // All character bodies detected in the vicinity of the explosion.
-    public Godot.Collections.Array<Character> NearbyCharacters { get; private set; }
     // All character bodies already damaged by this explosion.
     public Godot.Collections.Array<Character> DamagedCharacters { get; private set; }
 
     //Projectiles that are affected by explosions
     public List<Projectile> NearbyProjectiles { get; private set; }
-
-    public double SpawnEpochSeconds { get; private set; }
 
     // The collision shape for this explosion. Created dynamically when the explosion is spawned into the scene tree.
     public CollisionShape2D Collider { get; private set; }
@@ -74,11 +55,8 @@ public partial class Explosion : Area2D, IInstigated, IImpactMaterial, IEntity
         base._Ready();
 
         // Set up to detect bodies in radius.
-        NearbyCharacters = new Godot.Collections.Array<Character>();
         DamagedCharacters = new Godot.Collections.Array<Character>();
         NearbyProjectiles = new List<Projectile>();
-        BodyEntered += Explosion_BodyEntered;
-        BodyExited += Explosion_BodyExited;
 
         // Spawn the collider.
         var sensorShape = new CircleShape2D();
@@ -93,17 +71,6 @@ public partial class Explosion : Area2D, IInstigated, IImpactMaterial, IEntity
         Raycaster.Enabled = false; // We only want to use this on-demand so disable otherwise.
         AddChild(Raycaster);
 
-        // Start explosion.
-        SpawnEpochSeconds = Time.GetTicksMsec() / 1000.0;
-        if(CleanupLifetime > 0) {
-            var timer = new Timer();
-            timer.WaitTime = CleanupLifetime;
-            timer.OneShot = true;
-            timer.Timeout += QueueFree;
-            AddChild(timer);
-            timer.Start();
-        }
-
         // OneShot particle effects don't seem to emit by default so we have to turn them all on.
         foreach(var node in GetChildren()) {
             if(node is GpuParticles2D particles) {
@@ -115,19 +82,15 @@ public partial class Explosion : Area2D, IInstigated, IImpactMaterial, IEntity
         AddToGroup("Explosions");
     }
 
-    private void Explosion_BodyEntered(Node2D body) {
-        if (body is Character character) {
-            NearbyCharacters.Add(character);
-        }
-
+    protected override void OnBodyEntered(PhysicsBody2D body) {
         if (body is Projectile p && p.DestroyedByExplosions) {
             NearbyProjectiles.Add(p);
         }
     }
 
-    private void Explosion_BodyExited(Node2D body) {
-        if (body is Character character) {
-            NearbyCharacters.Remove(character);
+    protected override void OnBodyExited(PhysicsBody2D body) {
+        if (body is Projectile p) {
+            NearbyProjectiles.Remove(p);
         }
     }
 

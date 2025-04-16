@@ -148,9 +148,9 @@ collision_mode = 2
 collision_layer = 2
 collision_mask = 15
 script = ExtResource("1_3h2h4")
-MaximumRadius = 250.0
 ExpansionDuration = 0.1
 BaseDamage = 110.0
+MaximumRadius = 250.0
 
 [node name="FireRingParticles" type="GPUParticles2D" parent="."]
 emitting = false
