@@ -1,7 +1,7 @@
 [gd_scene load_steps=17 format=3 uid="uid://dhjipnr7f4joy"]
 
 [ext_resource type="Script" uid="uid://7bd5jukoswn7" path="res://Gameplay/Effects/AreaEffectDOT.cs" id="1_md0l2"]
-[ext_resource type="PackedScene" uid="uid://hbyva082052j" path="res://Gameplay/Effects/Impacts/impact_default_vomit.tscn" id="2_ha8bb"]
+[ext_resource type="PackedScene" uid="uid://hbyva082052j" path="res://Gameplay/Effects/Impacts/impact_vomitsplash.tscn" id="2_ha8bb"]
 [ext_resource type="Script" uid="uid://sqk6ahh6u522" path="res://Gameplay/Effects/AreaEffectFOVFilter.cs" id="2_t4kqy"]
 
 [sub_resource type="Resource" id="Resource_ha8bb"]

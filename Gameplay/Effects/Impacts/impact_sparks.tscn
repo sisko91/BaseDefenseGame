@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://bfrjbygekem55"]
 
-[ext_resource type="Script" uid="uid://bdlpabjq7i1yw" path="res://Gameplay/Effects/Impacts/Impact.cs" id="1_38j1k"]
+[ext_resource type="Script" uid="uid://bdlpabjq7i1yw" path="res://Gameplay/Effects/Impacts/Impact.cs" id="1_pnxs0"]
 
 [sub_resource type="Gradient" id="Gradient_2led1"]
 colors = PackedColorArray(0.548963, 0.548963, 0.548963, 1, 1, 1, 1, 1)
@@ -20,8 +20,8 @@ color = Color(1, 1, 0, 1)
 color_initial_ramp = SubResource("GradientTexture1D_w4t2o")
 turbulence_noise_strength = 1.1
 
-[node name="ImpactDefaultBullet" type="Node2D" node_paths=PackedStringArray("ParticleSystems")]
-script = ExtResource("1_38j1k")
+[node name="ImpactSparks" type="Node2D" node_paths=PackedStringArray("ParticleSystems")]
+script = ExtResource("1_pnxs0")
 CleanupLifetime = 0.6
 ParticleSystems = [NodePath("SparkParticles")]
 metadata/_custom_type_script = "uid://bdlpabjq7i1yw"

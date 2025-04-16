@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://hbyva082052j"]
 
-[ext_resource type="Script" uid="uid://bdlpabjq7i1yw" path="res://Gameplay/Effects/Impacts/Impact.cs" id="1_8n2pv"]
+[ext_resource type="Script" uid="uid://bdlpabjq7i1yw" path="res://Gameplay/Effects/Impacts/Impact.cs" id="1_esfx0"]
 
 [sub_resource type="Curve" id="Curve_8n2pv"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.256976), 0.0, 0.0, 0, 0]
@@ -36,8 +36,8 @@ color_ramp = SubResource("GradientTexture1D_lrqx0")
 color_initial_ramp = SubResource("GradientTexture1D_jbgcj")
 alpha_curve = SubResource("CurveTexture_jmo4j")
 
-[node name="ImpactDefaultVomit" type="Node2D" node_paths=PackedStringArray("ParticleSystems")]
-script = ExtResource("1_8n2pv")
+[node name="ImpactVomitSplash" type="Node2D" node_paths=PackedStringArray("ParticleSystems")]
+script = ExtResource("1_esfx0")
 ParticleSystems = [NodePath("SplashParticles")]
 
 [node name="SplashParticles" type="GPUParticles2D" parent="."]

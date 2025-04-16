@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cnoqjrtxeaoix" path="res://Gameplay/Character.cs" id="1_1gr7f"]
 [ext_resource type="Texture2D" uid="uid://deyurmldm56dm" path="res://art/CrystalTarget/runeBlue_slabOutline_005.png" id="2_5vhs2"]
-[ext_resource type="PackedScene" uid="uid://bfrjbygekem55" path="res://Gameplay/Effects/Impacts/impact_default_bullet.tscn" id="2_fcuk1"]
+[ext_resource type="PackedScene" uid="uid://bfrjbygekem55" path="res://Gameplay/Effects/Impacts/impact_sparks.tscn" id="2_fcuk1"]
 [ext_resource type="PackedScene" uid="uid://bjk4qjwt7h3d2" path="res://UI/floating_health_bar.tscn" id="3_6ntlg"]
 [ext_resource type="Script" uid="uid://2ajhnisvj48l" path="res://Gameplay/BodySensor.cs" id="3_vcxs1"]
 

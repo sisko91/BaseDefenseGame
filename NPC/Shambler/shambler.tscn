@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://c2u67ufhm0qxl" path="res://NPC/NonPlayerCharacter.cs" id="2_y8uwp"]
 [ext_resource type="Script" uid="uid://ehohhro0kwsq" path="res://NPC/AI/Brain.cs" id="3_kbqjp"]
 [ext_resource type="Script" uid="uid://brld2kj8jx7gm" path="res://NPC/AI/Actions/MeleeAttackAction.cs" id="3_y33um"]
-[ext_resource type="PackedScene" uid="uid://bc2ju5qbw3goj" path="res://Gameplay/Effects/Impacts/impact_character_default.tscn" id="4_biodx"]
+[ext_resource type="PackedScene" uid="uid://bc2ju5qbw3goj" path="res://Gameplay/Effects/Impacts/impact_bloodspurt.tscn" id="4_biodx"]
 [ext_resource type="Script" uid="uid://gqukfksere7u" path="res://NPC/AI/Actions/RangedAttackAction.cs" id="4_j7bkh"]
 [ext_resource type="Script" uid="uid://yfwjfdbs81n8" path="res://NPC/AI/Actions/MoveToTargetAction.cs" id="5_12p5w"]
 [ext_resource type="PackedScene" uid="uid://dhjipnr7f4joy" path="res://NPC/Shambler/shambler_vomit_attack.tscn" id="5_j7bkh"]

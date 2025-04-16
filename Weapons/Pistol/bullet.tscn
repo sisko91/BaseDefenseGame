@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://besoheoqrvcgm" path="res://Weapons/Pistol/Bullet.cs" id="1_jfrxl"]
 [ext_resource type="Shader" uid="uid://c6kodin14qwfb" path="res://Shaders/projectile.gdshader" id="1_rep0m"]
-[ext_resource type="PackedScene" uid="uid://bfrjbygekem55" path="res://Gameplay/Effects/Impacts/impact_default_bullet.tscn" id="3_qydnl"]
+[ext_resource type="PackedScene" uid="uid://bfrjbygekem55" path="res://Gameplay/Effects/Impacts/impact_sparks.tscn" id="3_qydnl"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rep0m"]
 shader = ExtResource("1_rep0m")
