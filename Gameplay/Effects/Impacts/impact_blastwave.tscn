@@ -1,0 +1,60 @@
+[gd_scene load_steps=11 format=3 uid="uid://51dmqitmovnd"]
+
+[ext_resource type="Script" uid="uid://bdlpabjq7i1yw" path="res://Gameplay/Effects/Impacts/Impact.cs" id="1_g7pff"]
+
+[sub_resource type="Curve" id="Curve_g7pff"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.747642, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_6b74v"]
+curve = SubResource("Curve_g7pff")
+
+[sub_resource type="Gradient" id="Gradient_6b74v"]
+offsets = PackedFloat32Array(0, 0.211055, 1)
+colors = PackedColorArray(0.112086, 7.18201e-08, 9.02452e-09, 1, 0.892259, 0.208576, 6.0756e-07, 1, 1, 0.988235, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_nn13i"]
+gradient = SubResource("Gradient_6b74v")
+
+[sub_resource type="Gradient" id="Gradient_rpmbq"]
+offsets = PackedFloat32Array(0, 0.487437, 0.773869, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.329159, 0.329158, 0.329158, 1, 0.2484, 0.2484, 0.2484, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_5e417"]
+gradient = SubResource("Gradient_rpmbq")
+
+[sub_resource type="Curve" id="Curve_nn13i"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.637264), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_rpmbq"]
+curve = SubResource("Curve_nn13i")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_3bq8v"]
+particle_flag_disable_z = true
+spread = 30.0
+initial_velocity_min = 110.0
+initial_velocity_max = 130.0
+gravity = Vector3(0, 0, 0)
+damping_min = 10.0
+damping_max = 75.0
+scale_min = 5.0
+scale_max = 15.0
+scale_curve = SubResource("CurveTexture_rpmbq")
+color_ramp = SubResource("GradientTexture1D_5e417")
+color_initial_ramp = SubResource("GradientTexture1D_nn13i")
+alpha_curve = SubResource("CurveTexture_6b74v")
+
+[node name="ImpactBlastwave" type="Node2D" node_paths=PackedStringArray("ParticleSystems")]
+script = ExtResource("1_g7pff")
+OrientationRule = 0
+ParticleSystems = [NodePath("BlastParticles")]
+
+[node name="BlastParticles" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 20
+lifetime = 0.5
+one_shot = true
+explosiveness = 0.8
+randomness = 0.5
+process_material = SubResource("ParticleProcessMaterial_3bq8v")

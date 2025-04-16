@@ -1,6 +1,7 @@
-[gd_scene load_steps=30 format=3 uid="uid://cx4fxn4mm7vc4"]
+[gd_scene load_steps=31 format=3 uid="uid://cx4fxn4mm7vc4"]
 
 [ext_resource type="Script" uid="uid://c4omck4eu2wr3" path="res://Gameplay/Effects/Explosion.cs" id="1_3h2h4"]
+[ext_resource type="PackedScene" uid="uid://51dmqitmovnd" path="res://Gameplay/Effects/Impacts/impact_blastwave.tscn" id="2_rhid6"]
 
 [sub_resource type="Curve" id="Curve_3h2h4"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.754386, 0), 0.0, 0.0, 0, 0]
@@ -150,6 +151,7 @@ collision_mask = 15
 script = ExtResource("1_3h2h4")
 ExpansionDuration = 0.1
 BaseDamage = 110.0
+DefaultResponseHint = ExtResource("2_rhid6")
 MaximumRadius = 250.0
 
 [node name="FireRingParticles" type="GPUParticles2D" parent="."]
