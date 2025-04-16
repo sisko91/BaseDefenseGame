@@ -74,6 +74,11 @@ public partial class AreaEffect : Area2D, IInstigated, IEntity
 
         // Every physics tick we iterate all overlapping bodies and determine which ones are newly inside/outside of the filter.
         // Subclasses will receive callbacks via OnBodyEntered() / OnBodyExited() for any physics bodies that satisfy the filter.
+        // Note: We create new arrays for all bodies and throw away the old ones after using them to determine newly entering/leaving
+        //       bodies. This is necessary because otherwise NearbyBodies/NearbyCharacters fills up with free'd objects over time
+        //       which breaks iteration of these lists in various ways.
+        var newNearbyBodies = new Godot.Collections.Array<PhysicsBody2D>();
+        var newNearbyCharacters = new Godot.Collections.Array<Character>();
         foreach(var body in GetOverlappingBodies()) {
             if(body is PhysicsBody2D physBody) {
                 bool seen = NearbyBodies.Contains(physBody);
@@ -81,24 +86,22 @@ public partial class AreaEffect : Area2D, IInstigated, IEntity
                 bool passedFilter = InfluenceFilter == null || InfluenceFilter.FilterNode(body, this);
                 if (seen) {
                     if(excluded || !passedFilter) {
-                        NearbyBodies.Remove(physBody);
-                        if (physBody is Character character) {
-                            NearbyCharacters.Remove(character);
-                        }
                         OnBodyExited(physBody);
                     }
                 }
                 else {
                     if(!excluded && passedFilter) {
-                        NearbyBodies.Add(physBody);
+                        newNearbyBodies.Add(physBody);
                         if(physBody is Character character) {
-                            NearbyCharacters.Add(character);
+                            newNearbyCharacters.Add(character);
                         }
                         OnBodyEntered(physBody);
                     }
                 }
             }
         }
+        NearbyBodies = newNearbyBodies;
+        NearbyCharacters = newNearbyCharacters;
     }
 
     // Removes and prohibits a physics body from registering as under the influence of this AreaEffect. If permanent is true the
