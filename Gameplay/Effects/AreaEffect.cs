@@ -17,7 +17,7 @@ public partial class AreaEffect : Area2D, IInstigated, IEntity
     // The filter to use for determining which nodes are under the influence of this area effect. Null is a valid value and indicates
     // no additional filtering besides the initial collider/overlap check.
     [Export]
-    public AreaEffectFilter InfluenceFilter { get; set; } = null;
+    public AreaEffectFilter Filter { get; set; } = null;
 
     // How long in seconds before this effect is removed from the scene and all behavior halted.
     [Export]
@@ -83,7 +83,7 @@ public partial class AreaEffect : Area2D, IInstigated, IEntity
             if(body is PhysicsBody2D physBody) {
                 bool seen = NearbyBodies.Contains(physBody);
                 bool excluded = InfluenceExceptions.Contains(body);
-                bool passedFilter = InfluenceFilter == null || InfluenceFilter.FilterNode(body, this);
+                bool passedFilter = Filter == null || Filter.FilterNode(body, this);
                 if (seen) {
                     if(excluded || !passedFilter) {
                         OnBodyExited(physBody);

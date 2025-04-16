@@ -83,7 +83,7 @@ script = ExtResource("1_md0l2")
 ImpactMaterialType = 4
 DefaultResponseHint = ExtResource("2_ha8bb")
 DamageTickPeriod = 0.25
-InfluenceFilter = SubResource("Resource_ha8bb")
+Filter = SubResource("Resource_ha8bb")
 
 [node name="GPUParticles2D" type="GPUParticles2D" parent="."]
 amount = 60
