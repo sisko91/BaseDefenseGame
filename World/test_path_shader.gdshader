@@ -1,11 +1,13 @@
 shader_type canvas_item;
 
+uniform sampler2D path_texture;
+
 void vertex() {
 	// Called for every vertex the material is visible on.
 }
 
 void fragment() {
-	COLOR = vec4(UV, 1.0, 1.0);
+	COLOR = texture(path_texture, UV);
 }
 
 //void light() {

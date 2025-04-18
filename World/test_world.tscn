@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=26 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://dys3a163srv0l" path="res://Gameplay/crystal_target.tscn" id="7_8h8jj"]
 [ext_resource type="PackedScene" uid="uid://ca1u833dx2dax" path="res://World/Structures/Testing/test_fireplace.tscn" id="7_8h8jw"]
 [ext_resource type="PackedScene" uid="uid://blio7x08xw4te" path="res://NPC/Merchant/merchant.tscn" id="7_8ojdi"]
+[ext_resource type="Texture2D" uid="uid://d1skfyo8wkj1a" path="res://art/World/test_road.png" id="7_b48bc"]
 [ext_resource type="Resource" uid="uid://eurmfqo548j4" path="res://World/ShopItems/pistol.tres" id="8_lquev"]
 [ext_resource type="Resource" uid="uid://wi0ppwstcfuk" path="res://World/ShopItems/scattergun.tres" id="9_hjxpo"]
 [ext_resource type="Resource" uid="uid://b77gn5emtpi6g" path="res://World/ShopItems/barber.tres" id="10_cdkb4"]
@@ -40,6 +41,7 @@ shader = ExtResource("3_dghf1")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_b48bc"]
 shader = ExtResource("6_cdkb4")
+shader_parameter/path_texture = ExtResource("7_b48bc")
 
 [sub_resource type="Curve2D" id="Curve2D_cdkb4"]
 _data = {
@@ -82,7 +84,8 @@ region_filter_clip_enabled = true
 script = ExtResource("5_hjxpo")
 Path = NodePath("Path2D")
 PathMeshMaterial = SubResource("ShaderMaterial_b48bc")
-TexCoordsRepeatDistance = 128.0
+StretchTexCoords = false
+TexCoordsRepeatDistance = 1000.0
 
 [node name="Path2D" type="Path2D" parent="RoadMeshGenerator"]
 curve = SubResource("Curve2D_cdkb4")
