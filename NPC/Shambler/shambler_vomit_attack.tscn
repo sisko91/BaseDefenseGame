@@ -72,6 +72,7 @@ alpha_curve = SubResource("CurveTexture_t4kqy")
 turbulence_noise_scale = 1.288
 turbulence_initial_displacement_min = 1.49012e-06
 turbulence_initial_displacement_max = 1.49012e-06
+collision_mode = 2
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_t4kqy"]
 radius = 100.0
