@@ -27,7 +27,7 @@ namespace AI
 
                 float targetDistance = GetAcceptableTargetDistance();
                 float distSq = Owner.GlobalPosition.DistanceSquaredTo(Brain.EnemyTarget.GlobalPosition);
-                if (distSq < targetDistance*targetDistance)
+                if (Owner.CurrentElevationLevel == Brain.EnemyTarget.CurrentElevationLevel && distSq < targetDistance*targetDistance)
                 {
                     // Too close, nothing to do.
                     return 0;

@@ -29,7 +29,7 @@ namespace AI
                     return baseScore;
                 }
                 float meleeAttackRange = GetMeleeAttackRange();
-                if (Brain.EnemyTarget.GlobalPosition.DistanceSquaredTo(Owner.GlobalPosition) > (meleeAttackRange * meleeAttackRange)) {
+                if (Brain.EnemyTarget.CurrentElevationLevel != Owner.CurrentElevationLevel || Brain.EnemyTarget.GlobalPosition.DistanceSquaredTo(Owner.GlobalPosition) > (meleeAttackRange * meleeAttackRange)) {
                     // Out of range.
                     // TODO: Move this into AttackAction?
                     return 0;

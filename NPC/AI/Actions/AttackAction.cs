@@ -43,8 +43,8 @@ namespace AI
                 return 1.0f;
             }
 
-            public bool IsInRangeOf(Node2D targetNode) {
-                return targetNode.GlobalPosition.DistanceSquaredTo(Owner.GlobalPosition) <= (MaxAttackRange * MaxAttackRange);
+            public bool IsInRangeOf(Character targetNode) {
+                return Owner.CurrentElevationLevel == targetNode.CurrentElevationLevel && targetNode.GlobalPosition.DistanceSquaredTo(Owner.GlobalPosition) <= (MaxAttackRange * MaxAttackRange);
             }
 
             public bool IsOffCooldown() {
