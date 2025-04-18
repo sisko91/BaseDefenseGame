@@ -94,6 +94,12 @@ namespace AI
                 if (rangedAttackInstance is IInstigated instigated) {
                     instigated.Instigator = Owner;
                 }
+    
+                if (rangedAttackInstance is CollisionObject2D c) {
+                    c.CollisionLayer = c.CollisionLayer << Owner.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
+                    c.CollisionMask = c.CollisionMask << Owner.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
+                }
+
                 Owner.AddChild(rangedAttackInstance);
                 rangedAttackInstance.Position = AttackInstanceSpawnOffset;
             }
