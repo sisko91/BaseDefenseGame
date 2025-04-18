@@ -1,11 +1,13 @@
-[gd_scene load_steps=21 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=25 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
 [ext_resource type="Shader" uid="uid://cudyiyn8n3ntx" path="res://Shaders/cloud.gdshader" id="2_vxmty"]
 [ext_resource type="Shader" uid="uid://cwkbk8kbjdbbj" path="res://Shaders/background.gdshader" id="3_dghf1"]
+[ext_resource type="Script" uid="uid://cv674n30j8ogj" path="res://World/ProcGen/PathMeshGenerator.cs" id="5_hjxpo"]
 [ext_resource type="Texture2D" uid="uid://oe3re6tn0ddh" path="res://art/World/woodfloor.png" id="6_11lc6"]
 [ext_resource type="PackedScene" uid="uid://2ctjrem32j1v" path="res://NPC/Shambler/shambler.tscn" id="6_a6glu"]
+[ext_resource type="Shader" uid="uid://wjxju78pf2j" path="res://World/test_path_shader.gdshader" id="6_cdkb4"]
 [ext_resource type="PackedScene" uid="uid://h6mtv0wbug0t" path="res://World/Structures/Testing/test_building.tscn" id="6_lhns8"]
 [ext_resource type="Script" uid="uid://bnt0qsggcts86" path="res://World/RadialSpawner.cs" id="6_xi2eq"]
 [ext_resource type="PackedScene" uid="uid://dys3a163srv0l" path="res://Gameplay/crystal_target.tscn" id="7_8h8jj"]
@@ -35,6 +37,15 @@ shader_parameter/speed = Vector2(0.02, 0.01)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_523qg"]
 shader = ExtResource("3_dghf1")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_b48bc"]
+shader = ExtResource("6_cdkb4")
+
+[sub_resource type="Curve2D" id="Curve2D_cdkb4"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, -2174, -1622, -659.014, -30.5796, 659.014, 30.5796, -1086, -770, -277.922, -225.967, 277.922, 225.967, 884, -280, 483.713, 5.55992, -483.713, -5.55992, 812, 516, 280.541, 37.7808, -280.541, -37.7808, -1233, 403, 0, 0, 0, 0, -2088, -232)
+}
+point_count = 6
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_tr0n8")
@@ -66,6 +77,15 @@ texture = ExtResource("2_rsvub")
 region_enabled = true
 region_rect = Rect2(0, 0, 6144, 6144)
 region_filter_clip_enabled = true
+
+[node name="RoadMeshGenerator" type="Node2D" parent="." node_paths=PackedStringArray("Path")]
+script = ExtResource("5_hjxpo")
+Path = NodePath("Path2D")
+PathMeshMaterial = SubResource("ShaderMaterial_b48bc")
+TexCoordsRepeatDistance = 128.0
+
+[node name="Path2D" type="Path2D" parent="RoadMeshGenerator"]
+curve = SubResource("Curve2D_cdkb4")
 
 [node name="TestBuilding" parent="." instance=ExtResource("6_lhns8")]
 position = Vector2(-566, -305)
@@ -120,7 +140,6 @@ InnerRadius = 400.0
 OuterRadius = 500.0
 StartAngleDegrees = 270.0
 StopAngleDegrees = 90.0
-InitialCount = 2
 
 [node name="CrystalTarget" parent="." instance=ExtResource("7_8h8jj")]
 position = Vector2(-312, 146)
