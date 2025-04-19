@@ -48,6 +48,29 @@ public partial class PathMesh : Node2D
         PathMeshInstance.Material = PathMeshMaterial;
     }
 
+    // Samples the edge of the PathMesh at a relative alpha value along its length.
+    // lengthAlpha: [0 -> 1.0] percentage of the overall path length, defines the relative point along the path to sample the edge at.
+    // leftEdge: When true, the left edge (as oriented traveling from start -> end of the path) is sampled, when false the right edge is
+    //           sampled.
+    // cubic: When true cubic interpolation is used, otherwise linear is used. Cubic interpolation tends to follow the curves better, but linear is faster (and often, precise enough).
+    public Vector2 SampleEdgeAlpha(float lengthAlpha, bool leftEdge, bool cubic = false) {
+        float length = Path.Curve.GetBakedLength();
+        float offset = length * lengthAlpha;
+        return SampleEdge(offset, leftEdge, cubic);
+    }
+
+    // Samples the edge of the PathMesh at a set point along its length.
+    // lengthAlpha: [0 -> 1.0] percentage of the overall path length, defines the relative point along the path to sample the edge at.
+    // leftEdge: When true, the left edge (as oriented traveling from start -> end of the path) is sampled, when false the right edge is
+    //           sampled.
+    // cubic: When true cubic interpolation is used, otherwise linear is used. Cubic interpolation tends to follow the curves better, but linear is faster (and often, precise enough).
+    public Vector2 SampleEdge(float distance, bool leftEdge, bool cubic = false) {
+        var sampledTransform = Path.Curve.SampleBakedWithRotation(distance, cubic: cubic);
+        var normal = sampledTransform.Y.Normalized();
+        int sign = leftEdge ? -1 : 1;
+        return sampledTransform.Origin + sign * normal * (PathWidth / 2f);
+    }
+
     protected virtual Mesh GeneratePathMesh() {
         var curve = Path.Curve;
 
@@ -65,18 +88,10 @@ public partial class PathMesh : Node2D
             var t0 = currentOffset;
             var t1 = currentOffset + GenerationStepSize;
 
-            var transform0 = curve.SampleBakedWithRotation(t0, cubic: true);
-            var transform1 = curve.SampleBakedWithRotation(t1, cubic: true);
-
-            Vector2 center0 = transform0.Origin;
-            Vector2 center1 = transform1.Origin;
-            Vector2 normal0 = transform0.Y.Normalized();
-            Vector2 normal1 = transform1.Y.Normalized();
-
-            Vector2 left0 = center0 - normal0 * (PathWidth / 2f);
-            Vector2 right0 = center0 + normal0 * (PathWidth / 2f);
-            Vector2 left1 = center1 - normal1 * (PathWidth / 2f);
-            Vector2 right1 = center1 + normal1 * (PathWidth / 2f);
+            var left0 = SampleEdge(t0, leftEdge: true, cubic: true);
+            var right0 = SampleEdge(t0, leftEdge: false, cubic: true);
+            var left1 = SampleEdge(t1, leftEdge: true, cubic: true);
+            var right1 = SampleEdge(t1, leftEdge: false, cubic: true);
 
             // Add unique vertices for this segment
             int baseIdx = vertices.Count;
