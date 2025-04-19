@@ -4,8 +4,12 @@ using System;
 
 public partial class Main : Node
 {
+    [Export]
+    public PackedScene WorldScene { get; private set; }
+
     // Cached reference to the world node instantiated as part of the main.tscn.
     private World world;
+
     // Cached reference to the player node instantiated below during scene startup.
     private Player player;
     private PlayerCamera playerCamera;
@@ -32,7 +36,9 @@ public partial class Main : Node
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        world = GetNode<World>("World");
+        world = WorldScene.Instantiate<World>();
+        world.Name = "World";
+        AddChild(world);
 
         player = PlayerTemplate.Instantiate<Player>();
         player.Name = "Player";

@@ -79,7 +79,10 @@ public partial class World : Node2D
 
     private void SetupBackground()
     {
-        backgroundSprite = GetNode<Sprite2D>("Background");
+        backgroundSprite = GetNodeOrNull<Sprite2D>("Background");
+        if (backgroundSprite == null) {
+            return;
+        }
         // We enable Regions + Tiling and stretch the background to cover the world RegionBounds.
         backgroundSprite.RegionEnabled = true;
         backgroundSprite.TextureRepeat = TextureRepeatEnum.Enabled;

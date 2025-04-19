@@ -32,11 +32,18 @@ public partial class PlayerCamera : Camera2D
         LimitBottom = (int)this.GetGameWorld().RegionBounds.Y / 2;
         LimitRight = (int)this.GetGameWorld().RegionBounds.X / 2;
         LimitLeft = -(int)this.GetGameWorld().RegionBounds.X / 2;
-        LimitSmoothed = true;
 
+        LimitSmoothed = true;
         PositionSmoothingEnabled = true;
         DragHorizontalEnabled = true;
         DragVerticalEnabled = true;
+
+        //Restrict zooming out past the world bounds
+        Vector2 viewportSize = GetViewportRect().Size;
+        var absoluteCameraZoomMin = viewportSize / this.GetGameWorld().RegionBounds;
+        CameraZoomMin = Math.Max(CameraZoomMin, Math.Max(absoluteCameraZoomMin.X, absoluteCameraZoomMin.Y));
+
+        ProcessCallback = Camera2DProcessCallback.Physics;
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.
