@@ -52,6 +52,12 @@ public partial class World : Node2D
         }
     }
 
+    public Node2D NPCContainerNode {
+        get {
+            return GetNode<Node2D>("NPCContainer");
+        }
+    }
+
     // Cached reference to the background sprite defined by the .tscn.
     private Sprite2D backgroundSprite;
 

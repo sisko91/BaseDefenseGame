@@ -75,7 +75,7 @@ turbulence_initial_displacement_max = 1.49012e-06
 collision_mode = 2
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_t4kqy"]
-radius = 100.0
+radius = 135.0
 
 [node name="ShamblerVomitAttack" type="Area2D"]
 collision_layer = 2
@@ -84,6 +84,7 @@ script = ExtResource("1_md0l2")
 ImpactSourceType = 256
 DefaultResponseHint = ExtResource("2_ha8bb")
 DamageTickPeriod = 0.25
+MaximumRadius = 135.0
 Filter = SubResource("Resource_ha8bb")
 
 [node name="GPUParticles2D" type="GPUParticles2D" parent="."]

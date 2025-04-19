@@ -151,8 +151,10 @@ public partial class Building : Node2D
             {
                 m.Reparent(this.GetGameWorld().PlayerContainerNode);
             }
-            else
-            {
+            else if(m is NonPlayerCharacter) {
+                m.Reparent(this.GetGameWorld().NPCContainerNode);
+            }
+            else {
                 m.Reparent(this.GetGameWorld());
             }
 

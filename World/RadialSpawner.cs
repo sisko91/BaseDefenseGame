@@ -8,6 +8,9 @@ public partial class RadialSpawner : Node2D
     [Export]
     public PackedScene SpawnTemplate = null;
 
+    [Export]
+    public Node2D SpawnContainerReference = null;
+
     // Inner exclusion boundary. The spawner will not spawn instances within this radius of its center.
     [Export]
     public float InnerRadius
@@ -92,7 +95,7 @@ public partial class RadialSpawner : Node2D
         }
 
         var instance = SpawnTemplate.Instantiate<Node2D>();
-        AddChild(instance, true);
+        SpawnContainerReference.AddChild(instance, true);
 
         // Calculate the angle as StartAngleDegrees + random % of the arc
         var angleRange = StopAngleDegrees - StartAngleDegrees;
