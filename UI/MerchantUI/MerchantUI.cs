@@ -29,16 +29,18 @@ public partial class MerchantUI : Control
         base._Process(delta);
     }
 
-    public override void _GuiInput(InputEvent @event)
-    {
+    public override void _Input(InputEvent @event) {
+        if (!Visible) {
+            return;
+        }
+
         if (@event.IsActionPressed("Cancel")) {
             AcceptEvent();
             Hide();
         }
 
-        //Steal mouse input while open - the player can still move, but cant shoot
-        //Otherwise they shoot when they click buttons, which is jank
-        if (@event is InputEventMouseButton) {
+        //Steal mouse input for clicks outside of the menu, so the player can't shoot while clicking around
+        if (@event is InputEventMouseButton mbe && !GetGlobalRect().HasPoint(mbe.GlobalPosition)) {
             AcceptEvent();
         }
     }
