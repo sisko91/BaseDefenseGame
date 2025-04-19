@@ -1,7 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
-public partial class PathMeshGenerator : Node2D
+public partial class PathMesh : Node2D
 {
     [ExportCategory("Path Description")]
     // The bezier curve defining the route the path should take through the level.

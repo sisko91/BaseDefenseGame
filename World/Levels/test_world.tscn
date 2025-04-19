@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
 [ext_resource type="Shader" uid="uid://cudyiyn8n3ntx" path="res://Shaders/cloud.gdshader" id="2_vxmty"]
 [ext_resource type="Shader" uid="uid://cwkbk8kbjdbbj" path="res://Shaders/background.gdshader" id="3_dghf1"]
-[ext_resource type="Script" uid="uid://cv674n30j8ogj" path="res://World/ProcGen/PathMeshGenerator.cs" id="5_hjxpo"]
+[ext_resource type="Script" uid="uid://cv674n30j8ogj" path="res://World/PathMesh.cs" id="5_hjxpo"]
 [ext_resource type="Texture2D" uid="uid://oe3re6tn0ddh" path="res://art/World/woodfloor.png" id="6_11lc6"]
 [ext_resource type="PackedScene" uid="uid://2ctjrem32j1v" path="res://NPC/Shambler/shambler.tscn" id="6_a6glu"]
 [ext_resource type="Shader" uid="uid://wjxju78pf2j" path="res://Shaders/test_path_shader.gdshader" id="6_cdkb4"]
