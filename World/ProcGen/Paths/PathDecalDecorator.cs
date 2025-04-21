@@ -44,11 +44,6 @@ public partial class PathDecalDecorator : PathDecorator
                 maxDecals *= segmentRatio;
             }
 
-            Vector2 left0 = pathMesh.SampleEdge(distance, -pathMesh.PathWidth  /2f);
-            Vector2 left1 = pathMesh.SampleEdge(endDistance, -pathMesh.PathWidth / 2f);
-            Vector2 right0 = pathMesh.SampleEdge(distance, pathMesh.PathWidth / 2f);
-            Vector2 right1 = pathMesh.SampleEdge(endDistance, pathMesh.PathWidth / 2f);
-
             // Decide how many decals to spawn in this segment.
             float decalsToSpawn = Mathf.Max(minDecals, GD.Randf() * maxDecals);
             for(int i = 0; i < decalsToSpawn; i++) {
@@ -59,21 +54,6 @@ public partial class PathDecalDecorator : PathDecorator
                 float sampleWidth = ((GD.Randf() * 2) - 1f) * (pathMesh.PathWidth / 2f);
 
                 Vector2 point = pathMesh.SampleEdge(sampleDist, sampleWidth);
-
-                // Triangle A (left0), B (right0), C (right1)
-                // Triangle D (right1), E (left1), F (left0)
-                /*Vector2 point;
-                if (u + v <= 1f) {
-                    // Interpolate within triangle (left0, right0, right1)
-                    point = left0 + u * (right0 - left0) + v * (right1 - left0);
-                }
-                else {
-                    // Flip u,v to get barycentric coords for the second triangle (right1, left1, left0)
-                    u = 1f - u;
-                    v = 1f - v;
-
-                    point = right1 + u * (left1 - right1) + v * (left0 - right1);
-                }*/
 
                 var sprite = new Sprite2D();
                 sprite.GlobalPosition = point;
