@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=31 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
@@ -15,8 +15,12 @@
 [ext_resource type="PackedScene" uid="uid://blio7x08xw4te" path="res://NPC/Merchant/merchant.tscn" id="7_8ojdi"]
 [ext_resource type="Texture2D" uid="uid://d1skfyo8wkj1a" path="res://art/World/test_road.png" id="7_b48bc"]
 [ext_resource type="Resource" uid="uid://eurmfqo548j4" path="res://World/ShopItems/pistol.tres" id="8_lquev"]
+[ext_resource type="Script" uid="uid://cu0g6818gf7x1" path="res://World/ProcGen/Paths/PathDecorator.cs" id="8_wh5fb"]
 [ext_resource type="Resource" uid="uid://wi0ppwstcfuk" path="res://World/ShopItems/scattergun.tres" id="9_hjxpo"]
+[ext_resource type="Texture2D" uid="uid://dwn5oow6sd10h" path="res://art/World/oil_barrel.png" id="9_j617i"]
+[ext_resource type="Texture2D" uid="uid://bpy4i0vli8ewl" path="res://art/World/old_barrel.png" id="9_wh5fb"]
 [ext_resource type="Resource" uid="uid://b77gn5emtpi6g" path="res://World/ShopItems/barber.tres" id="10_cdkb4"]
+[ext_resource type="Script" uid="uid://b3g2d4jh4bxsj" path="res://World/ProcGen/Paths/PathDecalDecorator.cs" id="10_qx1mc"]
 [ext_resource type="Script" uid="uid://bunp1yq3jjjv7" path="res://World/DayNight/DayNight.cs" id="11_11lc6"]
 [ext_resource type="Script" uid="uid://7x2lypek5o4l" path="res://Gameplay/CrystalTarget.cs" id="11_dghf1"]
 
@@ -43,11 +47,20 @@ shader = ExtResource("3_dghf1")
 shader = ExtResource("6_cdkb4")
 shader_parameter/path_texture = ExtResource("7_b48bc")
 
+[sub_resource type="Resource" id="Resource_hkmll"]
+script = ExtResource("10_qx1mc")
+DecalTextures = Array[Texture2D]([ExtResource("9_wh5fb"), ExtResource("9_j617i")])
+DecalScale = 0.5
+LinearSegmentLength = 1000.0
+MinDecalsPerSegment = 1.0
+MaxDecalsPerSegment = 2.0
+metadata/_custom_type_script = "uid://b3g2d4jh4bxsj"
+
 [sub_resource type="Curve2D" id="Curve2D_cdkb4"]
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, -2174, -1622, -659.014, -30.5796, 659.014, 30.5796, -1086, -770, -277.922, -225.967, 277.922, 225.967, 884, -280, 483.713, 5.55992, -483.713, -5.55992, 812, 516, 280.541, 37.7808, -280.541, -37.7808, -1233, 403, 0, 0, 0, 0, -2088, -232)
+"points": PackedVector2Array(0, 0, 0, 0, -2203, -1812, -267.359, -193.985, 267.359, 193.985, 1924, -1786, 2.20227, -272.654, -2.20227, 272.654, 2142, -689, 483.713, 5.55992, -483.713, -5.55992, 1506, 343, 0, 0, 0, 0, -2086, 341)
 }
-point_count = 6
+point_count = 5
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_tr0n8")
@@ -82,13 +95,23 @@ region_filter_clip_enabled = true
 
 [node name="RoadMeshGenerator" type="Node2D" parent="." node_paths=PackedStringArray("Path")]
 script = ExtResource("5_hjxpo")
-Path = NodePath("Path2D")
+Path = NodePath("SourcePath2D")
 PathMeshMaterial = SubResource("ShaderMaterial_b48bc")
+Decorators = Array[ExtResource("8_wh5fb")]([SubResource("Resource_hkmll")])
+PathWidth = 400.0
 StretchTexCoords = false
 TexCoordsRepeatDistance = 1000.0
 
-[node name="Path2D" type="Path2D" parent="RoadMeshGenerator"]
+[node name="SourcePath2D" type="Path2D" parent="RoadMeshGenerator"]
 curve = SubResource("Curve2D_cdkb4")
+
+[node name="RuntimeGenerated" type="Node2D" parent="RoadMeshGenerator"]
+
+[node name="BelowPathContainer" type="Node2D" parent="RoadMeshGenerator/RuntimeGenerated"]
+
+[node name="PathContainer" type="Node2D" parent="RoadMeshGenerator/RuntimeGenerated"]
+
+[node name="AbovePathContainer" type="Node2D" parent="RoadMeshGenerator/RuntimeGenerated"]
 
 [node name="TestBuilding" parent="." instance=ExtResource("6_lhns8")]
 position = Vector2(-566, -305)
