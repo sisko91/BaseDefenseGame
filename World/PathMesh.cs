@@ -46,26 +46,48 @@ public partial class PathMesh : Node2D
     // Direct reference to the generated mesh instance for the path itself.
     protected MeshInstance2D RuntimePathMeshInstance { get; set; }
 
-    // Access the parent container that the generated path mesh is added to during runtime.
-    protected Node RuntimeContainerForPath { 
-        get {
-            return GetNode("RuntimeGenerated/PathContainer");
-        } 
-    }
-
     // Access the parent container for generated nodes that should always render below the path mesh at runtime. Populated primarily
     // by decorators.
-    protected Node RuntimeContainerBelowPath {
+    protected Node2D RuntimeContainerBelowPath {
         get {
-            return GetNode("RuntimeGenerated/BelowPathContainer");
+            var node = GetNodeOrNull<Node2D>("BelowPathContainer");
+            if (node == null) {
+                node = new Node2D();
+                node.Name = "BelowPathContainer";
+                AddChild(node);
+            }
+            return node;
         }
+    }
+
+    // Access the parent container that the generated path mesh is added to during runtime.
+    protected Node2D RuntimeContainerForPath { 
+        get {
+            var node = GetNodeOrNull<Node2D>("PathContainer");
+            if(node == null) {
+                node = new Node2D();
+                node.Name = "PathContainer";
+                // This is just like AddChild(), but will first create the RuntimeContainerBelowPath (if non-existent) and then 
+                // ensure that PathContainer sits below it in the hierarchy.
+                RuntimeContainerBelowPath.AddSibling(node);
+            }
+            return node;
+        } 
     }
 
     // Access the parent container for generated nodes that should always render above the path mesh at runtime. Populated primarily
     // by decorators.
-    protected Node RuntimeContainerAbovePath {
+    protected Node2D RuntimeContainerAbovePath {
         get {
-            return GetNode("RuntimeGenerated/AbovePathContainer");
+            var node = GetNodeOrNull<Node2D>("AbovePathContainer");
+            if (node == null) {
+                node = new Node2D();
+                node.Name = "AbovePathContainer";
+                // This is just like AddChild(), but will first create the RuntimeContainerForPath (if non-existent) and then 
+                // ensure that PathContainer sits below it in the hierarchy.
+                RuntimeContainerForPath.AddSibling(node);
+            }
+            return node;
         }
     }
 
