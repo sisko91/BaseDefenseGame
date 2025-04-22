@@ -38,6 +38,7 @@ public partial class Main : Node
     {
         world = WorldScene.Instantiate<World>();
         world.Name = "World";
+        world.ProcessMode = ProcessModeEnum.Pausable;
         AddChild(world);
 
         player = PlayerTemplate.Instantiate<Player>();
