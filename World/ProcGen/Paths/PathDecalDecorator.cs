@@ -28,7 +28,6 @@ public partial class PathDecalDecorator : PathDecorator
 
     public override void ApplyTo(PathMesh pathMesh) {
         float length = pathMesh.Length;
-        GD.Print("LENGTH: " + length);
 
         for (float distance = 0; distance < length; distance += LinearSegmentLength) {
             float endDistance = distance + LinearSegmentLength;
