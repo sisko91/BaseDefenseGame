@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=32 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
@@ -23,6 +23,7 @@
 [ext_resource type="Script" uid="uid://b3g2d4jh4bxsj" path="res://World/ProcGen/Paths/PathDecalDecorator.cs" id="10_qx1mc"]
 [ext_resource type="Script" uid="uid://bunp1yq3jjjv7" path="res://World/DayNight/DayNight.cs" id="11_11lc6"]
 [ext_resource type="Script" uid="uid://7x2lypek5o4l" path="res://Gameplay/CrystalTarget.cs" id="11_dghf1"]
+[ext_resource type="Script" uid="uid://ul68if3kp7vg" path="res://World/ProcGen/Scenarios/SmallTown.cs" id="12_qx1mc"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_fn2eg"]
 frequency = 0.0075
@@ -58,7 +59,7 @@ metadata/_custom_type_script = "uid://b3g2d4jh4bxsj"
 
 [sub_resource type="Curve2D" id="Curve2D_cdkb4"]
 _data = {
-"points": PackedVector2Array(0, 0, 0, 0, -2203, -1812, -267.359, -193.985, 267.359, 193.985, 1924, -1786, 2.20227, -272.654, -2.20227, 272.654, 2142, -689, 483.713, 5.55992, -483.713, -5.55992, 1506, 343, 0, 0, 0, 0, -2086, 341)
+"points": PackedVector2Array(0, 1582.05, 0, -1582.05, -2400, 3089, 0, 0, 0, 0, -2400, 750, 0, 0, 0, 0, 2000, 750, 0, 0, 0, 0, 2000, -2000, -992.486, -1.39261, 992.486, 1.39261, 3000, -2000)
 }
 point_count = 5
 
@@ -93,7 +94,12 @@ region_enabled = true
 region_rect = Rect2(0, 0, 6000, 6000)
 region_filter_clip_enabled = true
 
-[node name="RoadMeshGenerator" type="Node2D" parent="." node_paths=PackedStringArray("Path")]
+[node name="ScenarioContainer" type="Node2D" parent="." node_paths=PackedStringArray("MainPathMesh")]
+script = ExtResource("12_qx1mc")
+MainPathMesh = NodePath("RoadPathMesh")
+BuildingFootprint = Vector2(500, 250)
+
+[node name="RoadPathMesh" type="Node2D" parent="ScenarioContainer" node_paths=PackedStringArray("Path")]
 script = ExtResource("5_hjxpo")
 Path = NodePath("SourcePath2D")
 PathMeshMaterial = SubResource("ShaderMaterial_b48bc")
@@ -102,16 +108,10 @@ PathWidth = 400.0
 StretchTexCoords = false
 TexCoordsRepeatDistance = 1000.0
 
-[node name="SourcePath2D" type="Path2D" parent="RoadMeshGenerator"]
+[node name="SourcePath2D" type="Path2D" parent="ScenarioContainer/RoadPathMesh"]
+position = Vector2(5.28125, 1.73393)
+scale = Vector2(1.0022, 0.999438)
 curve = SubResource("Curve2D_cdkb4")
-
-[node name="RuntimeGenerated" type="Node2D" parent="RoadMeshGenerator"]
-
-[node name="BelowPathContainer" type="Node2D" parent="RoadMeshGenerator/RuntimeGenerated"]
-
-[node name="PathContainer" type="Node2D" parent="RoadMeshGenerator/RuntimeGenerated"]
-
-[node name="AbovePathContainer" type="Node2D" parent="RoadMeshGenerator/RuntimeGenerated"]
 
 [node name="TestBuilding" parent="." instance=ExtResource("6_lhns8")]
 position = Vector2(-566, -305)
