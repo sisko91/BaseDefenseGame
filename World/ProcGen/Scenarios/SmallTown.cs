@@ -1,9 +1,7 @@
 using ExtensionMethods;
 using Godot;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 
 // Small town generates a random assortment of buildings along a general path defined for the scenario.
 // TODO: Scenario base class?
@@ -44,14 +42,31 @@ public partial class SmallTown : Node2D
         var world = this.GetGameWorld();
         // Produce a set of candidate points, uniformly distributed across the bounds of the world.
         Rect2 boundingRect = new Rect2(world.GlobalPosition - world.RegionBounds/2f, world.RegionBounds);
-        var points = PointCloudFromBounds(boundingRect, BuildingFootprint);
-        GD.Print($"{Name}[{GetType()}] generated {points.Count} candidate points.");
+        var points = PointCloudFromBounds(boundingRect, BuildingFootprint/2f);
+        int pointSizeInitial = points.Count;
+        GD.Print($"{Name}[{GetType()}] generated {pointSizeInitial} candidate points.");
+
+        // Remove points too close to the main path through the world, making sure no building is too close.
+        points = RemovePointsNearPath(points, 
+            pathMesh: MainPathMesh, 
+            // additionalPathPadding: We want this slightly larger than the largest span of the footprint, so that we don't place anything
+            //                        so close that it's practically touching the edge of the path.
+            additionalPathPadding: BuildingFootprint.Length() * 1.5f,
+            // pathStepLength: We want this to be the smaller of the two footprint dimensions because this is the distance between 
+            //                 consecutive points we are testing along the path's length. If it were larger than any span of the footprint,
+            //                 we'd miss filtering out some points.
+            pathStepLength: Mathf.Min(BuildingFootprint.X, BuildingFootprint.Y));
+
+        GD.Print($"{Name}[{GetType()}] filtered out {pointSizeInitial - points.Count} candidate points too close to the path.");
 
         // Determine possible placements for the buildings we want to spawn in the world; Using a custom spacing rule to prevent
         // buildings from spawning too close together.
-        var minBuildingSpacing = BuildingFootprint;
-        minBuildingSpacing.Y *= 2; // make sure buildings aren't on top of each other.
-        var placements = GetPlacementLocations(points, boundingRect, BuildingFootprint, DesiredBuildingCount, minBuildingSpacing);
+        var placements = GetPlacementLocations(points, 
+            boundaryRect: boundingRect, 
+            footprint: BuildingFootprint, 
+            desiredCount: DesiredBuildingCount, 
+            // minFootprintSpacing: We use the footprint again because we don't want buildings right on top of each other.
+            minFootprintSpacing: BuildingFootprint);
         GD.Print($"{Name}[{GetType()}] found {placements.Count} viable placements matching criteria.");
 
         // TODO: Place buildings.
@@ -62,7 +77,7 @@ public partial class SmallTown : Node2D
 
     // Given a bounding region in world-coordinates, produce a uniform point cloud that can be further sampled / filtered / enriched
     // to determine viable locations for procedural generation.
-    public List<Vector2> PointCloudFromBounds(Rect2 bounds, Vector2? inSpacing = null) {
+    protected List<Vector2> PointCloudFromBounds(Rect2 bounds, Vector2? inSpacing = null) {
         // Impose a default of (1,1) for spacing if none is provided.
         var spacing = inSpacing ?? Vector2.One;
 
@@ -78,6 +93,24 @@ public partial class SmallTown : Node2D
             }
         }
         return points;
+    }
+
+    // Removes points from the point cloud which are too close to points along the PathMesh.
+    // TODO: Convert this to an IEnumerable<> / predicates so that we can chain operations without copying the point cloud into new
+    //       return values constantly.
+    protected List<Vector2> RemovePointsNearPath(List<Vector2> pointCloud, PathMesh pathMesh, float additionalPathPadding = 0.0f, float pathStepLength = 20.0f) {
+        float minClearance = (pathMesh.PathWidth / 2f) + additionalPathPadding;
+        Vector2[] pathPoints = pathMesh.Path.Curve.TessellateEvenLength(toleranceLength: pathStepLength);
+        return pointCloud.Where((candidate) => {
+            // Any point on the curve that's close to the candidate means the candidate is rejected.
+            foreach (var pathPoint in pathPoints) {
+                if (candidate.DistanceSquaredTo(pathPoint) < (minClearance*minClearance)) {
+                    return false;
+                }
+            }
+            // If no point was too close, candidate is okay.
+            return true;
+        }).ToList();
     }
 
     // Given a point cloud and bounding rectangle, attempts to select points where a rectangle with the indicated footprint (size) can be
