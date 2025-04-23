@@ -26,6 +26,12 @@ public partial class SmallTown : Node2D
     [Export]
     public int DesiredBuildingCount { get; protected set; } = 10;
 
+    [ExportCategory("Advanced")]
+    // Rectangular regions (specified in world coordinates) where buildings cannot be placed/spawned.
+    // TODO: This is generalizable to any type of procedurally-placed node, but we'll want some basic type enumerations to go with it.
+    [Export]
+    public Godot.Collections.Array<RectRegion> BuildingExclusionZones = [];
+
     public override void _Ready() {
         base._Ready();
 
@@ -58,6 +64,11 @@ public partial class SmallTown : Node2D
             pathStepLength: Mathf.Min(BuildingFootprint.X, BuildingFootprint.Y));
 
         GD.Print($"{Name}[{GetType()}] filtered out {pointSizeInitial - points.Count} candidate points too close to the path.");
+
+        // Remove points near exclusion zones.
+        pointSizeInitial = points.Count;
+        points = RemovePointsNearRects(points, BuildingExclusionZones, BuildingFootprint.Length() * 1.5f);
+        GD.Print($"{Name}[{GetType()}] filtered out {pointSizeInitial - points.Count} candidate points too close to an exclusion zone.");
 
         // Determine possible placements for the buildings we want to spawn in the world; Using a custom spacing rule to prevent
         // buildings from spawning too close together.
@@ -109,6 +120,17 @@ public partial class SmallTown : Node2D
                 }
             }
             // If no point was too close, candidate is okay.
+            return true;
+        }).ToList();
+    }
+
+    protected List<Vector2> RemovePointsNearRects(List<Vector2> pointCloud, Godot.Collections.Array<RectRegion> rects, float additionalRectPadding = 0.0f) {
+        return pointCloud.Where((candidate) => {
+            foreach(var rect in rects) {
+                if(rect.Region.Grow(additionalRectPadding).HasPoint(candidate)) {
+                    return false;
+                }
+            }
             return true;
         }).ToList();
     }

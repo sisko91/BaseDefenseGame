@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=37 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
@@ -24,6 +24,7 @@
 [ext_resource type="Script" uid="uid://bunp1yq3jjjv7" path="res://World/DayNight/DayNight.cs" id="11_11lc6"]
 [ext_resource type="Script" uid="uid://7x2lypek5o4l" path="res://Gameplay/CrystalTarget.cs" id="11_dghf1"]
 [ext_resource type="Script" uid="uid://ul68if3kp7vg" path="res://World/ProcGen/Scenarios/SmallTown.cs" id="12_qx1mc"]
+[ext_resource type="Script" uid="uid://duyw2hn54xkre" path="res://World/ProcGen/RectRegion.cs" id="14_80b3c"]
 [ext_resource type="Shader" uid="uid://7akcch5ndkta" path="res://Shaders/silhouette.gdshader" id="20_hkmll"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_fn2eg"]
@@ -112,10 +113,12 @@ region_enabled = true
 region_rect = Rect2(0, 0, 6000, 6000)
 region_filter_clip_enabled = true
 
-[node name="ScenarioContainer" type="Node2D" parent="." node_paths=PackedStringArray("MainPathMesh")]
+[node name="ScenarioContainer" type="Node2D" parent="." node_paths=PackedStringArray("MainPathMesh", "BuildingExclusionZones")]
 script = ExtResource("12_qx1mc")
 MainPathMesh = NodePath("RoadPathMesh")
 BuildingFootprint = Vector2(500, 250)
+DesiredBuildingCount = 20
+BuildingExclusionZones = [NodePath("ExclusionZones/ExcludeStartZone")]
 
 [node name="RoadPathMesh" type="Node2D" parent="ScenarioContainer" node_paths=PackedStringArray("Path")]
 script = ExtResource("5_hjxpo")
@@ -130,6 +133,13 @@ TexCoordsRepeatDistance = 1000.0
 position = Vector2(5.28125, 1.73393)
 scale = Vector2(1.0022, 0.999438)
 curve = SubResource("Curve2D_cdkb4")
+
+[node name="ExclusionZones" type="Node2D" parent="ScenarioContainer"]
+
+[node name="ExcludeStartZone" type="Node2D" parent="ScenarioContainer/ExclusionZones"]
+script = ExtResource("14_80b3c")
+Region = Rect2(-1000, -500, 2000, 1250)
+metadata/_custom_type_script = "uid://duyw2hn54xkre"
 
 [node name="TestBuilding" parent="." instance=ExtResource("6_lhns8")]
 position = Vector2(-566, -305)
