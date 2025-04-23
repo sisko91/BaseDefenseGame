@@ -11,6 +11,12 @@ uniform bool is_inside = false;
 uniform float time_scale = 20; //Blink animation speed
 uniform float gb_ceil = 0.75; //Max color green/blue can reach
 
+varying vec4 modulate;
+void vertex()
+{
+    modulate = COLOR;
+}
+
 vec4 hit(vec4 color) {
 	float time_cycle = sin(TIME * time_scale);
 	return vec4(1.0,
@@ -29,7 +35,7 @@ void fragment() {
 		color = color * day_night_color;
 	}
 
-	COLOR = color;
+	COLOR = vec4(color.rgb, color.a * modulate.a);
 }
 
 void light()

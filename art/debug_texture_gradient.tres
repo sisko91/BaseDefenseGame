@@ -2,7 +2,7 @@
 
 [sub_resource type="Gradient" id="Gradient_gspqo"]
 offsets = PackedFloat32Array(0)
-colors = PackedColorArray(0.460429, 0.764252, 0.921376, 1)
+colors = PackedColorArray(0.141176, 0.388235, 0.505882, 1)
 
 [resource]
 gradient = SubResource("Gradient_gspqo")

@@ -103,7 +103,6 @@ public partial class Player : Character
         {
             isDashing = false;
             lastDashTime = Time.GetTicksUsec() / 1000000.0;
-            Material.Set("shader_parameter/is_dashing", false);
             dashGhostTimer.Stop();
         };
         AddChild(dashTimer);
@@ -259,9 +258,8 @@ public partial class Player : Character
     private void SpawnDashGhost() {
         Sprite2D ghostSprite = GetSpriteCopy();
         ghostSprite.ZIndex = ZIndex;
-        var mat = new CanvasItemMaterial();
-        mat.BlendMode = CanvasItemMaterial.BlendModeEnum.Mix;
-        ghostSprite.Material = mat;
+        ghostSprite.UseParentMaterial = false;
+        ghostSprite.Material = Material;
 
         var tween = CreateTween();
         tween.TweenProperty(ghostSprite, "modulate:a", 0.0, 0.5);
@@ -286,9 +284,7 @@ public partial class Player : Character
     }
 
     private Sprite2D GetSpriteCopy() {
-        Sprite2D sprite = new Sprite2D();
-        sprite.Texture = (Texture2D) GetNode<Sprite2D>("Sprite2D").Texture.Duplicate();
-        return sprite;
+        return (Sprite2D) GetNode<Sprite2D>("Sprite2D").Duplicate();
     }
 
     private void SetShaderScreenUV() {
