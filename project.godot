@@ -163,3 +163,7 @@ day_night_color={
 "type": "color",
 "value": Color(1, 1, 1, 1)
 }
+time={
+"type": "float",
+"value": 0.0
+}

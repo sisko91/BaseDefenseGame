@@ -8,10 +8,12 @@ uniform float density: hint_range(0.0, 1.0) = 0.25;
 // Fog speed
 uniform vec2 speed = vec2(0.02, 0.01);
 
+global uniform float time;
+
 // Called for every pixel the material is visible on
 void fragment() {
 	// Make the fog slowly move
-	vec2 uv = UV + speed * TIME;
+	vec2 uv = UV + speed * time;
 	// Sample the noise texture
 	float noise = texture(noise_texture, uv).r;
 	// Convert the noise from the (0.0, 1.0) range to the (-1.0, 1.0) range

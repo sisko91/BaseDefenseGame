@@ -28,9 +28,9 @@ public partial class Main : Node
     // Cached reference to the PauseMenu scene node defined on main.tscn.
     private PauseMenu pauseMenu = null;
 
+    private Timer ShaderTimer;
+
     public Main() {
-        // The main scene is NEVER paused, as it handles top-level input processing for the game (menus, terminal signals, etc.)
-        ProcessMode = ProcessModeEnum.Always;
     }
 
     // Called when the node enters the scene tree for the first time.
@@ -62,6 +62,11 @@ public partial class Main : Node
         playerCamera = new PlayerCamera();
         playerCamera.Target = player;
         AddChild(playerCamera);
+
+        ShaderTimer = new Timer();
+        ShaderTimer.WaitTime = 3600;
+        ShaderTimer.Autostart = true;
+        AddChild(ShaderTimer);
     }
 
     private void OnPlayerHealthChanged(Character character, float newHealth, float oldHealth)
@@ -76,6 +81,9 @@ public partial class Main : Node
     // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(double delta)
     {
+        //https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/canvas_item_shader.html
+        //The TIME variable in shaders it not affected by pausing. The framework recommendation is to use your own global parameter for time if you want to pause shader effects that use TIME
+        RenderingServer.GlobalShaderParameterSet("time", ShaderTimer.WaitTime - ShaderTimer.TimeLeft);
     }
 
     // Reviews current game state and determines if the main scene should be paused or unpaused.
