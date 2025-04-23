@@ -30,6 +30,8 @@ public partial class Main : Node
 
     private Timer ShaderTimer;
 
+    public static Main Instance { get; private set; }
+
     public Main() {
     }
 
@@ -62,11 +64,14 @@ public partial class Main : Node
         playerCamera = new PlayerCamera();
         playerCamera.Target = player;
         AddChild(playerCamera);
+        MoveChild(playerCamera, 0);
 
         ShaderTimer = new Timer();
         ShaderTimer.WaitTime = 3600;
         ShaderTimer.Autostart = true;
         AddChild(ShaderTimer);
+
+        Instance = this;
     }
 
     private void OnPlayerHealthChanged(Character character, float newHealth, float oldHealth)
@@ -96,5 +101,9 @@ public partial class Main : Node
         else {
             GetTree().Paused = false;
         }
+    }
+
+    public static Camera2D GetActiveCamera() {
+        return Instance.playerCamera;
     }
 }

@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://h6mtv0wbug0t"]
+[gd_scene load_steps=25 format=3 uid="uid://h6mtv0wbug0t"]
 
 [ext_resource type="Script" uid="uid://drac3p47binwd" path="res://World/Structures/Building.cs" id="1_7ffef"]
 [ext_resource type="PackedScene" uid="uid://cw48c72a4tsvk" path="res://World/Structures/Testing/test_wall.tscn" id="1_e2nee"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://chpuk4qnqqxm4" path="res://World/Structures/Testing/test_door.tscn" id="5_e5hgi"]
 [ext_resource type="PackedScene" uid="uid://boifro8bbs3lu" path="res://World/Structures/Testing/test_stairs.tscn" id="6_k5khk"]
 [ext_resource type="PackedScene" uid="uid://dgkvalqk6hieg" path="res://World/Structures/Testing/test_wall_small.tscn" id="6_mexbq"]
+[ext_resource type="Shader" uid="uid://7akcch5ndkta" path="res://Shaders/silhouette.gdshader" id="7_pvg10"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k1td7"]
 size = Vector2(480, 205)
@@ -59,6 +60,9 @@ fill_from = Vector2(0.5, 0.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_chivl"]
 size = Vector2(512, 257)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4jyrl"]
+shader = ExtResource("7_pvg10")
 
 [sub_resource type="Gradient" id="Gradient_8a53c"]
 offsets = PackedFloat32Array(0.785714, 1)
@@ -298,6 +302,7 @@ shape = SubResource("RectangleShape2D_chivl")
 
 [node name="Ground" type="Sprite2D" parent="Roof"]
 texture_repeat = 2
+material = SubResource("ShaderMaterial_4jyrl")
 position = Vector2(0, -23)
 texture = SubResource("GradientTexture2D_n21n1")
 centered = false
@@ -309,42 +314,6 @@ position = Vector2(64, 192)
 collision_layer = 2048
 collision_mask = 256
 TargetStairs = NodePath("../../Floor1/StairsFloor1Up")
-
-[node name="TopPerimeter" type="ColorRect" parent="Roof"]
-offset_top = -24.0
-offset_right = 512.0
-offset_bottom = -14.0
-mouse_filter = 2
-color = Color(0.352156, 0.261893, 0.161308, 1)
-
-[node name="LeftPerimeter" type="ColorRect" parent="Roof"]
-offset_top = -14.0
-offset_right = 10.0
-offset_bottom = 224.0
-mouse_filter = 2
-color = Color(0.352156, 0.261893, 0.161308, 1)
-
-[node name="RightPerimeter" type="ColorRect" parent="Roof"]
-offset_left = 502.0
-offset_top = -14.0
-offset_right = 512.0
-offset_bottom = 224.0
-mouse_filter = 2
-color = Color(0.352156, 0.261893, 0.161308, 1)
-
-[node name="BottomPerimeter" type="ColorRect" parent="Roof"]
-offset_top = 223.0
-offset_right = 512.0
-offset_bottom = 233.0
-mouse_filter = 2
-color = Color(0.352156, 0.261893, 0.161308, 1)
-
-[node name="Facade" type="ColorRect" parent="Roof"]
-offset_top = 233.0
-offset_right = 512.0
-offset_bottom = 256.0
-mouse_filter = 2
-color = Color(0.23078, 0.175854, 0.116757, 1)
 
 [node name="OccluderBottom" type="LightOccluder2D" parent="Roof"]
 occluder = SubResource("OccluderPolygon2D_8qk5p")

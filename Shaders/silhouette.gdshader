@@ -1,20 +1,20 @@
 shader_type canvas_item;
 
-uniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;
+global uniform sampler2D player_texture : repeat_disable, filter_nearest;
+
+//Would prefer to use an array here, but not yet supported for global uniforms:
+//https://github.com/godotengine/godot-proposals/discussions/9553
+global uniform vec2 player_screen_uv_start;
+global uniform vec2 player_screen_uv_end;
 
 void fragment() {
-	vec4 sprite_color = texture(TEXTURE, UV);
-	vec4 background_color = texture(screen_texture, SCREEN_UV);
+	//Check if this pixel is inside the player's sprite rect
+	if (SCREEN_UV.x >= player_screen_uv_start.x && SCREEN_UV.y >= player_screen_uv_start.y &&
+	    SCREEN_UV.x <= player_screen_uv_end.x && SCREEN_UV.y <= player_screen_uv_end.y) {
 
-	if (all(lessThan(abs(sprite_color - background_color), vec4(0.1)))) {
-		COLOR = sprite_color;
-	} else {
-		COLOR = vec4(0, 0, 0, 0.5 * sprite_color.a);
+		//TODO: Check if the overlapping player pixel is not transparent
+		//For now, just color the whole rect
+		vec4 color = texture(TEXTURE, UV);
+		COLOR = vec4(color.rgb * 0.5, color.a);
 	}
-}
-
-void light()
-{
-    vec4 color = texture(TEXTURE, UV);
-    LIGHT = vec4(color.rgb * LIGHT_COLOR.rgb * LIGHT_ENERGY, LIGHT_COLOR.a);
 }

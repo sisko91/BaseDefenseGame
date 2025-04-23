@@ -37,8 +37,6 @@ public partial class PlayerCamera : Camera2D
         Vector2 viewportSize = GetViewportRect().Size;
         var absoluteCameraZoomMin = viewportSize / this.GetGameWorld().RegionBounds;
         CameraZoomMin = Math.Max(CameraZoomMin, Math.Max(absoluteCameraZoomMin.X, absoluteCameraZoomMin.Y));
-
-        ProcessCallback = Camera2DProcessCallback.Physics;
     }
 
     // Called every frame. 'delta' is the elapsed time since the previous frame.

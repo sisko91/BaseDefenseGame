@@ -131,6 +131,7 @@ public partial class Player : Character
     public override void _Process(double delta)
     {
         HandleAim(delta);
+        SetShaderScreenUV();
     }
 
     public override void _Input(InputEvent @event)
@@ -288,5 +289,19 @@ public partial class Player : Character
         Sprite2D sprite = new Sprite2D();
         sprite.Texture = (Texture2D) GetNode<Sprite2D>("Sprite2D").Texture.Duplicate();
         return sprite;
+    }
+
+    private void SetShaderScreenUV() {
+        Main.GetActiveCamera().ForceUpdateTransform();
+
+        var spriteRect = GetNode<Sprite2D>("Sprite2D").GetRect();
+
+        var screenTopLeft = GetGlobalTransformWithCanvas() * spriteRect.Position;
+        var screenBottomRight = GetGlobalTransformWithCanvas() * spriteRect.End;
+        var normalizedStart = screenTopLeft / GetViewport().GetVisibleRect().Size;
+        var normalizedEnd = screenBottomRight / GetViewport().GetVisibleRect().Size;
+
+        RenderingServer.GlobalShaderParameterSet("player_screen_uv_start", normalizedStart);
+        RenderingServer.GlobalShaderParameterSet("player_screen_uv_end", normalizedEnd);
     }
 }

@@ -167,3 +167,15 @@ time={
 "type": "float",
 "value": 0.0
 }
+player_screen_uv_start={
+"type": "vec2",
+"value": Vector2(0, 0)
+}
+player_screen_uv_end={
+"type": "vec2",
+"value": Vector2(0, 0)
+}
+player_texture={
+"type": "sampler2D",
+"value": ""
+}

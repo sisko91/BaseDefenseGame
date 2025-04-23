@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=36 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
@@ -24,6 +24,7 @@
 [ext_resource type="Script" uid="uid://bunp1yq3jjjv7" path="res://World/DayNight/DayNight.cs" id="11_11lc6"]
 [ext_resource type="Script" uid="uid://7x2lypek5o4l" path="res://Gameplay/CrystalTarget.cs" id="11_dghf1"]
 [ext_resource type="Script" uid="uid://ul68if3kp7vg" path="res://World/ProcGen/Scenarios/SmallTown.cs" id="12_qx1mc"]
+[ext_resource type="Shader" uid="uid://7akcch5ndkta" path="res://Shaders/silhouette.gdshader" id="20_hkmll"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_fn2eg"]
 frequency = 0.0075
@@ -62,6 +63,18 @@ _data = {
 "points": PackedVector2Array(0, 1582.05, 0, -1582.05, -2400, 3089, 0, 0, 0, 0, -2400, 750, 0, 0, 0, 0, 2000, 750, 0, 0, 0, 0, 2000, -2000, -992.486, -1.39261, 992.486, 1.39261, 3000, -2000)
 }
 point_count = 5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hkmll"]
+shader = ExtResource("20_hkmll")
+
+[sub_resource type="Gradient" id="Gradient_80b3c"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0.238088, 0.144595, 0.0765795, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_782py"]
+gradient = SubResource("Gradient_80b3c")
+width = 119
+height = 26
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_tr0n8")
@@ -145,13 +158,10 @@ light_mask = 2
 z_index = 1
 position = Vector2(-58, -244)
 
-[node name="ColorRect" type="ColorRect" parent="Overhang"]
-light_mask = 2
-offset_right = 119.0
-offset_bottom = 26.0
-mouse_filter = 2
-color = Color(0.623529, 0.333333, 0, 1)
-metadata/_edit_use_anchors_ = true
+[node name="Sprite2D" type="Sprite2D" parent="Overhang"]
+material = SubResource("ShaderMaterial_hkmll")
+position = Vector2(59, 13)
+texture = SubResource("GradientTexture2D_782py")
 
 [node name="Shadow" type="ColorRect" parent="Overhang"]
 light_mask = 0
