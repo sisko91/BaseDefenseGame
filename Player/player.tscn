@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://dy47gg8c687bv"]
+[gd_scene load_steps=12 format=3 uid="uid://dy47gg8c687bv"]
 
 [ext_resource type="Script" uid="uid://dsdu35x76daf1" path="res://Player/Player.cs" id="1_imx3i"]
 [ext_resource type="Shader" uid="uid://cfv027nbsnbss" path="res://Shaders/character.gdshader" id="1_od3ui"]
@@ -8,7 +8,6 @@
 [ext_resource type="PackedScene" uid="uid://csp5yukh5lbt0" path="res://Weapons/Throwables/player_thrower_weapon.tscn" id="5_00tjw"]
 [ext_resource type="PackedScene" uid="uid://bc2ju5qbw3goj" path="res://Gameplay/Effects/Impacts/impact_bloodspurt.tscn" id="6_x3vf3"]
 [ext_resource type="Script" uid="uid://2ajhnisvj48l" path="res://Gameplay/BodySensor.cs" id="7_o4ihg"]
-[ext_resource type="Shader" uid="uid://b07rd8knmdvko" path="res://Shaders/silhouette.gdshader" id="8_apopc"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_od3ui"]
 shader = ExtResource("1_od3ui")
@@ -16,12 +15,6 @@ shader_parameter/is_hit = false
 shader_parameter/is_inside = false
 shader_parameter/time_scale = 20.0
 shader_parameter/gb_ceil = 0.75
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_apopc"]
-viewport_path = NodePath("SubViewport")
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_apopc"]
-shader = ExtResource("8_apopc")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vtle1"]
 size = Vector2(48, 48)
@@ -43,26 +36,9 @@ ImpactResponseTable = Dictionary[int, PackedScene]({
 3: ExtResource("6_x3vf3")
 })
 
-[node name="SubViewport" type="SubViewport" parent="."]
-disable_3d = true
-transparent_bg = true
-handle_input_locally = false
-size = Vector2i(48, 48)
-render_target_update_mode = 0
-
-[node name="Sprite2D" type="Sprite2D" parent="SubViewport"]
-light_mask = 0
+[node name="Sprite2D" type="Sprite2D" parent="."]
+use_parent_material = true
 texture = ExtResource("2_s5van")
-centered = false
-
-[node name="MainSprite" type="Sprite2D" parent="."]
-light_mask = 0
-texture = SubResource("ViewportTexture_apopc")
-
-[node name="Silhouette" type="Sprite2D" parent="."]
-light_mask = 2
-z_index = 1
-material = SubResource("ShaderMaterial_apopc")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_vtle1")

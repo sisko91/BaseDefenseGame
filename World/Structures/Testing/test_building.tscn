@@ -173,7 +173,6 @@ occluder = SubResource("OccluderPolygon2D_4jyrl")
 occluder = SubResource("OccluderPolygon2D_j0jsy")
 
 [node name="Floor1" type="Area2D" parent="."]
-visible = false
 z_index = 1
 collision_layer = 16
 collision_mask = 48
@@ -285,7 +284,6 @@ occluder = SubResource("OccluderPolygon2D_4jyrl")
 occluder = SubResource("OccluderPolygon2D_j0jsy")
 
 [node name="Roof" type="Area2D" parent="."]
-visible = false
 z_index = 1
 use_parent_material = true
 collision_layer = 256

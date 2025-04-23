@@ -119,14 +119,6 @@ public partial class Player : Character
         }
 
         ghostSprites = new HashSet<Sprite2D>();
-
-        //The player's sprite and all shader effects are rendered in a viewport (this is not shown onscreen)
-        //This allows retrieving a flattened post-effect texture, which is used for generating a silhouette
-        GetPlayerSpriteSubviewport().GetNode<Sprite2D>("Sprite2D").Material = Material;
-        GetPlayerSpriteSubviewport().RenderTargetUpdateMode = SubViewport.UpdateMode.Always;
-
-        var silhouetteSprite = GetNode<Sprite2D>("Silhouette");
-        silhouetteSprite.Texture = GetSpriteCopy().Texture;
     }       
 
     // Called every tick of the physics thread.
@@ -294,12 +286,7 @@ public partial class Player : Character
 
     private Sprite2D GetSpriteCopy() {
         Sprite2D sprite = new Sprite2D();
-        sprite.Texture = GetPlayerSpriteSubviewport().GetTexture();
+        sprite.Texture = (Texture2D) GetNode<Sprite2D>("Sprite2D").Texture.Duplicate();
         return sprite;
-    }
-
-    private SubViewport GetPlayerSpriteSubviewport()
-    {
-        return GetNode<SubViewport>("SubViewport");
     }
 }
