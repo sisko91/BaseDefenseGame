@@ -47,7 +47,7 @@ public partial class NonPlayerCharacter : Character
         NavAgent = new NavigationAgent2D();
         NavAgent.DebugEnabled = DebugConfig.Instance.DRAW_NAVIGATION;
         // Update the NavAgent any time the debug config changes.
-        DebugConfig.Instance.DrawNavigationChanged += () => { NavAgent.DebugEnabled = DebugConfig.Instance.DRAW_NAVIGATION; };
+        DebugConfig.Instance.DrawNavigationChanged += RefreshConfig;
 
         NavAgent.PathDesiredDistance = NavigationConfig.PATH_DESIRED_DISTANCE;
         NavAgent.TargetDesiredDistance = NavigationConfig.DEFAULT_TARGET_DESIRED_DISTANCE; // Updated by the AI depending on what the target is.
@@ -133,5 +133,14 @@ public partial class NonPlayerCharacter : Character
 
         base.ChangeFloor(targetFloor);
         NavAgent.SetNavigationMap(this.GetGameWorld().NavMaps[CurrentElevationLevel]);
+    }
+
+    public void RefreshConfig() {
+        if (!IsInstanceValid(this)) {
+            DebugConfig.Instance.DrawNavigationChanged -= RefreshConfig;
+            return;
+        }
+
+        NavAgent.DebugEnabled = DebugConfig.Instance.DRAW_NAVIGATION;
     }
 }
