@@ -33,11 +33,6 @@ public partial class PlayerCamera : Camera2D
         LimitRight = (int)this.GetGameWorld().RegionBounds.X / 2;
         LimitLeft = -(int)this.GetGameWorld().RegionBounds.X / 2;
 
-        LimitSmoothed = true;
-        PositionSmoothingEnabled = true;
-        DragHorizontalEnabled = true;
-        DragVerticalEnabled = true;
-
         //Restrict zooming out past the world bounds
         Vector2 viewportSize = GetViewportRect().Size;
         var absoluteCameraZoomMin = viewportSize / this.GetGameWorld().RegionBounds;
@@ -75,6 +70,6 @@ public partial class PlayerCamera : Camera2D
         targetZoom = targetZoom.Clamp(Vector2.One * CameraZoomMin, Vector2.One * CameraZoomMax);
 
         //Smooth zoom in / out with linear interpolation
-        Zoom = Zoom.Slerp(targetZoom, CameraZoomRate  * (float) delta);
+        Zoom = Zoom.Lerp(targetZoom, CameraZoomRate  * (float) delta);
     }
 }
