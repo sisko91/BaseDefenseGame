@@ -17,7 +17,7 @@ void fragment() {
 			(SCREEN_UV.x - player_screen_uv_start.x) / (player_screen_uv_end.x - player_screen_uv_start.x),
 			(SCREEN_UV.y - player_screen_uv_start.y) / (player_screen_uv_end.y - player_screen_uv_start.y));
 		vec4 player_color = texture(player_texture, player_sprite_uv);
-		
+
 		//Filtering out transparent and partially-transparent pixels.
 		//The latter provides more detail on pixel-y art. 0.25 looks good on this sprite,
 		//might be different for other sprites

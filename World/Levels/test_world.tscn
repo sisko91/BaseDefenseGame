@@ -130,7 +130,7 @@ StretchTexCoords = false
 TexCoordsRepeatDistance = 1000.0
 
 [node name="SourcePath2D" type="Path2D" parent="ScenarioContainer/RoadPathMesh"]
-position = Vector2(5.28125, 1.73393)
+position = Vector2(-40, 188)
 scale = Vector2(1.0022, 0.999438)
 curve = SubResource("Curve2D_cdkb4")
 
@@ -138,7 +138,8 @@ curve = SubResource("Curve2D_cdkb4")
 
 [node name="ExcludeStartZone" type="Node2D" parent="ScenarioContainer/ExclusionZones"]
 script = ExtResource("14_80b3c")
-Region = Rect2(-1000, -500, 2000, 1250)
+Region = Rect2(-1000, -500, 2442.17, 1529.88)
+EditorDrawColor = Color(0.798347, 0, 0.20126, 1)
 metadata/_custom_type_script = "uid://duyw2hn54xkre"
 
 [node name="TestBuilding" parent="." instance=ExtResource("6_lhns8")]
