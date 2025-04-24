@@ -45,6 +45,11 @@ public sealed partial class RectRegion : Node2D
                         dragAnchorOffset = Region.End - mousePos;
                         // We don't want to select ANYTHING when we're dragging around, so wipe the editor's selection list clean.
                         EditorInterface.Singleton.GetSelection().Clear();
+
+                        // Register the original size with the editor's undo/redo system.
+                        var undoRedo = EditorInterface.Singleton.GetEditorUndoRedo();
+                        undoRedo.CreateAction("Resize RegionRect");
+                        undoRedo.AddUndoProperty(this, "Region", Region);
                     }
                 }
             }
@@ -55,6 +60,11 @@ public sealed partial class RectRegion : Node2D
                     // We want the region to be re-selected (and nothing else) after we're done dragging around.
                     EditorInterface.Singleton.GetSelection().Clear();
                     EditorInterface.Singleton.GetSelection().AddNode(this);
+
+                    // Register the change with the Editor's undo/redo system.
+                    var undoRedo = EditorInterface.Singleton.GetEditorUndoRedo();
+                    undoRedo.AddDoProperty(this, "Region", Region);
+                    undoRedo.CommitAction();
                 }
             }
 
