@@ -1,4 +1,5 @@
 using Godot;
+using System.Collections.Generic;
 
 namespace ExtensionMethods
 {
@@ -24,6 +25,16 @@ namespace ExtensionMethods
             }
             GD.PushError($"Game requires MainLoop to be a SceneTree but was {Engine.GetMainLoop().GetType()}");
             return null;
+        }
+
+        // Just like GetNodesInGroup(), but enforces a type constraint and only returns nodes which match. For this reason it's
+        // not possible to count the number of elements returned without iterating the full enumeration (or using LINQ).
+        public static IEnumerable<T> GetTypedNodesInGroup<T>(this SceneTree sceneTree, string groupName) {
+            foreach (var node in sceneTree.GetNodesInGroup(groupName)) {
+                if (node is T typedNode) {
+                    yield return typedNode;
+                }
+            }
         }
     }
 }

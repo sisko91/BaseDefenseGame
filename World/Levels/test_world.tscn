@@ -114,12 +114,12 @@ region_enabled = true
 region_rect = Rect2(0, 0, 6000, 6000)
 region_filter_clip_enabled = true
 
-[node name="ScenarioContainer" type="Node2D" parent="." node_paths=PackedStringArray("MainPathMesh", "BuildingExclusionZones")]
+[node name="ScenarioContainer" type="Node2D" parent="." node_paths=PackedStringArray("MainPathMesh")]
 script = ExtResource("12_qx1mc")
 MainPathMesh = NodePath("RoadPathMesh")
 BuildingFootprint = Vector2(500, 250)
 DesiredBuildingCount = 20
-BuildingExclusionZones = [NodePath("ExclusionZones/ExcludeStartZone")]
+ExcludedRegionsGroup = "SmallTown.Exclude"
 
 [node name="RoadPathMesh" type="Node2D" parent="ScenarioContainer" node_paths=PackedStringArray("Path")]
 script = ExtResource("5_hjxpo")
@@ -139,7 +139,8 @@ curve = SubResource("Curve2D_cdkb4")
 
 [node name="ExcludeStartZone" type="Node2D" parent="ScenarioContainer/ExclusionZones"]
 script = ExtResource("14_80b3c")
-Region = Rect2(-1000, -500, 2110.35, 1102.78)
+Region = Rect2(-1000, -500, 2087.52, 1194.08)
+AutoregisterGroup = "SmallTown.Exclude"
 EditorDrawColor = Color(0.798347, 0, 0.20126, 1)
 metadata/_custom_type_script = "uid://duyw2hn54xkre"
 

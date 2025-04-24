@@ -9,6 +9,10 @@ public sealed partial class RectRegion : Node2D
     [Export]
     public Rect2 Region { get; set; }
 
+    // The group that this region belongs to (if any). If defined this region will be added to the group automatically during play.
+    [Export]
+    public string AutoregisterGroup { get; set; } = null;
+
     [ExportCategory("Editor View")]
     [Export]
     public Color EditorDrawColor { get; private set; } = Colors.BlueViolet;
@@ -21,6 +25,10 @@ public sealed partial class RectRegion : Node2D
 
     public override void _Ready() {
         base._Ready();
+
+        if(AutoregisterGroup != null) {
+            AddToGroup(AutoregisterGroup);
+        }
 
         if(Engine.IsEditorHint()) {
             // This doesn't enable _Process() in the editor for this node, but it DOES cause _Notification() to fire for that event.
