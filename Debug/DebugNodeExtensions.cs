@@ -6,7 +6,7 @@ namespace ExtensionMethods
         // Enables all available debug renderers on the (assumed Main) scene root node specified.
         public static void EnableDebugRenderers()
         {
-            var sceneTree = WorldNodeExtensions.GetSceneTree();
+            var sceneTree = GurdyNodeExtensions.GetSceneTree();
             if (sceneTree != null)
             {
                 var mainSceneNode = sceneTree.Root.GetNode("Main");
@@ -35,7 +35,7 @@ namespace ExtensionMethods
         // renderer isn't defined.
         public static void DrawDebugLine(this Node node, Vector2 origin, Vector2 endpoint, Color color, double lifeTime = -1, string group = "default")
         {
-            var sceneTree = WorldNodeExtensions.GetSceneTree();
+            var sceneTree = GurdyNodeExtensions.GetSceneTree();
             if (sceneTree != null)
             {
                 var lineRenderer = sceneTree.Root.GetNode<DebugLineRenderer>("Main/Debug/LineRenderer");
@@ -44,7 +44,7 @@ namespace ExtensionMethods
         }
 
         public static void DrawDebugRect(this Node node, Vector2 origin, Rect2 rect, Color color, double lifeTime = -1, string group = "default") {
-            var sceneTree = WorldNodeExtensions.GetSceneTree();
+            var sceneTree = GurdyNodeExtensions.GetSceneTree();
             if (sceneTree != null) {
                 var lineRenderer = sceneTree.Root.GetNode<DebugLineRenderer>("Main/Debug/LineRenderer");
                 lineRenderer?.PushRect(origin, rect, color, lifeTime, group);
@@ -52,7 +52,7 @@ namespace ExtensionMethods
         }
 
         public static void ClearLines(this Node node, string group) {
-            var sceneTree = WorldNodeExtensions.GetSceneTree();
+            var sceneTree = GurdyNodeExtensions.GetSceneTree();
             if (sceneTree != null) {
                 var lineRenderer = sceneTree.Root.GetNode<DebugLineRenderer>("Main/Debug/LineRenderer");
                 lineRenderer?.Clear(group);
