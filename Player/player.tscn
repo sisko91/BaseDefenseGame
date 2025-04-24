@@ -1,11 +1,11 @@
-[gd_scene load_steps=12 format=3 uid="uid://dy47gg8c687bv"]
+[gd_scene load_steps=21 format=3 uid="uid://dy47gg8c687bv"]
 
 [ext_resource type="Script" uid="uid://dsdu35x76daf1" path="res://Player/Player.cs" id="1_imx3i"]
 [ext_resource type="Shader" uid="uid://cfv027nbsnbss" path="res://Shaders/character.gdshader" id="1_od3ui"]
 [ext_resource type="PackedScene" uid="uid://dqdhhyjyrp2ri" path="res://Weapons/Pistol/pistol.tscn" id="2_psqbx"]
-[ext_resource type="Texture2D" uid="uid://doaffvj52e0h1" path="res://art/debug_texture_gradient.tres" id="2_s5van"]
 [ext_resource type="Script" uid="uid://ct1byufijcefb" path="res://Player/WeaponRing.cs" id="4_q66cr"]
 [ext_resource type="PackedScene" uid="uid://csp5yukh5lbt0" path="res://Weapons/Throwables/player_thrower_weapon.tscn" id="5_00tjw"]
+[ext_resource type="Texture2D" uid="uid://byii30q2b6rfu" path="res://art/NPCs/The Adventurer/Idle/Idle_Down.png" id="6_od3ui"]
 [ext_resource type="PackedScene" uid="uid://bc2ju5qbw3goj" path="res://Gameplay/Effects/Impacts/impact_bloodspurt.tscn" id="6_x3vf3"]
 [ext_resource type="Script" uid="uid://2ajhnisvj48l" path="res://Gameplay/BodySensor.cs" id="7_o4ihg"]
 
@@ -16,8 +16,73 @@ shader_parameter/is_inside = false
 shader_parameter/time_scale = 20.0
 shader_parameter/gb_ceil = 0.75
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_vtle1"]
-size = Vector2(48, 48)
+[sub_resource type="AtlasTexture" id="AtlasTexture_00tjw"]
+atlas = ExtResource("6_od3ui")
+region = Rect2(0, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x3vf3"]
+atlas = ExtResource("6_od3ui")
+region = Rect2(48, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_apopc"]
+atlas = ExtResource("6_od3ui")
+region = Rect2(96, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5htga"]
+atlas = ExtResource("6_od3ui")
+region = Rect2(144, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_p5o4e"]
+atlas = ExtResource("6_od3ui")
+region = Rect2(192, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gu6f8"]
+atlas = ExtResource("6_od3ui")
+region = Rect2(240, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dkpta"]
+atlas = ExtResource("6_od3ui")
+region = Rect2(288, 0, 48, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lfmf2"]
+atlas = ExtResource("6_od3ui")
+region = Rect2(336, 0, 48, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_pisgm"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_00tjw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x3vf3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_apopc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5htga")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_p5o4e")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gu6f8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dkpta")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lfmf2")
+}],
+"loop": true,
+"name": &"idle_down",
+"speed": 5.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_od3ui"]
+radius = 23.0
+height = 82.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_wbypx"]
 radius = 120.0
@@ -36,12 +101,17 @@ ImpactResponseTable = Dictionary[int, PackedScene]({
 3: ExtResource("6_x3vf3")
 })
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 use_parent_material = true
-texture = ExtResource("2_s5van")
+position = Vector2(0, -1)
+scale = Vector2(3, 3)
+sprite_frames = SubResource("SpriteFrames_pisgm")
+animation = &"idle_down"
+autoplay = "idle_down"
+frame_progress = 0.896812
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("RectangleShape2D_vtle1")
+shape = SubResource("CapsuleShape2D_od3ui")
 
 [node name="WeaponRing" type="Node2D" parent="."]
 script = ExtResource("4_q66cr")

@@ -258,8 +258,6 @@ public partial class Player : Character
     private void SpawnDashGhost() {
         Sprite2D ghostSprite = GetSpriteCopy();
         ghostSprite.ZIndex = ZIndex;
-        ghostSprite.UseParentMaterial = false;
-        ghostSprite.Material = Material;
 
         var tween = CreateTween();
         tween.TweenProperty(ghostSprite, "modulate:a", 0.0, 0.5);
@@ -284,20 +282,34 @@ public partial class Player : Character
     }
 
     private Sprite2D GetSpriteCopy() {
-        return (Sprite2D) GetNode<Sprite2D>("Sprite2D").Duplicate();
+        var playerSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+        var currentTexture = playerSprite.SpriteFrames.GetFrameTexture(playerSprite.Animation, playerSprite.Frame);
+
+        Sprite2D copy = new Sprite2D();
+        copy.Texture = currentTexture;
+        copy.Scale = playerSprite.Scale;
+        copy.LightMask = playerSprite.LightMask;
+        copy.UseParentMaterial = false;
+        copy.Material = Material;
+
+        return copy;
     }
 
     private void SetShaderScreenUV() {
         Main.GetActiveCamera().ForceUpdateTransform();
 
-        var spriteRect = GetNode<Sprite2D>("Sprite2D").GetRect();
+        var currentSprite = GetSpriteCopy();
 
-        var screenTopLeft = GetGlobalTransformWithCanvas() * spriteRect.Position;
-        var screenBottomRight = GetGlobalTransformWithCanvas() * spriteRect.End;
+        var screenTopLeft = GetGlobalTransformWithCanvas() * (currentSprite.GetRect().Position * currentSprite.Scale);
+        var screenBottomRight = GetGlobalTransformWithCanvas() * (currentSprite.GetRect().End * currentSprite.Scale);
         var normalizedStart = screenTopLeft / GetViewport().GetVisibleRect().Size;
         var normalizedEnd = screenBottomRight / GetViewport().GetVisibleRect().Size;
 
         RenderingServer.GlobalShaderParameterSet("player_screen_uv_start", normalizedStart);
         RenderingServer.GlobalShaderParameterSet("player_screen_uv_end", normalizedEnd);
+
+        //TODO: Just update this when the animation texture changes
+        var imageTex = ImageTexture.CreateFromImage(currentSprite.Texture.GetImage());
+        RenderingServer.GlobalShaderParameterSet("player_texture", imageTex);
     }
 }
