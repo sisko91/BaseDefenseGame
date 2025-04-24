@@ -13,6 +13,9 @@ public sealed partial class RectRegion : Node2D
     [Export]
     public Color EditorDrawColor { get; private set; } = Colors.BlueViolet;
 
+    [Export]
+    public float EditorControlPointSize = 10.0f;
+
     private bool isDragging = false;
     private Vector2 dragAnchorOffset = Vector2.Zero;
 
@@ -93,7 +96,10 @@ public sealed partial class RectRegion : Node2D
             }
 
             var zoom = EditorInterface.Singleton.GetEditorViewport2D().GlobalCanvasTransform.Scale;
-            DrawCircle(Region.End, 5.0f / zoom.X, Colors.White, filled: true);
+            var color = isDragging ? Colors.Green : Colors.White;
+            var controlPointSizeUnscaled = new Vector2(EditorControlPointSize, EditorControlPointSize) / Scale;
+            var zoomedControlPointSize = controlPointSizeUnscaled / zoom;
+            DrawRect(new Rect2(Region.End - zoomedControlPointSize / 2f, zoomedControlPointSize), color, filled: true);
         }
     }
 
@@ -109,8 +115,13 @@ public sealed partial class RectRegion : Node2D
     private bool IsMouseOverHandle(Vector2 mousePos) {
         if(Engine.IsEditorHint()) {
             var zoom = EditorInterface.Singleton.GetEditorViewport2D().GlobalCanvasTransform.Scale;
-            float handleRadius = 5.0f / zoom.X;
-            return Region.End.DistanceTo(mousePos) <= handleRadius;
+            float handleRadius = EditorControlPointSize / zoom.X;
+            // Get the node's world position to calculate the inverse transform
+            var nodeTransform = GlobalTransform;
+
+            // Convert mouse position to local coordinates of the node
+            Vector2 localMousePos = nodeTransform.AffineInverse().BasisXform(mousePos - nodeTransform.Origin);
+            return Region.End.DistanceTo(localMousePos) <= handleRadius;
         }
         return false;
     }
