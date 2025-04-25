@@ -43,11 +43,11 @@ namespace ExtensionMethods
             }
         }
 
-        public static void DrawDebugRect(this Node node, Vector2 origin, Rect2 rect, Color color, double lifeTime = -1, string group = "default") {
+        public static void DrawDebugRect(this Node node, Vector2 origin, Rect2 rect, Color color, double lifeTime = -1, string group = "default", bool centerOrigin = true) {
             var sceneTree = GurdyNodeExtensions.GetSceneTree();
             if (sceneTree != null) {
                 var lineRenderer = sceneTree.Root.GetNode<DebugLineRenderer>("Main/Debug/LineRenderer");
-                lineRenderer?.PushRect(origin, rect, color, lifeTime, group);
+                lineRenderer?.PushRect(origin, rect, color, lifeTime, group, centerOrigin: centerOrigin);
             }
         }
 

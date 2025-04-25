@@ -28,8 +28,10 @@ public partial class DebugLineRenderer : Control
 
     private Dictionary<string, List<DebugLineEntry>> DebugLineGroups = new Dictionary<string, List<DebugLineEntry>>();
 
-    public void PushRect(Vector2 origin, Rect2 rect, Color color, double lifeTime = -1, string group = "default") {
-        origin = origin - new Vector2(rect.Size.X / 2, rect.Size.Y / 2);
+    public void PushRect(Vector2 origin, Rect2 rect, Color color, double lifeTime = -1, string group = "default", bool centerOrigin = true) {
+        if(centerOrigin) {
+            origin = origin - new Vector2(rect.Size.X / 2, rect.Size.Y / 2);
+        }
 
         PushLine(new Vector2(origin.X, origin.Y), new Vector2(origin.X + rect.Size.X, origin.Y), color, lifeTime, group);
         PushLine(new Vector2(origin.X, origin.Y), new Vector2(origin.X, origin.Y + rect.Size.Y), color, lifeTime, group);
