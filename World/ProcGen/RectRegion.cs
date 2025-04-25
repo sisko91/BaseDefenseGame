@@ -1,3 +1,4 @@
+using ExtensionMethods;
 using Godot;
 using System;
 
@@ -50,10 +51,11 @@ public sealed partial class RectRegion : Node2D
             if(isMousePressed) {
                 if(!isDragging) {
                     Vector2 mousePos = EditorInterface.Singleton.GetEditorViewport2D().GetMousePosition();
-                    if (IsMouseOverHandle(mousePos)) {
+                    if (IsMouseOverControlPoint(mousePos)) {
                         GD.Print("Drag-resize started.");
                         isDragging = true;
-                        dragAnchorOffset = Region.End - mousePos;
+                        var globalRegionEnd = GlobalTransform.BasisXform(Region.End);
+                        dragAnchorOffset = globalRegionEnd - mousePos;
                         // We don't want to select ANYTHING when we're dragging around, so wipe the editor's selection list clean.
                         EditorInterface.Singleton.GetSelection().Clear();
 
@@ -81,8 +83,8 @@ public sealed partial class RectRegion : Node2D
 
             if(isDragging) {
                 Vector2 mousePos = EditorInterface.Singleton.GetEditorViewport2D().GetMousePosition();
-                var newSize = mousePos + dragAnchorOffset - Region.Position;
-                Region = new Rect2(Region.Position, newSize);
+                Vector2 localMousePos = GlobalTransform.AffineInverse().BasisXform(mousePos + dragAnchorOffset);
+                Region = new Rect2(Vector2.Zero, localMousePos);
             }
         }
     }
@@ -120,17 +122,21 @@ public sealed partial class RectRegion : Node2D
         return false;
     }
 
-    private bool IsMouseOverHandle(Vector2 mousePos) {
+    private bool IsMouseOverControlPoint(Vector2 mousePos) {
         if(Engine.IsEditorHint()) {
             var zoom = EditorInterface.Singleton.GetEditorViewport2D().GlobalCanvasTransform.Scale;
-            float handleRadius = EditorControlPointSize / zoom.X;
-            // Get the node's world position to calculate the inverse transform
-            var nodeTransform = GlobalTransform;
+            float cpRadius = EditorControlPointSize / zoom.X;
 
             // Convert mouse position to local coordinates of the node
-            Vector2 localMousePos = nodeTransform.AffineInverse().BasisXform(mousePos - nodeTransform.Origin);
-            return Region.End.DistanceTo(localMousePos) <= handleRadius;
+            Vector2 localMousePos = GlobalTransform.AffineInverse().BasisXform(mousePos - GlobalTransform.Origin);
+            return Region.End.DistanceTo(localMousePos) <= cpRadius;
         }
         return false;
+    }
+
+    // Returns a Rect2 positioned and scaled to match the Size and GlobalTransform of this RectRegion.
+    public Rect2 GetGlobalRect() {
+        var regionSizeGlobal = GlobalTransform.BasisXform(Region.Size);
+        return new Rect2(GlobalPosition, regionSizeGlobal);
     }
 }

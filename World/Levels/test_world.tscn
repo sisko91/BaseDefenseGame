@@ -15,13 +15,13 @@
 [ext_resource type="PackedScene" uid="uid://blio7x08xw4te" path="res://NPC/Merchant/merchant.tscn" id="7_8ojdi"]
 [ext_resource type="Texture2D" uid="uid://d1skfyo8wkj1a" path="res://art/World/test_road.png" id="7_b48bc"]
 [ext_resource type="Resource" uid="uid://eurmfqo548j4" path="res://World/ShopItems/pistol.tres" id="8_lquev"]
-[ext_resource type="Script" uid="uid://cu0g6818gf7x1" path="res://World/ProcGen/Paths/PathDecorator.cs" id="8_wh5fb"]
 [ext_resource type="Resource" uid="uid://wi0ppwstcfuk" path="res://World/ShopItems/scattergun.tres" id="9_hjxpo"]
 [ext_resource type="Texture2D" uid="uid://dwn5oow6sd10h" path="res://art/World/oil_barrel.png" id="9_j617i"]
 [ext_resource type="Texture2D" uid="uid://bpy4i0vli8ewl" path="res://art/World/old_barrel.png" id="9_wh5fb"]
 [ext_resource type="Resource" uid="uid://b77gn5emtpi6g" path="res://World/ShopItems/barber.tres" id="10_cdkb4"]
 [ext_resource type="Script" uid="uid://b3g2d4jh4bxsj" path="res://World/ProcGen/Paths/PathDecalDecorator.cs" id="10_qx1mc"]
 [ext_resource type="Script" uid="uid://bunp1yq3jjjv7" path="res://World/DayNight/DayNight.cs" id="11_11lc6"]
+[ext_resource type="Script" uid="uid://cu0g6818gf7x1" path="res://World/ProcGen/Paths/PathDecorator.cs" id="11_80b3c"]
 [ext_resource type="Script" uid="uid://7x2lypek5o4l" path="res://Gameplay/CrystalTarget.cs" id="11_dghf1"]
 [ext_resource type="Script" uid="uid://ul68if3kp7vg" path="res://World/ProcGen/Scenarios/SmallTown.cs" id="12_qx1mc"]
 [ext_resource type="Script" uid="uid://duyw2hn54xkre" path="res://World/ProcGen/RectRegion.cs" id="14_80b3c"]
@@ -108,7 +108,6 @@ metadata/_edit_use_anchors_ = true
 z_index = -1
 texture_repeat = 2
 material = SubResource("ShaderMaterial_523qg")
-position = Vector2(261, 19)
 texture = ExtResource("2_rsvub")
 region_enabled = true
 region_rect = Rect2(0, 0, 6000, 6000)
@@ -117,15 +116,15 @@ region_filter_clip_enabled = true
 [node name="ScenarioContainer" type="Node2D" parent="." node_paths=PackedStringArray("MainPathMesh")]
 script = ExtResource("12_qx1mc")
 MainPathMesh = NodePath("RoadPathMesh")
+BuildingSceneTemplate = ExtResource("6_lhns8")
 BuildingFootprint = Vector2(500, 250)
-DesiredBuildingCount = 20
 ExcludedRegionsGroup = "SmallTown.Exclude"
 
 [node name="RoadPathMesh" type="Node2D" parent="ScenarioContainer" node_paths=PackedStringArray("Path")]
 script = ExtResource("5_hjxpo")
 Path = NodePath("SourcePath2D")
 PathMeshMaterial = SubResource("ShaderMaterial_b48bc")
-Decorators = Array[ExtResource("8_wh5fb")]([SubResource("Resource_hkmll")])
+Decorators = Array[ExtResource("11_80b3c")]([SubResource("Resource_hkmll")])
 PathWidth = 400.0
 StretchTexCoords = false
 TexCoordsRepeatDistance = 1000.0
@@ -138,10 +137,12 @@ curve = SubResource("Curve2D_cdkb4")
 [node name="ExclusionZones" type="Node2D" parent="ScenarioContainer"]
 
 [node name="ExcludeStartZone" type="Node2D" parent="ScenarioContainer/ExclusionZones"]
+position = Vector2(-699, -1369)
+scale = Vector2(1.5, 1.498)
 script = ExtResource("14_80b3c")
-Region = Rect2(-1000, -500, 2087.52, 1194.08)
+Region = Rect2(0, 0, 959.852, 675.932)
 AutoregisterGroup = "SmallTown.Exclude"
-EditorDrawColor = Color(0.798347, 0, 0.20126, 1)
+EditorDrawColor = Color(0.798375, 0, 0.201584, 1)
 metadata/_custom_type_script = "uid://duyw2hn54xkre"
 
 [node name="TestBuilding" parent="." instance=ExtResource("6_lhns8")]
