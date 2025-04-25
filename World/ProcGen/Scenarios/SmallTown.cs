@@ -37,7 +37,6 @@ public partial class SmallTown : Node2D
     [Export]
     public Node2D PlacementContainer { get; protected set; } = null;
 
-    // TODO: This should be exposed as DebugConfig.
     [Export]
     public bool RenderDebugInfo { get; private set; } = false;
 
@@ -92,7 +91,7 @@ public partial class SmallTown : Node2D
 
         foreach (var point in placements) {
             if(RenderDebugInfo) {
-                this.DrawDebugRect(point, new Rect2(point, BuildingFootprint), Colors.Orange, centerOrigin: false);
+                this.DrawDebugRect(point, BuildingFootprint, Colors.Orange, centerOrigin: false);
             }
         }
         if(BuildingSceneTemplate != null) {
@@ -153,7 +152,7 @@ public partial class SmallTown : Node2D
         if (RenderDebugInfo) {
             foreach (var rect in rects) {
                 var globalRect = rect.GetGlobalRect();
-                this.DrawDebugRect(globalRect.Position, globalRect, Colors.Yellow, centerOrigin: false);
+                this.DrawDebugRect(globalRect.Position, globalRect.Size, Colors.Yellow, centerOrigin: false);
             }
         }
         var testBounds = pointSize ?? Vector2.One;

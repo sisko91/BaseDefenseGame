@@ -190,7 +190,7 @@ public partial class Brain : Resource
             return;
         }
 
-        Owner.ClearLines(Owner.GetPath());
+        Owner.ClearDebugDrawCalls(Owner.GetPath());
         lastNavPathDirection = Owner.GlobalPosition.DirectionTo(Owner.NavAgent.GetNextPathPosition());
 
         // Always update interests and dangers.

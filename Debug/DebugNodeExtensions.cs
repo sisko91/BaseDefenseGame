@@ -19,44 +19,48 @@ namespace ExtensionMethods
                     mainSceneNode.AddChild(debugRootNode);
 
                     // Configure & Add our debug LineRenderer.
-                    AddLineRenderer(debugRootNode);
+                    AddDebugDrawCallRenderer(debugRootNode);
                 }
             }
         }
 
-        private static void AddLineRenderer(Node parentNode)
+        private static void AddDebugDrawCallRenderer(Node parentNode)
         {
-            DebugLineRenderer lineRenderer = new DebugLineRenderer();
-            lineRenderer.Name = "LineRenderer";
-            parentNode.AddChild(lineRenderer);
+            DebugDrawCallRenderer ddcRenderer = new DebugDrawCallRenderer();
+            ddcRenderer.Name = "DebugDrawCallRenderer";
+            parentNode.AddChild(ddcRenderer);
         }
 
-        // Attempts to acquire the DebugLineRenderer under the conventional path /root/Main/Debug/LineRenderer, no-op if the line
-        // renderer isn't defined.
+        // Attempts to acquire the DebugDrawCallRenderer under the conventional path /root/Main/Debug/DebugDrawCallRenderer, returns null
+        // if the renderer is not enabled.
+        public static DebugDrawCallRenderer GetDebugDrawCallRenderer() {
+            var sceneTree = GurdyNodeExtensions.GetSceneTree();
+            if (sceneTree != null) {
+                return sceneTree.Root.GetNodeOrNull<DebugDrawCallRenderer>("Main/Debug/DebugDrawCallRenderer");
+            }
+            return null;
+        }
+
+        
         public static void DrawDebugLine(this Node node, Vector2 origin, Vector2 endpoint, Color color, double lifeTime = -1, string group = "default")
         {
-            var sceneTree = GurdyNodeExtensions.GetSceneTree();
-            if (sceneTree != null)
-            {
-                var lineRenderer = sceneTree.Root.GetNode<DebugLineRenderer>("Main/Debug/LineRenderer");
-                lineRenderer?.PushLine(origin, endpoint, color, lifeTime, group);
-            }
+            GetDebugDrawCallRenderer()?.PushLine(origin, endpoint, color, lifeTime, group);
         }
 
-        public static void DrawDebugRect(this Node node, Vector2 origin, Rect2 rect, Color color, double lifeTime = -1, string group = "default", bool centerOrigin = true) {
-            var sceneTree = GurdyNodeExtensions.GetSceneTree();
-            if (sceneTree != null) {
-                var lineRenderer = sceneTree.Root.GetNode<DebugLineRenderer>("Main/Debug/LineRenderer");
-                lineRenderer?.PushRect(origin, rect, color, lifeTime, group, centerOrigin: centerOrigin);
-            }
+        public static void DrawDebugRect(this Node node, Vector2 origin, Vector2 size, Color color, bool fillInterior = false, double lifeTime = -1, string group = "default", bool centerOrigin = true) {
+            GetDebugDrawCallRenderer()?.PushRect(origin, size, color, fillInterior, lifeTime, group, centerOrigin);
         }
 
-        public static void ClearLines(this Node node, string group) {
-            var sceneTree = GurdyNodeExtensions.GetSceneTree();
-            if (sceneTree != null) {
-                var lineRenderer = sceneTree.Root.GetNode<DebugLineRenderer>("Main/Debug/LineRenderer");
-                lineRenderer?.Clear(group);
-            }
+        public static void DrawDebugCircle(this Node node, Vector2 origin, float radius, Color color, bool fillInterior = false, double lifeTime = -1, string group = "default") {
+            GetDebugDrawCallRenderer()?.PushCircle(origin, radius, color, fillInterior, lifeTime, group);
+        }
+
+        public static void DrawDebugPoint(this Node node, Vector2 origin, float radius, Color color, double lifeTime = -1, string group = "default") {
+            node.DrawDebugCircle(origin, radius, color, true, lifeTime, group);
+        }
+
+        public static void ClearDebugDrawCalls(this Node node, string group) {
+            GetDebugDrawCallRenderer()?.Clear(group);
         }
     }
 
