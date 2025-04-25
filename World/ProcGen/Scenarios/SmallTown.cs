@@ -1,5 +1,6 @@
 using ExtensionMethods;
 using Godot;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -30,6 +31,15 @@ public partial class SmallTown : Node2D
     // The group containing RegionRects specifying where the town is not allowed to place objects.
     [Export]
     public string ExcludedRegionsGroup { get; protected set; } = null;
+
+    // Reference to another node in the scene that will serve as the container / parent for any nodes placed by the town's generation.
+    // If this is null, all placed nodes will be children of this SmallTown node.
+    [Export]
+    public Node2D PlacementContainer { get; protected set; } = null;
+
+    // TODO: This should be exposed as DebugConfig.
+    [Export]
+    public bool RenderDebugInfo { get; private set; } = false;
 
     public override void _Ready() {
         base._Ready();
@@ -67,7 +77,7 @@ public partial class SmallTown : Node2D
         // Remove points near exclusion zones.
         pointSizeInitial = points.Count;
         var excludeRegions = GetTree().GetTypedNodesInGroup<RectRegion>(ExcludedRegionsGroup);
-        points = RemovePointsNearRects(points, excludeRegions, BuildingFootprint.Length() * 1.5f);
+        points = RemovePointsNearRects(points, excludeRegions, pointSize: BuildingFootprint);
         GD.Print($"{Name}[{GetType()}] filtered out {pointSizeInitial - points.Count} candidate points too close to an exclusion zone.");
 
         // Determine possible placements for the buildings we want to spawn in the world; Using a custom spacing rule to prevent
@@ -80,9 +90,24 @@ public partial class SmallTown : Node2D
             minFootprintSpacing: BuildingFootprint);
         GD.Print($"{Name}[{GetType()}] found {placements.Count} viable placements matching criteria.");
 
-        // TODO: Place buildings.
         foreach (var point in placements) {
-            this.DrawDebugRect(point, new Rect2(point, BuildingFootprint), new Color(1, 0, 0), 5.0f); // only draw for first 5 seconds
+            if(RenderDebugInfo) {
+                this.DrawDebugRect(point, new Rect2(point, BuildingFootprint), Colors.Orange, centerOrigin: false);
+            }
+        }
+        if(BuildingSceneTemplate != null) {
+            int placed = 0;
+            var parent = PlacementContainer ?? this;
+            foreach (var point in placements) {
+                var newBuilding = BuildingSceneTemplate.Instantiate<Node2D>();
+                parent.AddChild(newBuilding);
+                newBuilding.GlobalPosition = point;
+
+                placed++;
+                if(placed >= DesiredBuildingCount) {
+                    break;
+                }
+            }
         }
     }
 
@@ -124,10 +149,18 @@ public partial class SmallTown : Node2D
         }).ToList();
     }
 
-    protected List<Vector2> RemovePointsNearRects(List<Vector2> pointCloud, IEnumerable<RectRegion> rects, float additionalRectPadding = 0.0f) {
+    protected List<Vector2> RemovePointsNearRects(List<Vector2> pointCloud, IEnumerable<RectRegion> rects, Vector2? pointSize = null) {
+        if (RenderDebugInfo) {
+            foreach (var rect in rects) {
+                var globalRect = rect.GetGlobalRect();
+                this.DrawDebugRect(globalRect.Position, globalRect, Colors.Yellow, centerOrigin: false);
+            }
+        }
+        var testBounds = pointSize ?? Vector2.One;
         return pointCloud.Where((candidate) => {
             foreach(var rect in rects) {
-                if(rect.Region.Grow(additionalRectPadding).HasPoint(candidate)) {
+                var globalRect = rect.GetGlobalRect();
+                if (globalRect.Intersects(new Rect2(candidate, pointSize ?? Vector2.One))) {
                     return false;
                 }
             }
