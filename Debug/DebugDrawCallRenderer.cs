@@ -114,14 +114,14 @@ public partial class DebugDrawCallRenderer : Control
                             DrawRect(
                                 rect: new Rect2(drawCall.Origin, drawCall.Endpoint - drawCall.Origin), 
                                 color: drawCall.Color,
-                                filled: false);
+                                filled: drawCall.FillInterior);
                             break;
                         case DrawCallType.Circle:
                             DrawCircle(
                                 position: drawCall.Origin, 
                                 radius: drawCall.Origin.DistanceTo(drawCall.Endpoint), 
                                 color:drawCall.Color,
-                                filled: false);
+                                filled: drawCall.FillInterior);
                             break;
                         default:
                             GD.PrintErr($"Unknown DebugDrawCallType encountered: {drawCall.Type}, did you forget to add support?");
