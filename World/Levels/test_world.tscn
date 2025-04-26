@@ -119,6 +119,7 @@ MainPathMesh = NodePath("RoadPathMesh")
 BuildingSceneTemplate = ExtResource("6_lhns8")
 BuildingFootprint = Vector2(500, 250)
 ExcludedRegionsGroup = "SmallTown.Exclude"
+DebugPointRadius = 5.0
 
 [node name="RoadPathMesh" type="Node2D" parent="ScenarioContainer" node_paths=PackedStringArray("Path")]
 script = ExtResource("5_hjxpo")
@@ -137,10 +138,10 @@ curve = SubResource("Curve2D_cdkb4")
 [node name="ExclusionZones" type="Node2D" parent="ScenarioContainer"]
 
 [node name="ExcludeStartZone" type="Node2D" parent="ScenarioContainer/ExclusionZones"]
-position = Vector2(-699, -1369)
-scale = Vector2(1.5, 1.498)
+position = Vector2(-682, -458)
+scale = Vector2(0.578354, 0.508114)
 script = ExtResource("14_80b3c")
-Region = Rect2(0, 0, 959.852, 675.932)
+Region = Rect2(0, 0, 2428.55, 2032.71)
 AutoregisterGroup = "SmallTown.Exclude"
 EditorDrawColor = Color(0.798375, 0, 0.201584, 1)
 metadata/_custom_type_script = "uid://duyw2hn54xkre"
