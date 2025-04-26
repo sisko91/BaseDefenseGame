@@ -8,7 +8,7 @@ using System;
 public sealed partial class RectRegion : Node2D
 {
     [Export]
-    public Rect2 Region { get; set; }
+    public Vector2 Size { get; set; }
 
     // The group that this region belongs to (if any). If defined this region will be added to the group automatically during play.
     [Export]
@@ -54,15 +54,15 @@ public sealed partial class RectRegion : Node2D
                     if (IsMouseOverControlPoint(mousePos)) {
                         GD.Print("Drag-resize started.");
                         isDragging = true;
-                        var globalRegionEnd = GlobalTransform.BasisXform(Region.End);
-                        dragAnchorOffset = globalRegionEnd - mousePos;
+                        var globalSize = GlobalTransform.BasisXform(Size);
+                        dragAnchorOffset = globalSize - mousePos;
                         // We don't want to select ANYTHING when we're dragging around, so wipe the editor's selection list clean.
                         EditorInterface.Singleton.GetSelection().Clear();
 
                         // Register the original size with the editor's undo/redo system.
                         var undoRedo = EditorInterface.Singleton.GetEditorUndoRedo();
                         undoRedo.CreateAction("Resize RegionRect");
-                        undoRedo.AddUndoProperty(this, "Region", Region);
+                        undoRedo.AddUndoProperty(this, "Size", Size);
                     }
                 }
             }
@@ -76,7 +76,7 @@ public sealed partial class RectRegion : Node2D
 
                     // Register the change with the Editor's undo/redo system.
                     var undoRedo = EditorInterface.Singleton.GetEditorUndoRedo();
-                    undoRedo.AddDoProperty(this, "Region", Region);
+                    undoRedo.AddDoProperty(this, "Size", Size);
                     undoRedo.CommitAction();
                 }
             }
@@ -84,7 +84,7 @@ public sealed partial class RectRegion : Node2D
             if(isDragging) {
                 Vector2 mousePos = EditorInterface.Singleton.GetEditorViewport2D().GetMousePosition();
                 Vector2 localMousePos = GlobalTransform.AffineInverse().BasisXform(mousePos + dragAnchorOffset);
-                Region = new Rect2(Vector2.Zero, localMousePos);
+                Size = localMousePos;
             }
         }
     }
@@ -98,10 +98,10 @@ public sealed partial class RectRegion : Node2D
             // Always half-transparent.
             var drawColor = EditorDrawColor;
             drawColor.A = 0.5f;
-            DrawRect(rect: Region, color: drawColor, filled: true);
+            DrawRect(rect: new Rect2(Vector2.Zero, Size), color: drawColor, filled: true);
 
             // Early-exit from rendering control points at all if the region is very small.
-            if (Region.Size.LengthSquared() <= 10.0f) {
+            if (Size.LengthSquared() <= 10.0f) {
                 return;
             }
 
@@ -109,7 +109,7 @@ public sealed partial class RectRegion : Node2D
             var color = isDragging ? Colors.Green : Colors.White;
             var controlPointSizeUnscaled = new Vector2(EditorControlPointSize, EditorControlPointSize) / Scale;
             var zoomedControlPointSize = controlPointSizeUnscaled / zoom;
-            DrawRect(new Rect2(Region.End - zoomedControlPointSize / 2f, zoomedControlPointSize), color, filled: true);
+            DrawRect(new Rect2(Size - zoomedControlPointSize / 2f, zoomedControlPointSize), color, filled: true);
         }
     }
 
@@ -129,14 +129,14 @@ public sealed partial class RectRegion : Node2D
 
             // Convert mouse position to local coordinates of the node
             Vector2 localMousePos = GlobalTransform.AffineInverse().BasisXform(mousePos - GlobalTransform.Origin);
-            return Region.End.DistanceTo(localMousePos) <= cpRadius;
+            return Size.DistanceTo(localMousePos) <= cpRadius;
         }
         return false;
     }
 
     // Returns a Rect2 positioned and scaled to match the Size and GlobalTransform of this RectRegion.
     public Rect2 GetGlobalRect() {
-        var regionSizeGlobal = GlobalTransform.BasisXform(Region.Size);
+        var regionSizeGlobal = GlobalTransform.BasisXform(Size);
         return new Rect2(GlobalPosition, regionSizeGlobal);
     }
 }
