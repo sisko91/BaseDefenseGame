@@ -72,8 +72,6 @@ public partial class SmallTown : Node2D
         // Produce a set of candidate points, uniformly distributed across the bounds of the world.
         Rect2 boundingRect = new Rect2(world.GlobalPosition - world.RegionBounds/2f, world.RegionBounds);
         var points = PointCloudFromBounds(boundingRect, PointCloudSpacing);
-        int pointSizeInitial = points.Count;
-        GD.Print($"{Name}[{GetType()}] generated {pointSizeInitial} candidate points.");
 
         // Remove points too close to the main path through the world, making sure no building is too close.
         points = RemovePointsNearPath(points, 
@@ -89,12 +87,12 @@ public partial class SmallTown : Node2D
             // boundary.
             minDistanceBetween: Mathf.Min(BuildingFootprint.X, BuildingFootprint.Y));
 
-        GD.Print($"{Name}[{GetType()}] filtered out {pointSizeInitial - points.Count} candidate points too close to the path.");
 
         // Remove points near exclusion zones.
-        pointSizeInitial = points.Count;
         var excludedRegions = GetTree().GetTypedNodesInGroup<RectRegion>(ExcludedRegionsGroup);
-        points = RemovePointsNearRects(
+        // NOTE: viablePoints is a LIST which causes ALL of the IEnumerable<> calls before this to finally run. No loops actually happen
+        // until something converts them to a definitive collection.
+        List<Vector2> viablePoints = RemovePointsNearRects(
             pointCloud: points, 
             rects: excludedRegions, 
             // pointSize: We want this to be the building footprint so that points are excluded if we couldn't place the building there.
@@ -104,21 +102,20 @@ public partial class SmallTown : Node2D
             // minDistanceBetween: We want some spacing between anything placed with this footprint and the exclusion zones.
             // If the building origin is the top-left corner, this moves the origin up and to the left by this amount, and moves the
             // bottom right corner of the footprint down and right by the same amount.
-            minDistanceBetween: Mathf.Min(BuildingFootprint.X, BuildingFootprint.Y));
-        GD.Print($"{Name}[{GetType()}] filtered out {pointSizeInitial - points.Count} candidate points too close to an exclusion zone.");
+            minDistanceBetween: Mathf.Min(BuildingFootprint.X, BuildingFootprint.Y)).ToList();
 
         // Determine possible placements for the buildings we want to spawn in the world; Using a custom spacing rule to prevent
         // buildings from spawning too close together.
-        var placements = GetPlacementLocations(points, 
+        var placements = GetPlacementLocations(viablePoints, 
             boundaryRect: boundingRect,
             footprint: BuildingFootprint, 
             desiredCount: DesiredBuildingCount, 
             // minFootprintSpacing: We use the footprint again because we don't want buildings right on top of each other.
             minFootprintSpacing: BuildingFootprint);
-        GD.Print($"{Name}[{GetType()}] found {placements.Count} viable placements matching criteria.");
+        //GD.Print($"{Name}[{GetType()}] found {placements.Count} viable placements matching criteria.");
 
         if (RenderDebugInfo) {
-            foreach (var point in points) {
+            foreach (var point in viablePoints) {
                 this.DrawDebugPoint(point, DebugPointRadius, ViablePointsColor);
             }
         }
@@ -146,8 +143,7 @@ public partial class SmallTown : Node2D
 
     // Given a bounding region in world-coordinates, produce a uniform point cloud that can be further sampled / filtered / enriched
     // to determine viable locations for procedural generation.
-    protected List<Vector2> PointCloudFromBounds(Rect2 bounds, float spacing = 1f) {
-        var points = new List<Vector2>();
+    protected IEnumerable<Vector2> PointCloudFromBounds(Rect2 bounds, float spacing = 1f) {
         float startX = bounds.Position.X;
         float startY = bounds.Position.Y;
         float endX = startX + bounds.Size.X;
@@ -155,16 +151,13 @@ public partial class SmallTown : Node2D
 
         for (float x = startX; x < endX; x += spacing) {
             for (float y = startY; y < endY; y += spacing) {
-                points.Add(new Vector2(x, y));
+                yield return new Vector2(x, y);
             }
         }
-        return points;
     }
 
     // Removes points from the point cloud which are too close to points along the PathMesh.
-    // TODO: Convert this to an IEnumerable<> / predicates so that we can chain operations without copying the point cloud into new
-    //       return values constantly.
-    protected List<Vector2> RemovePointsNearPath(List<Vector2> pointCloud, PathMesh pathMesh, Vector2? pointSize = null, float pathStepLength = 20.0f, float minDistanceBetween = 0.0f) {
+    protected IEnumerable<Vector2> RemovePointsNearPath(IEnumerable<Vector2> pointCloud, PathMesh pathMesh, Vector2? pointSize = null, float pathStepLength = 20.0f, float minDistanceBetween = 0.0f) {
         float minClearance = (pathMesh.PathWidth / 2f);
 
         var testBounds = pointSize ?? Vector2.One;
@@ -182,10 +175,10 @@ public partial class SmallTown : Node2D
             }
             // If no point was too close, candidate is okay.
             return true;
-        }).ToList();
+        });
     }
 
-    protected List<Vector2> RemovePointsNearRects(List<Vector2> pointCloud, IEnumerable<RectRegion> rects, Vector2? pointSize = null, bool testPointAsCenter = false, float minDistanceBetween = 0.0f) {
+    protected IEnumerable<Vector2> RemovePointsNearRects(IEnumerable<Vector2> pointCloud, IEnumerable<RectRegion> rects, Vector2? pointSize = null, bool testPointAsCenter = false, float minDistanceBetween = 0.0f) {
         if (RenderDebugInfo) {
             foreach (var rect in rects) {
                 var globalRect = rect.GetGlobalRect();
@@ -210,18 +203,18 @@ public partial class SmallTown : Node2D
                 }
             }
             return true;
-        }).ToList();
+        });
     }
 
     // Given a point cloud and bounding rectangle, attempts to select points where a rectangle with the indicated footprint (size) can be
     // placed the desired number of times without overlapping footprints.
     // Note this does NOT place anything in the world, it only identifies a set of points where rectangular regions can exist without
     // overlap.
-    protected List<Vector2> GetPlacementLocations(List<Vector2> pointCloud, Rect2 boundaryRect, Vector2 footprint, 
+    protected List<Vector2> GetPlacementLocations(IEnumerable<Vector2> pointCloud, Rect2 boundaryRect, Vector2 footprint, 
         int desiredCount, Vector2? minFootprintSpacing = null) {
 
         var placed = new List<Vector2>();
-        var shuffledPoints = pointCloud.OrderBy(_ => GD.Randf()).ToList();
+        var shuffledPoints = pointCloud.OrderBy(_ => GD.Randf());
 
         foreach (var point in shuffledPoints) {
             // Centered footprint rectangle with optional margin padding
