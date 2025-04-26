@@ -110,8 +110,8 @@ public partial class SmallTown : Node2D
             boundaryRect: boundingRect,
             footprint: BuildingFootprint, 
             desiredCount: DesiredBuildingCount, 
-            // minFootprintSpacing: We use the footprint again because we don't want buildings right on top of each other.
-            minFootprintSpacing: BuildingFootprint);
+            // minFootprintSpacing: We use the footprint dimensions again because we don't want buildings right on top of each other.
+            minFootprintSpacing: Mathf.Min(BuildingFootprint.X, BuildingFootprint.Y));
         //GD.Print($"{Name}[{GetType()}] found {placements.Count} viable placements matching criteria.");
 
         if (RenderDebugInfo) {
@@ -211,15 +211,15 @@ public partial class SmallTown : Node2D
     // Note this does NOT place anything in the world, it only identifies a set of points where rectangular regions can exist without
     // overlap.
     protected List<Vector2> GetPlacementLocations(IEnumerable<Vector2> pointCloud, Rect2 boundaryRect, Vector2 footprint, 
-        int desiredCount, Vector2? minFootprintSpacing = null) {
+        int desiredCount, float minFootprintSpacing = 0.0f) {
 
         var placed = new List<Vector2>();
         var shuffledPoints = pointCloud.OrderBy(_ => GD.Randf());
 
         foreach (var point in shuffledPoints) {
-            // Centered footprint rectangle with optional margin padding
-            Vector2 paddedFootprint = footprint + (minFootprintSpacing ?? Vector2.Zero);
-            Rect2 candidateRect = new Rect2(point - paddedFootprint / 2f, paddedFootprint);
+            // Footprint extends from point in top-left corner. Growing the rect by minFootprintSpacing gives it equal spacing
+            // on all sides.
+            Rect2 candidateRect = new Rect2(point, footprint).Grow(minFootprintSpacing);
 
             // 1. Check bounds
             if (!boundaryRect.Encloses(candidateRect)) {
@@ -228,7 +228,7 @@ public partial class SmallTown : Node2D
 
             // 2. Check for overlap or proximity (via intersecting padded rectangles)
             bool tooClose = placed.Any(existing => {
-                var existingRect = new Rect2(existing - paddedFootprint / 2f, paddedFootprint);
+                var existingRect = new Rect2(existing, footprint).Grow(minFootprintSpacing);
                 return existingRect.Intersects(candidateRect);
             });
 
