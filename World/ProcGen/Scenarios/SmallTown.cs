@@ -1,6 +1,7 @@
 using ExtensionMethods;
 using Godot;
-using System;
+using Gurdy;
+using Gurdy.ProcGen;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -45,7 +46,7 @@ public partial class SmallTown : Node2D
     //       menu and add config. Eventually we should consider supporting delayed generation / regeneration so that it's easier to
     //       observe / debug.
     [Export]
-    public bool RenderDebugInfo { get; private set; } = false;
+    public bool GenerateDebugInfo { get; private set; } = false;
     [Export]
     public float DebugPointRadius = 15.0f;
     [Export]
@@ -69,59 +70,77 @@ public partial class SmallTown : Node2D
 
     protected void Generate() {
         var world = this.GetGameWorld();
+        if (!world.GlobalScale.IsEqualApprox(Vector2.One) || !world.GlobalPosition.IsZeroApprox()) {
+            GD.PushError($"SmallTown ProcGen only works with an identity coordinate system. (Current Scale={world.GlobalScale}, Current Position={world.GlobalPosition}");
+            return;
+        }
         // Produce a set of candidate points, uniformly distributed across the bounds of the world.
-        Rect2 boundingRect = new Rect2(world.GlobalPosition - world.RegionBounds/2f, world.RegionBounds);
-        var points = PointCloudFromBounds(boundingRect, PointCloudSpacing);
+        var points = world.GeneratePoints(PointCloudSpacing);
+        // Our points are shaped and sized according to the footprint of the buildings we're placing.
+        points.PointSize = BuildingFootprint;
+        // Our BuildingFootprint and BuildingTemplate both assume a top-left anchor point.
+        points.AnchorPointAtCenter = false;
 
-        // Remove points too close to the main path through the world, making sure no building is too close.
-        points = RemovePointsNearPath(points, 
-            pathMesh: MainPathMesh, 
-            // pointSize: We want this to be at least as large as our footprint we plan to eventually place.
-            pointSize: BuildingFootprint,
+        // Construct a filter for removing points from the cloud if they overlap any of our exclusion regions.
+        var excludedRegions = GetTree().GetTypedNodesInGroup<RectRegion>(ExcludedRegionsGroup);
+        var excludedRegionsFilter = Filters.OverlapsAnyRectRegion(
+            rectRegions: excludedRegions,
+            // additionalPointSkirt: Additional spacing between points and the path. This is added to the pointSize to ensure that even
+            //                       a building placed as close as "possible" to the path still has at least minDistanceBetween its
+            //                       closest edge and the path's boundary.
+            additionalPointSkirt: Mathf.Min(BuildingFootprint.X, BuildingFootprint.Y));
+
+        // Construct a filter for removing points if they overlap the main path (or are too close).
+        var mainPathFilter = Filters.OverlapsPathMesh(
+            pathMesh: MainPathMesh,
             // pathStepLength: We want this to be the smaller of the two footprint dimensions because this is the distance between 
             //                 consecutive points we are testing along the path's length. If it were larger than any span of the footprint,
             //                 we'd miss filtering out some points.
             pathStepLength: Mathf.Min(BuildingFootprint.X, BuildingFootprint.Y),
-            // minDistanceBetween: Additional spacing between points and the path. This is added to the pointSize to ensure that even
-            // a building placed as close as "possible" to the path still has at least minDistanceBetween its closest edge and the path's
-            // boundary.
-            minDistanceBetween: Mathf.Min(BuildingFootprint.X, BuildingFootprint.Y));
+            // additionalPointSkirt: Same as on the excludedRegionsFilter above.
+            additionalPointSkirt: Mathf.Min(BuildingFootprint.X, BuildingFootprint.Y));
 
+        if(GenerateDebugInfo) {
+            // Wrap the filters in callbacks that use different colors so that we can see what points are identified by each.
+            excludedRegionsFilter = excludedRegionsFilter.WithCallback((point, filtered) => {
+                if (filtered) {
+                    this.DrawDebugPoint(point, DebugPointRadius, NearExclusionsColor);
+                }
+            });
 
-        // Remove points near exclusion zones.
-        var excludedRegions = GetTree().GetTypedNodesInGroup<RectRegion>(ExcludedRegionsGroup);
+            mainPathFilter = mainPathFilter.WithCallback((point, filtered) => {
+                if(filtered) {
+                    this.DrawDebugPoint(point, DebugPointRadius, NearPathMeshColor);
+                }
+            });
+        }
+
+        // Remove all points that match one of the filters we created above.
+        points = points.FilterOut(Filters.MatchAny(excludedRegionsFilter, mainPathFilter));
+        
         // NOTE: viablePoints is a LIST which causes ALL of the IEnumerable<> calls before this to finally run. No loops actually happen
         // until something converts them to a definitive collection.
-        List<Vector2> viablePoints = RemovePointsNearRects(
-            pointCloud: points, 
-            rects: excludedRegions, 
-            // pointSize: We want this to be the building footprint so that points are excluded if we couldn't place the building there.
-            pointSize: BuildingFootprint,
-            // testPointAsCenter: We set this to false because the building's origin is the top-left corner.
-            testPointAsCenter: false,
-            // minDistanceBetween: We want some spacing between anything placed with this footprint and the exclusion zones.
-            // If the building origin is the top-left corner, this moves the origin up and to the left by this amount, and moves the
-            // bottom right corner of the footprint down and right by the same amount.
-            minDistanceBetween: Mathf.Min(BuildingFootprint.X, BuildingFootprint.Y)).ToList();
+        var viablePoints = points.Points.ToList();
 
         // Determine possible placements for the buildings we want to spawn in the world; Using a custom spacing rule to prevent
         // buildings from spawning too close together.
         var placements = GetPlacementLocations(viablePoints, 
-            boundaryRect: boundingRect,
+            boundaryRect: new Rect2(world.GlobalPosition - world.RegionBounds / 2f, world.RegionBounds),
             footprint: BuildingFootprint, 
             desiredCount: DesiredBuildingCount, 
             // minFootprintSpacing: We use the footprint dimensions again because we don't want buildings right on top of each other.
             minFootprintSpacing: Mathf.Min(BuildingFootprint.X, BuildingFootprint.Y));
-        //GD.Print($"{Name}[{GetType()}] found {placements.Count} viable placements matching criteria.");
 
-        if (RenderDebugInfo) {
+        GD.Print($"{Name}[{GetType()}] selected {placements.Count} placements from {viablePoints.Count} viable points matching criteria.");
+
+        if (GenerateDebugInfo) {
             foreach (var point in viablePoints) {
                 this.DrawDebugPoint(point, DebugPointRadius, ViablePointsColor);
             }
         }
 
         foreach (var point in placements) {
-            if(RenderDebugInfo) {
+            if(GenerateDebugInfo) {
                 this.DrawDebugRect(point, BuildingFootprint, Colors.Green, centerOrigin: false);
             }
         }
@@ -139,71 +158,6 @@ public partial class SmallTown : Node2D
                 }
             }
         }
-    }
-
-    // Given a bounding region in world-coordinates, produce a uniform point cloud that can be further sampled / filtered / enriched
-    // to determine viable locations for procedural generation.
-    protected IEnumerable<Vector2> PointCloudFromBounds(Rect2 bounds, float spacing = 1f) {
-        float startX = bounds.Position.X;
-        float startY = bounds.Position.Y;
-        float endX = startX + bounds.Size.X;
-        float endY = startY + bounds.Size.Y;
-
-        for (float x = startX; x < endX; x += spacing) {
-            for (float y = startY; y < endY; y += spacing) {
-                yield return new Vector2(x, y);
-            }
-        }
-    }
-
-    // Removes points from the point cloud which are too close to points along the PathMesh.
-    protected IEnumerable<Vector2> RemovePointsNearPath(IEnumerable<Vector2> pointCloud, PathMesh pathMesh, Vector2? pointSize = null, float pathStepLength = 20.0f, float minDistanceBetween = 0.0f) {
-        float minClearance = (pathMesh.PathWidth / 2f);
-
-        var testBounds = pointSize ?? Vector2.One;
-        Vector2[] pathPoints = pathMesh.Path.Curve.TessellateEvenLength(toleranceLength: pathStepLength);
-        return pointCloud.Where((candidate) => {
-            // Any point on the curve that's close to the candidate means the candidate is rejected.
-            var testRect = new Rect2(candidate, testBounds).Grow(minClearance + minDistanceBetween);
-            foreach (var pathPoint in pathPoints) {
-                if(testRect.HasPoint(pathPoint)) {
-                    if (RenderDebugInfo) {
-                        this.DrawDebugPoint(candidate, DebugPointRadius, NearPathMeshColor);
-                    }
-                    return false;
-                }
-            }
-            // If no point was too close, candidate is okay.
-            return true;
-        });
-    }
-
-    protected IEnumerable<Vector2> RemovePointsNearRects(IEnumerable<Vector2> pointCloud, IEnumerable<RectRegion> rects, Vector2? pointSize = null, bool testPointAsCenter = false, float minDistanceBetween = 0.0f) {
-        if (RenderDebugInfo) {
-            foreach (var rect in rects) {
-                var globalRect = rect.GetGlobalRect();
-                this.DrawDebugRect(globalRect.Position, globalRect.Size, Colors.Yellow, centerOrigin: false);
-            }
-        }
-        var testBounds = pointSize ?? Vector2.One;
-        return pointCloud.Where((candidate) => {
-            foreach(var rect in rects) {
-                var globalRect = rect.GetGlobalRect();
-                // We want to "grow" the point from its origin to the pointSize differently depending on how this was called.
-                var testRect = new Rect2(candidate, testBounds).Grow(minDistanceBetween);
-                if(testPointAsCenter) {
-                    testRect.Position -= testBounds / 2f;
-                }
-
-                if (globalRect.Intersects(testRect)) {
-                    if (RenderDebugInfo) {
-                        this.DrawDebugPoint(candidate, DebugPointRadius, NearExclusionsColor);
-                    }
-                    return false;
-                }
-            }
-            return true;
-        });
     }
 
     // Given a point cloud and bounding rectangle, attempts to select points where a rectangle with the indicated footprint (size) can be
