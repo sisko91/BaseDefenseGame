@@ -166,11 +166,6 @@ public partial class SmallTown : Node2D
                 GD.Print($"{Name}[{GetType()}] placed {placed} buildings {placements.Count} options matching criteria.");
             }
         }
-
-        // TODO: Remove this once there's an options toggle for this in DebugConfig.cs.
-        if(GenerateDebugInfo) {
-            DebugNodeExtensions.EnableDebugDrawCallGroup(DebugDrawCallGroup_Buildings);
-        }
     }
 
     // Returns a PointTransform function that can be used to weight all points in the point cloud based on criteria for placing buildings:

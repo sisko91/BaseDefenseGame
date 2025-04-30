@@ -65,7 +65,6 @@ size_flags_horizontal = 3
 
 [node name="OptionsPage" type="TabContainer" parent="PauseControl"]
 unique_name_in_owner = true
-visible = false
 custom_minimum_size = Vector2(600, 400)
 layout_mode = 1
 anchors_preset = 8
@@ -80,16 +79,16 @@ offset_bottom = 200.0
 grow_horizontal = 2
 grow_vertical = 2
 focus_mode = 2
-current_tab = 1
+current_tab = 0
 tab_focus_mode = 0
 script = ExtResource("2_7amsf")
 
 [node name="Options" type="VBoxContainer" parent="PauseControl/OptionsPage"]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
 [node name="Dev" type="HBoxContainer" parent="PauseControl/OptionsPage"]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
@@ -101,23 +100,33 @@ size_flags_horizontal = 3
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
-text = "Draw Context-Aware Steering Vectors?"
+text = "Debug Context-Aware Steering Vectors?"
 
 [node name="DrawNavToggle" type="CheckButton" parent="PauseControl/OptionsPage/Dev/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
-text = "Draw Navigation Vectors?"
+text = "Debug Navigation Vectors?"
 
 [node name="DrawCollisionBodyToggle" type="CheckButton" parent="PauseControl/OptionsPage/Dev/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
-text = "Draw Collision Body Radius?"
+text = "Debug Collision Body Radius?"
 
 [node name="Spacer" type="Control" parent="PauseControl/OptionsPage/Dev"]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="Debug Draw Calls" type="ItemList" parent="PauseControl/OptionsPage"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+select_mode = 2
+item_count = 2
+item_0/text = "test"
+item_1/text = "test2"
+metadata/_tab_index = 2
 
 [connection signal="pressed" from="PauseControl/MainMenu/HBoxContainer/VBoxContainer/ResumeButton" to="." method="ToggleDisplay"]
 [connection signal="pressed" from="PauseControl/MainMenu/HBoxContainer/VBoxContainer/OptionsButton" to="PauseControl/OptionsPage" method="show"]

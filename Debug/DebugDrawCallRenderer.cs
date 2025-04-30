@@ -36,6 +36,12 @@ public partial class DebugDrawCallRenderer : Control
 
     private Dictionary<string, List<DebugDrawCallEntry>> DebugDrawCallGroups = new Dictionary<string, List<DebugDrawCallEntry>>();
 
+    public IEnumerable<string> DebugDrawCallGroupNames {
+        get {
+            return DebugDrawCallGroups.Keys;
+        }
+    }
+
     // DrawCall groups that will be skipped when the renderer ticks. Used to disable / enable call rendering at runtime.
     public HashSet<string> DisabledDrawCallGroups = [];
 
@@ -43,7 +49,6 @@ public partial class DebugDrawCallRenderer : Control
         if (!DebugDrawCallGroups.ContainsKey(group)) {
             DebugDrawCallGroups[group] = new List<DebugDrawCallEntry>();
         }
-
         var callsOfGroup = DebugDrawCallGroups[group];
         callsOfGroup.Add(new DebugDrawCallEntry {
             Type = type,
@@ -148,5 +153,9 @@ public partial class DebugDrawCallRenderer : Control
     public void Clear(string group) {
         if (!DebugDrawCallGroups.ContainsKey(group)) { return; }
         DebugDrawCallGroups[group].Clear();
+    }
+
+    public bool IsGroupEmpty(string group) {
+        return !DebugDrawCallGroups.TryGetValue(group, out var list) || list.Count == 0;
     }
 }

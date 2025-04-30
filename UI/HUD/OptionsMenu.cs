@@ -1,3 +1,4 @@
+using ExtensionMethods;
 using Godot;
 using System;
 
@@ -8,12 +9,16 @@ public partial class OptionsMenu : TabContainer
         SyncDevOptions();
 
         VisibilityChanged += UpdateFocus;
+
+        ItemList groupsList = GetNode<ItemList>("%Debug Draw Calls");
+        groupsList.MultiSelected += OnDebugDrawCallGroupSelectionChanged;
     }
 
     private void UpdateFocus()
     {
         if (Visible) {
             GrabFocus();
+            SyncDebugDrawCallGroups();
         } else {
             ReleaseFocus();
         }
@@ -31,6 +36,36 @@ public partial class OptionsMenu : TabContainer
         CheckButton drawCollisionBodies = GetNode<CheckButton>("%DrawCollisionBodyToggle");
         drawCollisionBodies.SetPressedNoSignal(DebugConfig.Instance.DRAW_COLLISION_BODY_RADIUS);
         drawCollisionBodies.Toggled += DebugConfig.Instance.SetDrawCollisionBodies;
+    }
+
+    private void SyncDebugDrawCallGroups() {
+        ItemList groupsList = GetNode<ItemList>("%Debug Draw Calls");
+        groupsList.Clear();
+
+        var dbgRenderer = DebugNodeExtensions.GetDebugDrawCallRenderer();
+        foreach(var groupName in dbgRenderer.DebugDrawCallGroupNames) {
+            if (dbgRenderer.IsGroupEmpty(groupName)) {
+                continue; // don't bother listing empty groups.
+            }
+            var groupIdx = groupsList.AddItem(groupName);
+            if(dbgRenderer.DisabledDrawCallGroups.Contains(groupName)) {
+                groupsList.Deselect(groupIdx);
+            }
+            else {
+                groupsList.Select(groupIdx, single: false);
+            }
+        }
+    }
+
+    private void OnDebugDrawCallGroupSelectionChanged(long index, bool selected) {
+        ItemList groupsList = GetNode<ItemList>("%Debug Draw Calls");
+        var groupName = groupsList.GetItemText((int)index); 
+        if(selected) {
+            DebugNodeExtensions.EnableDebugDrawCallGroup(groupName);
+        }
+        else {
+            DebugNodeExtensions.DisableDebugDrawCallGroup(groupName);
+        }
     }
 
     public override void _GuiInput(InputEvent @event)
