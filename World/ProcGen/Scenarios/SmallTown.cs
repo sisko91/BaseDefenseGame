@@ -42,11 +42,9 @@ public partial class SmallTown : Node2D
     public Node2D PlacementContainer { get; protected set; } = null;
 
     [ExportCategory("Debug")]
-    // TODO: For now this lives here at compile-time because generation of the town happens before we have a chance to open the options
-    //       menu and add config. Eventually we should consider supporting delayed generation / regeneration so that it's easier to
-    //       observe / debug.
-    [Export]
-    public bool GenerateDebugInfo { get; private set; } = false;
+    // Set to true to enable the generation of debug information during SmallTown build. This generates a significant number of debug
+    // draw calls and should probably be compiled out for a "shipping" build of the game./
+    private bool GenerateDebugInfo { get; set; } = true;
     [Export]
     public float DebugPointRadius = 15.0f;
     [Export]
@@ -55,6 +53,8 @@ public partial class SmallTown : Node2D
     public Color NearPathMeshColor = Colors.Orange;
     [Export]
     public Color NearExclusionsColor = Colors.Red;
+
+    private const string DebugDrawCallGroup_Buildings = "SmallTown.Buildings";
 
     public override void _Ready() {
         base._Ready();
@@ -69,6 +69,12 @@ public partial class SmallTown : Node2D
     }
 
     protected void Generate() {
+        if(GenerateDebugInfo) {
+            DebugNodeExtensions.ClearDebugDrawCallGroup(DebugDrawCallGroup_Buildings);
+            // Always start with the debug draw calls disabled, they can be enabled later if/when needed.
+            DebugNodeExtensions.DisableDebugDrawCallGroup(DebugDrawCallGroup_Buildings);
+        }
+
         var world = this.GetGameWorld();
         if (!world.GlobalScale.IsEqualApprox(Vector2.One) || !world.GlobalPosition.IsZeroApprox()) {
             GD.PushError($"SmallTown ProcGen only works with an identity coordinate system. (Current Scale={world.GlobalScale}, Current Position={world.GlobalPosition}");
@@ -108,13 +114,13 @@ public partial class SmallTown : Node2D
             // Wrap the filters in callbacks that use different colors so that we can see what points are identified by each.
             excludedRegionsFilter = excludedRegionsFilter.WithCallback((point, filtered) => {
                 if (filtered) {
-                    this.DrawDebugPoint(point, DebugPointRadius, NearExclusionsColor);
+                    this.DrawDebugPoint(point, DebugPointRadius, NearExclusionsColor, group: DebugDrawCallGroup_Buildings);
                 }
             });
 
             mainPathFilter = mainPathFilter.WithCallback((point, filtered) => {
                 if(filtered) {
-                    this.DrawDebugPoint(point, DebugPointRadius, NearPathMeshColor);
+                    this.DrawDebugPoint(point, DebugPointRadius, NearPathMeshColor, group: DebugDrawCallGroup_Buildings);
                 }
             });
         }
@@ -140,7 +146,7 @@ public partial class SmallTown : Node2D
 
         foreach (var point in placements) {
             if(GenerateDebugInfo) {
-                this.DrawDebugRect(point, BuildingFootprint, Colors.Green, centerOrigin: false);
+                this.DrawDebugRect(point, BuildingFootprint, Colors.Green, centerOrigin: false, group: DebugDrawCallGroup_Buildings);
             }
         }
         if(BuildingSceneTemplate != null) {
@@ -159,6 +165,11 @@ public partial class SmallTown : Node2D
             if(GenerateDebugInfo) {
                 GD.Print($"{Name}[{GetType()}] placed {placed} buildings {placements.Count} options matching criteria.");
             }
+        }
+
+        // TODO: Remove this once there's an options toggle for this in DebugConfig.cs.
+        if(GenerateDebugInfo) {
+            DebugNodeExtensions.EnableDebugDrawCallGroup(DebugDrawCallGroup_Buildings);
         }
     }
 
@@ -186,7 +197,9 @@ public partial class SmallTown : Node2D
             p.Z = pathWeight * originWeight;
 
             if (GenerateDebugInfo) {
-                this.DrawDebugPoint(point2D, DebugPointRadius, ViablePointsColor.Lerp(nonViablePointsColor, 1.0f - p.Z));
+                this.DrawDebugPoint(point2D, radius: DebugPointRadius, 
+                    color: ViablePointsColor.Lerp(nonViablePointsColor, 1.0f - p.Z),
+                    group: DebugDrawCallGroup_Buildings);
             }
             return p;
         };

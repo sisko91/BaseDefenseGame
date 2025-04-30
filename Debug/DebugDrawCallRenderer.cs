@@ -36,6 +36,9 @@ public partial class DebugDrawCallRenderer : Control
 
     private Dictionary<string, List<DebugDrawCallEntry>> DebugDrawCallGroups = new Dictionary<string, List<DebugDrawCallEntry>>();
 
+    // DrawCall groups that will be skipped when the renderer ticks. Used to disable / enable call rendering at runtime.
+    public HashSet<string> DisabledDrawCallGroups = [];
+
     private void PushDrawCall(DrawCallType type, Vector2 origin, Vector2 endpoint, Color color, bool fillInterior, double lifetime, string group) {
         if (!DebugDrawCallGroups.ContainsKey(group)) {
             DebugDrawCallGroups[group] = new List<DebugDrawCallEntry>();
@@ -94,6 +97,9 @@ public partial class DebugDrawCallRenderer : Control
     {
         var currentTime = Time.GetTicksMsec() / 1000.0;
         foreach(KeyValuePair<string, List<DebugDrawCallEntry>> entry in DebugDrawCallGroups) {
+            if(DisabledDrawCallGroups.Contains(entry.Key)) {
+                continue; // skip draws
+            }
             var drawCallsInGroup = entry.Value;
             // Iterate backwards so that removing elements doesn't shift indices
             for (int i = drawCallsInGroup.Count - 1; i >= 0; i--) {

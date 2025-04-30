@@ -205,7 +205,7 @@ public partial class Character : Moveable, IImpactMaterial
     {
         var boundingRect = CollisionShape.Shape.GetRect();
         if (DebugConfig.Instance.DRAW_COLLISION_BODY_RADIUS) {
-            this.ClearDebugDrawCalls(GetPath() + "bb");
+            this.ClearDebugDrawCallGroup(GetPath() + "bb");
             this.DrawDebugRect(GlobalPosition, boundingRect.Size, new Color(0, 0, 1), false, 1, GetPath() + "bb");
         }
         var collisionDiameter = Mathf.Max(boundingRect.Size.X, boundingRect.Size.Y);

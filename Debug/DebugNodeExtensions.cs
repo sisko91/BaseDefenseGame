@@ -59,8 +59,20 @@ namespace ExtensionMethods
             node.DrawDebugCircle(origin, radius, color, true, lifeTime, group);
         }
 
-        public static void ClearDebugDrawCalls(this Node node, string group) {
+        public static void ClearDebugDrawCallGroup(this Node node, string group) {
             GetDebugDrawCallRenderer()?.Clear(group);
+        }
+
+        public static void ClearDebugDrawCallGroup(string group) {
+            GetDebugDrawCallRenderer()?.Clear(group);
+        }
+
+        public static void DisableDebugDrawCallGroup(string group) {
+            GetDebugDrawCallRenderer()?.DisabledDrawCallGroups.Add(group);
+        }
+
+        public static void EnableDebugDrawCallGroup(string group) {
+            GetDebugDrawCallRenderer()?.DisabledDrawCallGroups.Remove(group);
         }
     }
 
