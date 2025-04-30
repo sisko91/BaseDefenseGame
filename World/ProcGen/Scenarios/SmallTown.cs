@@ -1,7 +1,7 @@
 using ExtensionMethods;
 using Godot;
-using Gurdy;
 using Gurdy.ProcGen;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -81,6 +81,10 @@ public partial class SmallTown : Node2D
         // Our BuildingFootprint and BuildingTemplate both assume a top-left anchor point.
         points.AnchorPointAtCenter = false;
 
+        // Construct a filter for removing points from the cloud if a building wouldn't fit there while being fully inside the world.
+        var worldBoundsFilter = Filters.WithinBounds(new Rect2(world.GlobalPosition - world.RegionBounds / 2f, world.RegionBounds))
+                                       .Inverted();
+
         // Construct a filter for removing points from the cloud if they overlap any of our exclusion regions.
         var excludedRegions = GetTree().GetTypedNodesInGroup<RectRegion>(ExcludedRegionsGroup);
         var excludedRegionsFilter = Filters.OverlapsAnyRectRegion(
@@ -116,28 +120,23 @@ public partial class SmallTown : Node2D
         }
 
         // Remove all points that match one of the filters we created above.
-        points = points.FilterOut(Filters.MatchAny(excludedRegionsFilter, mainPathFilter));
-        
-        // NOTE: viablePoints is a LIST which causes ALL of the IEnumerable<> calls before this to finally run. No loops actually happen
-        // until something converts them to a definitive collection.
-        var viablePoints = points.Points2D.ToList();
+        points = points.FilterOut(Filters.MatchAny(worldBoundsFilter, excludedRegionsFilter, mainPathFilter));
+
+        // Weight the remaining points according to how close they are to the path and the center of the world (to keep things close).
+        var maxDistanceFromPath = BuildingFootprint.Length() * 3;
+        points = points.Transform(WeightPointsForPlacementFunc(maxDistanceFromMainPath: BuildingFootprint.Length() * 3));
+
+        // Reorder the points in the point cloud according to their weight, with higher weights earlier in the sequence.
+        points.Points = points.Points.OrderBy(p => 1.0 - p.Z);
 
         // Determine possible placements for the buildings we want to spawn in the world; Using a custom spacing rule to prevent
         // buildings from spawning too close together.
-        var placements = GetPlacementLocations(viablePoints, 
+        var placements = GetPlacementLocations(points, 
             boundaryRect: new Rect2(world.GlobalPosition - world.RegionBounds / 2f, world.RegionBounds),
             footprint: BuildingFootprint, 
             desiredCount: DesiredBuildingCount, 
             // minFootprintSpacing: We use the footprint dimensions again because we don't want buildings right on top of each other.
             minFootprintSpacing: Mathf.Min(BuildingFootprint.X, BuildingFootprint.Y));
-
-        GD.Print($"{Name}[{GetType()}] selected {placements.Count} placements from {viablePoints.Count} viable points matching criteria.");
-
-        if (GenerateDebugInfo) {
-            foreach (var point in viablePoints) {
-                this.DrawDebugPoint(point, DebugPointRadius, ViablePointsColor);
-            }
-        }
 
         foreach (var point in placements) {
             if(GenerateDebugInfo) {
@@ -157,30 +156,63 @@ public partial class SmallTown : Node2D
                     break;
                 }
             }
+            if(GenerateDebugInfo) {
+                GD.Print($"{Name}[{GetType()}] placed {placed} buildings {placements.Count} options matching criteria.");
+            }
         }
+    }
+
+    // Returns a PointTransform function that can be used to weight all points in the point cloud based on criteria for placing buildings:
+    // 1. How close a point is to the main path (not too close, not too far) to ensure buildings spawn along the path.
+    // 2. How close a point is to the origin of the world (not too far) to ensure that buildings spawn closer to where the player is.
+    // Both weights 1 & 2 are multiplied together to produce a final weight.
+    protected PointTransformWithWeights WeightPointsForPlacementFunc(float maxDistanceFromMainPath) {
+        var minDistanceFromPath = MainPathMesh.PathWidth / 2f;
+        var world = this.GetGameWorld();
+        float maxDistanceFromOrigin = world.RegionBounds.Length() / 2f;
+        Vector2[] pathPoints = MainPathMesh.Path.Curve.TessellateEvenLength(toleranceLength: 100.0f);
+        var nonViablePointsColor = new Color(ViablePointsColor, 0.1f);
+        return (PointCloud2D pc, Vector3 p) => {
+            Vector2 point2D = new Vector2(p.X, p.Y);
+            Vector2 closestPathPoint = pathPoints.OrderBy((pathPoint) => {
+                return pathPoint.DistanceSquaredTo(point2D);
+            }).First();
+
+            float distanceToPath = closestPathPoint.DistanceTo(point2D);
+            float pathWeight = Mathf.Clamp(1.0f - ((distanceToPath - minDistanceFromPath) / (maxDistanceFromMainPath - minDistanceFromPath)), 0, 1);
+
+            float distanceToOrigin = point2D.DistanceTo(world.GlobalPosition);
+            float originWeight = Mathf.Clamp(1.0f - (distanceToOrigin / maxDistanceFromOrigin), 0, 1);
+            p.Z = pathWeight * originWeight;
+
+            if (GenerateDebugInfo) {
+                this.DrawDebugPoint(point2D, DebugPointRadius, ViablePointsColor.Lerp(nonViablePointsColor, 1.0f - p.Z));
+            }
+            return p;
+        };
     }
 
     // Given a point cloud and bounding rectangle, attempts to select points where a rectangle with the indicated footprint (size) can be
     // placed the desired number of times without overlapping footprints.
     // Note this does NOT place anything in the world, it only identifies a set of points where rectangular regions can exist without
     // overlap.
-    protected List<Vector2> GetPlacementLocations(IEnumerable<Vector2> pointCloud, Rect2 boundaryRect, Vector2 footprint, 
-        int desiredCount, float minFootprintSpacing = 0.0f) {
-
+    protected List<Vector2> GetPlacementLocations(PointCloud2D pointCloud, Rect2 boundaryRect, Vector2 footprint, 
+        int desiredCount, float minFootprintSpacing = 0.0f, float minWeightCutoff = 0.0f) {
         var placed = new List<Vector2>();
-        var shuffledPoints = pointCloud.OrderBy(_ => GD.Randf());
+        var count = 0;
+        // We iterate 2D points because weights don't matter here. We just use the cloud in the order it was sorted in so far.
+        foreach (var weightedPoint in pointCloud.Points) {
+            count++;
+            if(weightedPoint.Z <= minWeightCutoff) {
+                continue;
+            }
 
-        foreach (var point in shuffledPoints) {
+            var point = weightedPoint.XY();
             // Footprint extends from point in top-left corner. Growing the rect by minFootprintSpacing gives it equal spacing
             // on all sides.
             Rect2 candidateRect = new Rect2(point, footprint).Grow(minFootprintSpacing);
 
-            // 1. Check bounds
-            if (!boundaryRect.Encloses(candidateRect)) {
-                continue;
-            } 
-
-            // 2. Check for overlap or proximity (via intersecting padded rectangles)
+            // 1. Check for overlap or proximity (via intersecting padded rectangles)
             bool tooClose = placed.Any(existing => {
                 var existingRect = new Rect2(existing, footprint).Grow(minFootprintSpacing);
                 return existingRect.Intersects(candidateRect);
@@ -192,10 +224,10 @@ public partial class SmallTown : Node2D
 
             // Valid point
             placed.Add(point);
+        }
 
-            if (placed.Count >= desiredCount) {
-                break;
-            }
+        if(GenerateDebugInfo) {
+            GD.Print($"{Name}[{GetType()}] selected {placed.Count} placements from {count} viable points matching criteria.");
         }
         return placed;
     }

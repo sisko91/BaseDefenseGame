@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace Gurdy.ProcGen
@@ -38,8 +39,68 @@ namespace Gurdy.ProcGen
         }
 
         // Used to combine multiple point filter tests for a single PointCloud.FilterIn/Out call.
+        public static PointFilterWithWeights MatchAll(params PointFilterWithWeights[] filters) {
+            return (pc, p) => filters.All(filter => filter(pc, p));
+        }
+
+        // Used to combine multiple point filter tests for a single PointCloud.FilterIn/Out call.
         public static PointFilter MatchAny(params PointFilter[] filters) {
             return (pc, p) => filters.Any(filter => filter(pc, p));
+        }
+
+        // Used to combine multiple point filter tests for a single PointCloud.FilterIn/Out call.
+        public static PointFilterWithWeights MatchAny(params PointFilterWithWeights[] filters) {
+            return (pc, p) => filters.Any(filter => filter(pc, p));
+        }
+
+        // Wraps a filter function with a callback action to be invoked for each filtering result as the point cloud is iterated.
+        // Use with caution, this is mostly good for logging and other idempotent / lightweight operations that are PROBABLY only relevant to development of the game.
+        // TODO: Consider compiling this out of a "production" build using #ifdef/#endif.
+        public static PointFilter WithCallback(this PointFilter filter, Action<PointCloud2D, Vector2, bool> callbackAction) {
+            return (cp, p) => {
+                var result = filter(cp, p);
+                callbackAction(cp, p, result);
+                return result;
+            };
+        }
+
+        // Wraps a filter function with a callback action to be invoked for each filtering result as the point cloud is iterated.
+        // Use with caution, this is mostly good for logging and other idempotent / lightweight operations that are PROBABLY only relevant to development of the game.
+        // TODO: Consider compiling this out of a "production" build using #ifdef/#endif.
+        public static PointFilterWithWeights WithCallback(this PointFilterWithWeights filter, Action<PointCloud2D, Vector3, bool> callbackAction) {
+            return (cp, p) => {
+                var result = filter(cp, p);
+                callbackAction(cp, p, result);
+                return result;
+            };
+        }
+
+        // Convenience variant of FilterWithCallback taking a callback action that does not accept the point cloud reference.
+        public static PointFilter WithCallback(this PointFilter filter, Action<Vector2, bool> callbackAction) {
+            return (cp, p) => {
+                var result = filter(cp, p);
+                callbackAction(p, result);
+                return result;
+            };
+        }
+
+        // Convenience variant of FilterWithCallback taking a callback action that does not accept the point cloud reference.
+        public static PointFilterWithWeights WithCallback(this PointFilterWithWeights filter, Action<Vector3, bool> callbackAction) {
+            return (cp, p) => {
+                var result = filter(cp, p);
+                callbackAction(p, result);
+                return result;
+            };
+        }
+
+        // Inverts this filter to return true when it would return false and vice versa.
+        public static PointFilter Inverted(this PointFilter filter) {
+            return (cp, p) => { return !filter(cp, p); };
+        }
+
+        // Inverts this filter to return true when it would return false and vice versa.
+        public static PointFilterWithWeights Inverted(this PointFilterWithWeights filter) {
+            return (cp, p) => { return !filter(cp, p); };
         }
 
         // Evaluates points within the point cloud based on being contained within the specified RectRegion(s).
@@ -97,25 +158,19 @@ namespace Gurdy.ProcGen
             };
         }
 
-        // Wraps a filter function with a callback action to be invoked for each filtering result as the point cloud is iterated.
-        // Use with caution, this is mostly good for logging and other idempotent / lightweight operations that are PROBABLY only relevant to development of the game.
-        // TODO: Consider compiling this out of a "production" build using #ifdef/#endif.
-        public static PointFilter WithCallback(this PointFilter filter, Action<PointCloud2D, Vector2, bool> callbackAction) {
-            return (cp, p) => {
-                var result = filter(cp, p);
-                callbackAction(cp, p, result);
-                return result;
+        // Evaluates points within the point cloud based on being fully contained within the specified boundary region.
+        //
+        // Note: This function processes points according to their configured PointSize within the point cloud;
+        //       Points will be anchored according to how AnchorPointAtCenter is configured.
+        public static PointFilter WithinBounds(Rect2 bounds, float additionalPointSkirt = 0.0f) {
+            return (pointCloud, candidate) => {
+                var testRect = new Rect2(candidate, pointCloud.PointSize).Grow(additionalPointSkirt);
+                if (pointCloud.AnchorPointAtCenter) {
+                    testRect.Position -= pointCloud.PointSize / 2f;
+                }
+                return bounds.Encloses(testRect);
             };
-        }
-
-        // Convenience variant of FilterWithCallback taking a callback action that does not accept the point cloud reference.
-        public static PointFilter WithCallback(this PointFilter filter, Action<Vector2, bool> callbackAction) {
-            return (cp, p) => {
-                var result = filter(cp, p);
-                callbackAction(p, result);
-                return result;
-            };
-        }
+        } 
     }
 }
 

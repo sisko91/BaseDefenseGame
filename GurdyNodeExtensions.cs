@@ -36,6 +36,11 @@ namespace ExtensionMethods
                 }
             }
         }
+
+        // Tweens a Vector3 into a Vector2.
+        public static Vector2 XY(this Vector3 vec3) {
+            return new Vector2(vec3.X, vec3.Y);
+        }
     }
 }
 
