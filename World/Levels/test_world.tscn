@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=36 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
@@ -21,7 +21,6 @@
 [ext_resource type="Resource" uid="uid://b77gn5emtpi6g" path="res://World/ShopItems/barber.tres" id="10_cdkb4"]
 [ext_resource type="Script" uid="uid://b3g2d4jh4bxsj" path="res://World/ProcGen/Paths/PathDecalDecorator.cs" id="10_qx1mc"]
 [ext_resource type="Script" uid="uid://bunp1yq3jjjv7" path="res://World/DayNight/DayNight.cs" id="11_11lc6"]
-[ext_resource type="Script" uid="uid://cu0g6818gf7x1" path="res://World/ProcGen/Paths/PathDecorator.cs" id="11_80b3c"]
 [ext_resource type="Script" uid="uid://7x2lypek5o4l" path="res://Gameplay/CrystalTarget.cs" id="11_dghf1"]
 [ext_resource type="Script" uid="uid://ul68if3kp7vg" path="res://World/ProcGen/Scenarios/SmallTown.cs" id="12_qx1mc"]
 [ext_resource type="Script" uid="uid://duyw2hn54xkre" path="res://World/ProcGen/RectRegion.cs" id="14_80b3c"]
@@ -113,19 +112,20 @@ region_enabled = true
 region_rect = Rect2(0, 0, 6000, 6000)
 region_filter_clip_enabled = true
 
-[node name="ScenarioContainer" type="Node2D" parent="." node_paths=PackedStringArray("MainPathMesh")]
+[node name="ScenarioContainer" type="Node2D" parent="." node_paths=PackedStringArray("MainPathMesh", "PlacementContainer")]
 script = ExtResource("12_qx1mc")
 MainPathMesh = NodePath("RoadPathMesh")
 BuildingSceneTemplate = ExtResource("6_lhns8")
 BuildingFootprint = Vector2(500, 250)
 ExcludedRegionsGroup = "SmallTown.Exclude"
+PlacementContainer = NodePath("../YSort")
 DebugPointRadius = 5.0
 
 [node name="RoadPathMesh" type="Node2D" parent="ScenarioContainer" node_paths=PackedStringArray("Path")]
 script = ExtResource("5_hjxpo")
 Path = NodePath("SourcePath2D")
 PathMeshMaterial = SubResource("ShaderMaterial_b48bc")
-Decorators = Array[ExtResource("11_80b3c")]([SubResource("Resource_hkmll")])
+Decorators = [SubResource("Resource_hkmll")]
 PathWidth = 400.0
 StretchTexCoords = false
 TexCoordsRepeatDistance = 1000.0
@@ -146,39 +146,57 @@ AutoregisterGroup = "SmallTown.Exclude"
 EditorDrawColor = Color(0.798375, 0, 0.201584, 1)
 metadata/_custom_type_script = "uid://duyw2hn54xkre"
 
-[node name="TestBuilding" parent="." instance=ExtResource("6_lhns8")]
+[node name="ShamblerSpawnZone" type="Node2D" parent="." node_paths=PackedStringArray("SpawnContainerReference")]
+position = Vector2(7, 0)
+script = ExtResource("6_xi2eq")
+SpawnTemplate = ExtResource("6_a6glu")
+SpawnContainerReference = NodePath("../YSort")
+InnerRadius = 400.0
+OuterRadius = 500.0
+StartAngleDegrees = 270.0
+StopAngleDegrees = 90.0
+
+[node name="YSort" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="CrystalTarget" parent="YSort" instance=ExtResource("7_8h8jj")]
+position = Vector2(-312, 146)
+script = ExtResource("11_dghf1")
+MaxHealth = 100.0
+
+[node name="TestBuilding" parent="YSort" instance=ExtResource("6_lhns8")]
 position = Vector2(-566, -305)
 
-[node name="Ground" parent="TestBuilding/Floor1" index="1"]
+[node name="Ground" parent="YSort/TestBuilding/Floor1" index="1"]
 position = Vector2(33, 32)
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("6_11lc6")
 region_rect = Rect2(0, 0, 1792, 768)
 
-[node name="Wall" parent="TestBuilding/Floor1" index="8"]
+[node name="Wall" parent="YSort/TestBuilding/Floor1" index="8"]
 position = Vector2(112, 192)
 
-[node name="Merchant" parent="TestBuilding/Floor1" index="14" instance=ExtResource("7_8ojdi")]
+[node name="Merchant" parent="YSort/TestBuilding/Floor1" index="14" instance=ExtResource("7_8ojdi")]
 position = Vector2(257, 66)
 scale = Vector2(2, 2)
 collision_layer = 16
 collision_mask = 16
 ShopItems = Array[Resource]([ExtResource("8_lquev"), ExtResource("9_hjxpo"), ExtResource("10_cdkb4")])
 
-[node name="TestBuilding2" parent="." instance=ExtResource("6_lhns8")]
+[node name="TestBuilding2" parent="YSort" instance=ExtResource("6_lhns8")]
 position = Vector2(58, -305)
 
-[node name="Overhang" type="Sprite2D" parent="."]
+[node name="Overhang" type="Sprite2D" parent="YSort"]
 light_mask = 2
 z_index = 1
 position = Vector2(-58, -244)
 
-[node name="Sprite2D" type="Sprite2D" parent="Overhang"]
+[node name="Sprite2D" type="Sprite2D" parent="YSort/Overhang"]
 material = SubResource("ShaderMaterial_hkmll")
 position = Vector2(59, 13)
 texture = SubResource("GradientTexture2D_782py")
 
-[node name="Shadow" type="ColorRect" parent="Overhang"]
+[node name="Shadow" type="ColorRect" parent="YSort/Overhang"]
 light_mask = 0
 z_as_relative = false
 offset_top = 150.0
@@ -188,26 +206,7 @@ mouse_filter = 2
 color = Color(0.25, 0.133333, 0, 1)
 metadata/_edit_use_anchors_ = true
 
-[node name="ShamblerSpawnZone" type="Node2D" parent="." node_paths=PackedStringArray("SpawnContainerReference")]
-position = Vector2(7, 0)
-script = ExtResource("6_xi2eq")
-SpawnTemplate = ExtResource("6_a6glu")
-SpawnContainerReference = NodePath("../NPCContainer")
-InnerRadius = 400.0
-OuterRadius = 500.0
-StartAngleDegrees = 270.0
-StopAngleDegrees = 90.0
-
-[node name="PlayerContainer" type="Node2D" parent="."]
-
-[node name="NPCContainer" type="Node2D" parent="."]
-
-[node name="CrystalTarget" parent="NPCContainer" instance=ExtResource("7_8h8jj")]
-position = Vector2(-312, 146)
-script = ExtResource("11_dghf1")
-MaxHealth = 100.0
-
-[node name="TestFireplace" parent="." instance=ExtResource("7_8h8jw")]
+[node name="TestFireplace" parent="YSort" instance=ExtResource("7_8h8jw")]
 position = Vector2(0, 51)
 
-[editable path="TestBuilding"]
+[editable path="YSort/TestBuilding"]

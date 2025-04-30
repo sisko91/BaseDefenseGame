@@ -16,7 +16,6 @@ public partial class Building : Node2D
 
     public List<Door> Exits;
 
-    private static int BUILDING_Z_LAYER = 1;
     private static int WEATHER_Z_LAYER = 10;
     public Godot.Collections.Array<BuildingRegion> AllRegions 
     { 
@@ -116,7 +115,7 @@ public partial class Building : Node2D
                     if (other.Visible)
                     {
                         //Render above weather layer so we dont show clouds and stuff inside
-                        other.ZIndex = region.InteriorRegion ? WEATHER_Z_LAYER + 1 : BUILDING_Z_LAYER;
+                        other.ZIndex = region.InteriorRegion ? WEATHER_Z_LAYER + 1 : 0;
                     }
                 }
 
@@ -147,12 +146,9 @@ public partial class Building : Node2D
         Callable.From(() => {
             m.ZIndex -= 1;
 
-            if (m is Player)
+            if (m is Player || m is NonPlayerCharacter)
             {
-                m.Reparent(this.GetGameWorld().PlayerContainerNode);
-            }
-            else if(m is NonPlayerCharacter) {
-                m.Reparent(this.GetGameWorld().NPCContainerNode);
+                m.Reparent(this.GetGameWorld().YSortNode);
             }
             else {
                 m.Reparent(this.GetGameWorld());
@@ -244,7 +240,7 @@ public partial class Building : Node2D
         foreach (var region in AllRegions)
         {
             region.Visible = true;
-            region.ZIndex = BUILDING_Z_LAYER;
+            region.ZIndex = 0;
         }
     }
 

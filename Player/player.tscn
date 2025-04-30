@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://dy47gg8c687bv"]
+[gd_scene load_steps=22 format=3 uid="uid://dy47gg8c687bv"]
 
 [ext_resource type="Script" uid="uid://dsdu35x76daf1" path="res://Player/Player.cs" id="1_imx3i"]
 [ext_resource type="Shader" uid="uid://cfv027nbsnbss" path="res://Shaders/character.gdshader" id="1_od3ui"]
@@ -80,6 +80,9 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_od3ui"]
+size = Vector2(30, 7.5)
+
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_od3ui"]
 radius = 23.0
 height = 82.0
@@ -102,6 +105,7 @@ ImpactResponseTable = Dictionary[int, PackedScene]({
 })
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+light_mask = 2
 use_parent_material = true
 position = Vector2(0, -1)
 scale = Vector2(3, 3)
@@ -111,7 +115,12 @@ autoplay = "idle_down"
 frame_progress = 0.896812
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 29.75)
+shape = SubResource("RectangleShape2D_od3ui")
+
+[node name="HitboxTODO" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_od3ui")
+disabled = true
 
 [node name="WeaponRing" type="Node2D" parent="."]
 script = ExtResource("4_q66cr")

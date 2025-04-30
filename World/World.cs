@@ -44,17 +44,11 @@ public partial class World : Node2D
     }
 
     //Holds the player 
-    public Node2D PlayerContainerNode
+    public Node2D YSortNode
     {
         get
         {
-            return GetNode<Node2D>("PlayerContainer");
-        }
-    }
-
-    public Node2D NPCContainerNode {
-        get {
-            return GetNode<Node2D>("NPCContainer");
+            return GetNode<Node2D>("YSort");
         }
     }
 

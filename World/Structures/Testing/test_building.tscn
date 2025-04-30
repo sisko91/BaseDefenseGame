@@ -80,7 +80,7 @@ script = ExtResource("1_7ffef")
 BuildingHeight = 23
 
 [node name="Floor0" type="Area2D" parent="."]
-z_index = 1
+y_sort_enabled = true
 collision_mask = 3
 script = ExtResource("1_edy31")
 
@@ -177,7 +177,7 @@ occluder = SubResource("OccluderPolygon2D_4jyrl")
 occluder = SubResource("OccluderPolygon2D_j0jsy")
 
 [node name="Floor1" type="Area2D" parent="."]
-z_index = 1
+y_sort_enabled = true
 collision_layer = 16
 collision_mask = 48
 script = ExtResource("1_edy31")
@@ -288,7 +288,7 @@ occluder = SubResource("OccluderPolygon2D_4jyrl")
 occluder = SubResource("OccluderPolygon2D_j0jsy")
 
 [node name="Roof" type="Area2D" parent="."]
-z_index = 1
+y_sort_enabled = true
 use_parent_material = true
 collision_layer = 256
 collision_mask = 768

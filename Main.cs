@@ -46,7 +46,7 @@ public partial class Main : Node
         player = PlayerTemplate.Instantiate<Player>();
         player.Name = "Player";
         //Place player in a dummy node so we can control the render order in the world
-        world.PlayerContainerNode.AddChild(player);
+        world.YSortNode.AddChild(player);
 
         player.HealthChanged += OnPlayerHealthChanged;
 
