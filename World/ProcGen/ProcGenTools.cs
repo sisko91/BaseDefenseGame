@@ -26,8 +26,8 @@ namespace Gurdy.ProcGen
         }
 
         // Produce a set of points, uniformly distributed across the bounds of the world for use during ProcGen routines.
-        public static PointCloud GeneratePoints(this World worldNode, float spacing = 1f) {
-            return new PointCloud(new Rect2(worldNode.GlobalPosition - worldNode.RegionBounds / 2f, worldNode.RegionBounds), spacing);
+        public static PointCloud2D GeneratePoints(this World worldNode, float spacing = 1f) {
+            return new PointCloud2D(new Rect2(worldNode.GlobalPosition - worldNode.RegionBounds / 2f, worldNode.RegionBounds), spacing);
         }
     }
 
@@ -100,7 +100,7 @@ namespace Gurdy.ProcGen
         // Wraps a filter function with a callback action to be invoked for each filtering result as the point cloud is iterated.
         // Use with caution, this is mostly good for logging and other idempotent / lightweight operations that are PROBABLY only relevant to development of the game.
         // TODO: Consider compiling this out of a "production" build using #ifdef/#endif.
-        public static PointFilter WithCallback(this PointFilter filter, Action<PointCloud, Vector2, bool> callbackAction) {
+        public static PointFilter WithCallback(this PointFilter filter, Action<PointCloud2D, Vector2, bool> callbackAction) {
             return (cp, p) => {
                 var result = filter(cp, p);
                 callbackAction(cp, p, result);

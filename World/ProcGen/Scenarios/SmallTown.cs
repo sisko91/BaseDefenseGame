@@ -120,7 +120,7 @@ public partial class SmallTown : Node2D
         
         // NOTE: viablePoints is a LIST which causes ALL of the IEnumerable<> calls before this to finally run. No loops actually happen
         // until something converts them to a definitive collection.
-        var viablePoints = points.Points.ToList();
+        var viablePoints = points.Points2D.ToList();
 
         // Determine possible placements for the buildings we want to spawn in the world; Using a custom spacing rule to prevent
         // buildings from spawning too close together.
