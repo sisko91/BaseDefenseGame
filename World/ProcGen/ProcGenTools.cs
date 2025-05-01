@@ -103,6 +103,12 @@ namespace Gurdy.ProcGen
             return (cp, p) => { return !filter(cp, p); };
         }
 
+        // Convenience PointFilter aliasing for OverlapsAnyRect() when the rects we start with are actually RectRegions.
+        public static PointFilter OverlapsAnyRectRegion(IEnumerable<RectRegion> rectRegions, float additionalPointSkirt = 0.0f) {
+            var rects = rectRegions.Select((r) => r.GetGlobalRect());
+            return OverlapsAnyRect(rects, additionalPointSkirt);
+        }
+
         // Evaluates points within the point cloud based on being contained within the specified RectRegion(s).
         //
         // Note: This function processes points according to their configured PointSize within the point cloud;
@@ -118,13 +124,13 @@ namespace Gurdy.ProcGen
         //   s         s    <= 'blank' is the rect defined by PointSize (from origin, regardless of anchor).
         //   sssssssssss    <= 's' is the skirt grown around the point/rect.
         //
-        public static PointFilter OverlapsAnyRectRegion(IEnumerable<RectRegion> rectRegions, float additionalPointSkirt = 0.0f) {
+        public static PointFilter OverlapsAnyRect(IEnumerable<Rect2> rects, float additionalPointSkirt = 0.0f) {
             return (pointCloud, candidate) => {
                 var testRect = new Rect2(candidate, pointCloud.PointSize).Grow(additionalPointSkirt);
                 if (pointCloud.AnchorPointAtCenter) {
                     testRect.Position -= pointCloud.PointSize / 2f;
                 }
-                return rectRegions.Any(region => region.GetGlobalRect().Intersects(testRect));
+                return rects.Any(rect => rect.Intersects(testRect));
             };
         }
 

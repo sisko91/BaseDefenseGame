@@ -1,7 +1,6 @@
 using ExtensionMethods;
 using Godot;
 using Gurdy.ProcGen;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,6 +26,10 @@ public partial class SmallTown : Node2D
     // How many buildings to place.
     [Export]
     public int DesiredBuildingCount { get; protected set; } = 10;
+
+    [ExportCategory("Forest")]
+    [Export]
+    public Vector2 TreeFootprint { get; protected set; }
 
     [ExportCategory("Advanced")]
     // How far apart each point in the initial point cloud must be.
@@ -55,6 +58,7 @@ public partial class SmallTown : Node2D
     public Color NearExclusionsColor = Colors.Red;
 
     private const string DebugDrawCallGroup_Buildings = "SmallTown.Buildings";
+    private const string DebugDrawCallGroup_Trees = "SmallTown.Trees";
 
     public override void _Ready() {
         base._Ready();
@@ -69,12 +73,6 @@ public partial class SmallTown : Node2D
     }
 
     protected void Generate() {
-        if(GenerateDebugInfo) {
-            DebugNodeExtensions.ClearDebugDrawCallGroup(DebugDrawCallGroup_Buildings);
-            // Always start with the debug draw calls disabled, they can be enabled later if/when needed.
-            DebugNodeExtensions.DisableDebugDrawCallGroup(DebugDrawCallGroup_Buildings);
-        }
-
         var world = this.GetGameWorld();
         if (!world.GlobalScale.IsEqualApprox(Vector2.One) || !world.GlobalPosition.IsZeroApprox()) {
             GD.PushError($"SmallTown ProcGen only works with an identity coordinate system. (Current Scale={world.GlobalScale}, Current Position={world.GlobalPosition}");
@@ -82,6 +80,23 @@ public partial class SmallTown : Node2D
         }
         // Produce a set of candidate points, uniformly distributed across the bounds of the world.
         var points = world.GeneratePoints(PointCloudSpacing);
+
+        // Generate a neighborhood of buildings placed around the world, using the initial point cloud as a basis.
+        var placedBuildingRects = GenerateNeighborhood(world, points);
+        // Place trees throughout the world, using the same initial point cloud as the basis and avoiding any areas where buildings have
+        // already been placed by earlier steps.
+        GenerateTrees(world, points, placedBuildingRects);
+    }
+
+    // Procedurally generates and places a neighborhood of buildings within the world using the provided pointcloud as a basis.
+    // Returns a list of (global) Rect2s containing the positions and bounds of any placed buildings.
+    protected List<Rect2> GenerateNeighborhood(World world, PointCloud2D points) {
+        if (GenerateDebugInfo) {
+            DebugNodeExtensions.ClearDebugDrawCallGroup(DebugDrawCallGroup_Buildings);
+            // Always start with the debug draw calls disabled, they can be enabled later if/when needed.
+            DebugNodeExtensions.DisableDebugDrawCallGroup(DebugDrawCallGroup_Buildings);
+        }
+
         // Our points are shaped and sized according to the footprint of the buildings we're placing.
         points.PointSize = BuildingFootprint;
         // Our BuildingFootprint and BuildingTemplate both assume a top-left anchor point.
@@ -110,7 +125,7 @@ public partial class SmallTown : Node2D
             // additionalPointSkirt: Same as on the excludedRegionsFilter above.
             additionalPointSkirt: Mathf.Min(BuildingFootprint.X, BuildingFootprint.Y));
 
-        if(GenerateDebugInfo) {
+        if (GenerateDebugInfo) {
             // Wrap the filters in callbacks that use different colors so that we can see what points are identified by each.
             excludedRegionsFilter = excludedRegionsFilter.WithCallback((point, filtered) => {
                 if (filtered) {
@@ -119,7 +134,7 @@ public partial class SmallTown : Node2D
             });
 
             mainPathFilter = mainPathFilter.WithCallback((point, filtered) => {
-                if(filtered) {
+                if (filtered) {
                     this.DrawDebugPoint(point, DebugPointRadius, NearPathMeshColor, group: DebugDrawCallGroup_Buildings);
                 }
             });
@@ -137,35 +152,96 @@ public partial class SmallTown : Node2D
 
         // Determine possible placements for the buildings we want to spawn in the world; Using a custom spacing rule to prevent
         // buildings from spawning too close together.
-        var placements = GetPlacementLocations(points, 
+        var placements = GetPlacementLocations(points,
             boundaryRect: new Rect2(world.GlobalPosition - world.RegionBounds / 2f, world.RegionBounds),
-            footprint: BuildingFootprint, 
-            desiredCount: DesiredBuildingCount, 
+            footprint: BuildingFootprint,
+            desiredCount: DesiredBuildingCount,
             // minFootprintSpacing: We use the footprint dimensions again because we don't want buildings right on top of each other.
             minFootprintSpacing: Mathf.Min(BuildingFootprint.X, BuildingFootprint.Y));
 
         foreach (var point in placements) {
-            if(GenerateDebugInfo) {
+            if (GenerateDebugInfo) {
                 this.DrawDebugRect(point, BuildingFootprint, Colors.Green, centerOrigin: false, group: DebugDrawCallGroup_Buildings);
             }
         }
-        if(BuildingSceneTemplate != null) {
-            int placed = 0;
+        List<Rect2> placed = [];
+        if (BuildingSceneTemplate != null) {
             var parent = PlacementContainer ?? this;
             foreach (var point in placements) {
                 var newBuilding = BuildingSceneTemplate.Instantiate<Node2D>();
                 parent.AddChild(newBuilding);
                 newBuilding.GlobalPosition = point;
 
-                placed++;
-                if(placed >= DesiredBuildingCount) {
+                placed.Add(new Rect2(point, BuildingFootprint));
+                if (placed.Count >= DesiredBuildingCount) {
                     break;
                 }
             }
-            if(GenerateDebugInfo) {
-                GD.Print($"{Name}[{GetType()}] placed {placed} buildings {placements.Count} options matching criteria.");
+            if (GenerateDebugInfo) {
+                GD.Print($"{Name}[{GetType()}] placed {placed.Count} buildings {placements.Count} options matching criteria.");
             }
         }
+        return placed;
+    }
+
+    protected void GenerateTrees(World world, PointCloud2D points, IEnumerable<Rect2> placedBuildingRects) {
+        if (GenerateDebugInfo) {
+            DebugNodeExtensions.ClearDebugDrawCallGroup(DebugDrawCallGroup_Trees);
+            // Always start with the debug draw calls disabled, they can be enabled later if/when needed.
+            DebugNodeExtensions.DisableDebugDrawCallGroup(DebugDrawCallGroup_Trees);
+        }
+
+        // Our points are shaped and sized according to the footprint of the trees we're placing.
+        points.PointSize = TreeFootprint;
+        // Our trees have their origin point set to the center of their trunk.
+        points.AnchorPointAtCenter = true;
+
+        // Construct a filter for removing points from the cloud if a building wouldn't fit there while being fully inside the world.
+        var worldBoundsFilter = Filters.WithinBounds(new Rect2(world.GlobalPosition - world.RegionBounds / 2f, world.RegionBounds))
+                                       .Inverted();
+
+        // Compose a list of all excluded region rects based on 1) excluded RectRegions configured on SmallTown, and 2) any rects for
+        // buildings already placed.
+        var excludedRegions = GetTree().GetTypedNodesInGroup<RectRegion>(ExcludedRegionsGroup);
+        var allExcludedRects = placedBuildingRects.Concat(excludedRegions.Select((regionRect) => regionRect.GetGlobalRect()));
+        // Construct a filter for removing points from the cloud if they overlap any of our exclusion rects.
+        var excludedRectsFilter = Filters.OverlapsAnyRect(
+            rects: allExcludedRects,
+            additionalPointSkirt: TreeFootprint.Length());
+
+        // Construct a filter for removing points if they overlap the main path (or are too close).
+        var mainPathFilter = Filters.OverlapsPathMesh(
+            pathMesh: MainPathMesh,
+            pathStepLength: TreeFootprint.Length(),
+            additionalPointSkirt: TreeFootprint.Length());
+
+        if (GenerateDebugInfo) {
+            // Wrap the filters in callbacks that use different colors so that we can see what points are identified by each.
+            excludedRectsFilter = excludedRectsFilter.WithCallback((point, filtered) => {
+                if (filtered) {
+                    this.DrawDebugPoint(point, DebugPointRadius, NearExclusionsColor, group: DebugDrawCallGroup_Trees);
+                }
+            });
+
+            mainPathFilter = mainPathFilter.WithCallback((point, filtered) => {
+                if (filtered) {
+                    this.DrawDebugPoint(point, DebugPointRadius, NearPathMeshColor, group: DebugDrawCallGroup_Trees);
+                }
+            });
+        }
+
+        // Transform (translate) candidate tree positions by a random amount to add variety.
+        points = points.Transform((pc, p) => { return p + TreeFootprint * new Vector2(GD.RandRange(-1, 1), GD.RandRange(-1, 1)); });
+
+        // Filter out points where the tree would be outside of the world.
+        points = points.FilterOut(Filters.MatchAny(worldBoundsFilter, excludedRectsFilter, mainPathFilter));
+
+        if(GenerateDebugInfo) {
+            foreach (var point in points.Points2D) {
+                this.DrawDebugCircle(point, TreeFootprint.Length(), Colors.HotPink, group: DebugDrawCallGroup_Trees);
+            }
+        }
+        
     }
 
     // Returns a PointTransform function that can be used to weight all points in the point cloud based on criteria for placing buildings:
