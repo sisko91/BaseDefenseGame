@@ -7,4 +7,7 @@
 UpgradeLog.htm
 Properties/
 *.csProj.user
+.idea/
+/.idea/
+*.DotSettings.user
 
