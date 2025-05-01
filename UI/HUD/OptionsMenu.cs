@@ -47,7 +47,9 @@ public partial class OptionsMenu : TabContainer
         groupsList.Clear();
 
         var dbgRenderer = DebugNodeExtensions.GetDebugDrawCallRenderer();
-        foreach(var groupName in dbgRenderer.DebugDrawCallGroupNames) {
+        groupsList.TooltipText = $"Enabled Calls Overhead: {dbgRenderer.LastFrameDrawTime * 1000.0}ms\n" +
+                                 $"Expired Calls Overhead: {dbgRenderer.LastFramePruneTime * 1000.0}ms";
+        foreach (var groupName in dbgRenderer.DebugDrawCallGroupNames) {
             int drawCallCount = dbgRenderer.GetGroupSize(groupName);
             if (drawCallCount == 0) {
                 continue; // don't bother listing empty groups.

@@ -1,8 +1,13 @@
+using System.Collections.Concurrent;
 using Godot;
 using System.Collections.Generic;
 
 public partial class DebugDrawCallRenderer : Control
 {
+    // Returns how long in seconds it took to render all draw calls last frame.
+    public double LastFrameDrawTime { get; private set; }
+    // Returns how long in seconds it took to process and prune all expired draw calls in the last frame.
+    public double LastFramePruneTime { get; private set; }
     public override void _Ready()
     {
         // Ensure DebugDraw fills the entire screen
@@ -11,12 +16,7 @@ public partial class DebugDrawCallRenderer : Control
         FocusMode = FocusModeEnum.None; //Dont steal focus from other controls. This should never be focused
         MouseFilter = MouseFilterEnum.Ignore; //Dont eat mouse clicks
     }
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta)
-    {
-        QueueRedraw();
-    }
-
+    
     private enum DrawCallType {
         Line,
         Rect,
@@ -34,14 +34,11 @@ public partial class DebugDrawCallRenderer : Control
         public bool FillInterior; // ignored for shapes without an interior (e.g. lines)
     }
 
-    private Dictionary<string, List<DebugDrawCallEntry>> DebugDrawCallGroups = new Dictionary<string, List<DebugDrawCallEntry>>();
+    // All active draw call groups being processed in the next frame.
+    private Dictionary<string, List<DebugDrawCallEntry>> DebugDrawCallGroups = [];
 
     // Used for access to all call group names without exposing DebugDrawCallGroups publicly (which would require exposing inner types).
-    public IEnumerable<string> DebugDrawCallGroupNames {
-        get {
-            return DebugDrawCallGroups.Keys;
-        }
-    }
+    public IEnumerable<string> DebugDrawCallGroupNames => DebugDrawCallGroups.Keys;
 
     // DrawCall groups that will be skipped when the renderer ticks. Used to disable / enable call rendering at runtime.
     public HashSet<string> DisabledDrawCallGroups = [];
@@ -65,7 +62,6 @@ public partial class DebugDrawCallRenderer : Control
             SpawnTime = Time.GetTicksMsec() / 1000.0,
             FillInterior = fillInterior,
         });
-        QueueRedraw();
     }
 
     public void PushLine(Vector2 origin, Vector2 endpoint, Color color, double lifeTime = -1, string group = "default") {
@@ -103,6 +99,33 @@ public partial class DebugDrawCallRenderer : Control
             lifetime: lifeTime,
             group: group);
     }
+    
+    // Called every frame. 'delta' is the elapsed time since the previous frame.
+    public override void _Process(double delta)
+    {
+        var currentTime = Time.GetTicksMsec() / 1000.0;
+        foreach (KeyValuePair<string, List<DebugDrawCallEntry>> entry in DebugDrawCallGroups)
+        {
+            var drawCallsInGroup = entry.Value;
+            // Iterate backwards so that removing elements doesn't shift indices
+            for (int i = drawCallsInGroup.Count - 1; i >= 0; i--)
+            {
+                var drawCall = drawCallsInGroup[i];
+                if (drawCall.LifeTime >= 0)
+                {
+                    if (currentTime - drawCall.SpawnTime > drawCall.LifeTime)
+                    {
+                        drawCallsInGroup.RemoveAt(i);
+                    }
+                }
+            }
+        }
+        // NOTE: Avoid calling QueueRedraw() from threads other than the main thread.
+        // Even though it's thread-safe, excessive use (especially from the physics thread)
+        // introduces severe overhead due to internal synchronization.
+        QueueRedraw();
+        LastFramePruneTime = (Time.GetTicksMsec() / 1000.0) - currentTime;
+    }
 
     public override void _Draw()
     {
@@ -113,15 +136,7 @@ public partial class DebugDrawCallRenderer : Control
             }
             var drawCallsInGroup = entry.Value;
             // Iterate backwards so that removing elements doesn't shift indices
-            for (int i = drawCallsInGroup.Count - 1; i >= 0; i--) {
-                var drawCall = drawCallsInGroup[i];
-                if (drawCall.LifeTime >= 0) {
-                    if (currentTime - drawCall.SpawnTime > drawCall.LifeTime) {
-                        drawCallsInGroup.RemoveAt(i);
-                        continue;
-                    }
-                }
-
+            foreach(var drawCall in drawCallsInGroup) {
                 if (drawCall.Endpoint != drawCall.Origin) {
                     switch (drawCall.Type) {
                         case DrawCallType.Line:
@@ -154,9 +169,11 @@ public partial class DebugDrawCallRenderer : Control
                 }
             }
         }
+        LastFrameDrawTime = (Time.GetTicksMsec() / 1000.0) - currentTime;
     }
 
-    public void Clear(string group) {
+    public void Clear(string group)
+    {
         if (!DebugDrawCallGroups.ContainsKey(group)) { return; }
         DebugDrawCallGroups[group].Clear();
     }
