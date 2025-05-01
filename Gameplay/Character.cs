@@ -104,6 +104,16 @@ public partial class Character : Moveable, IImpactMaterial
         AddChild(StunTimer);
     }
 
+    public override void _Process(double delta) {
+        base._Process(delta);
+        if (DebugConfig.Instance.DRAW_COLLISION_BODY_RADIUS) {
+            DrawCollisionBodyRadius();
+        }
+        if (DebugConfig.Instance.DRAW_COLLISION_BOUNDING_BOX) {
+            DrawCollisionBoundingBox();
+        }
+    }
+
     // Process an incoming impact from the sourceNode. The impact is calculated by the other collider, i.e. impact.Collider == this.
     public void ReceiveHit(HitResult hitResult, float damage, IInstigated source)
     {
@@ -204,12 +214,21 @@ public partial class Character : Moveable, IImpactMaterial
     public float GetCollisionBodyRadius()
     {
         var boundingRect = CollisionShape.Shape.GetRect();
-        if (DebugConfig.Instance.DRAW_COLLISION_BODY_RADIUS) {
-            this.ClearDebugDrawCallGroup(GetPath() + "bb");
-            this.DrawDebugRect(GlobalPosition, boundingRect.Size, new Color(0, 0, 1), false, 1, GetPath() + "bb");
-        }
         var collisionDiameter = Mathf.Max(boundingRect.Size.X, boundingRect.Size.Y);
         return collisionDiameter / 2;
+    }
+
+    //The hitbox collisions and projectiles currently interact with
+    public void DrawCollisionBoundingBox() {
+        var boundingRect = CollisionShape.Shape.GetRect();
+        this.ClearDebugDrawCallGroup(GetPath() + "bb");
+        this.DrawDebugRect(CollisionShape.GlobalPosition, boundingRect.Size, new Color(0, 0, 1), false, 1, GetPath() + "bb");
+    }
+
+    //The circle used for padding distance checks when checking if an enemy is in range for attacks
+    public void DrawCollisionBodyRadius() {
+        this.ClearDebugDrawCallGroup(GetPath() + "Radius");
+        this.DrawDebugCircle(GlobalPosition, GetCollisionBodyRadius(), new Color(0, 0, 1), false, 1, GetPath() + "Radius");
     }
 }
 

@@ -56,7 +56,7 @@ namespace AI
 
             private float GetMeleeAttackRange()
             {
-                return Brain.EnemyTarget.GetCollisionBodyRadius() + Owner.GetCollisionBodyRadius() + 5;
+                return Brain.EnemyTarget.GetCollisionBodyRadius() + Owner.GetCollisionBodyRadius() + 10;
             }
         }
     }

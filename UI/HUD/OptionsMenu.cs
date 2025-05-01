@@ -36,6 +36,10 @@ public partial class OptionsMenu : TabContainer
         CheckButton drawCollisionBodies = GetNode<CheckButton>("%DrawCollisionBodyToggle");
         drawCollisionBodies.SetPressedNoSignal(DebugConfig.Instance.DRAW_COLLISION_BODY_RADIUS);
         drawCollisionBodies.Toggled += DebugConfig.Instance.SetDrawCollisionBodies;
+
+        CheckButton drawCollisionBoundingBox = GetNode<CheckButton>("%DrawCollisionBoundingBoxToggle");
+        drawCollisionBoundingBox.SetPressedNoSignal(DebugConfig.Instance.DRAW_COLLISION_BOUNDING_BOX);
+        drawCollisionBoundingBox.Toggled += DebugConfig.Instance.SetDrawCollisionBoundingBox;
     }
 
     private void SyncDebugDrawCallGroups() {

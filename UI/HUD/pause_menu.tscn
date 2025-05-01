@@ -100,19 +100,25 @@ size_flags_horizontal = 3
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
-text = "Debug Context-Aware Steering Vectors?"
+text = "Debug Context-Aware Steering Vectors"
 
 [node name="DrawNavToggle" type="CheckButton" parent="PauseControl/OptionsPage/Dev/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
-text = "Debug Navigation Vectors?"
+text = "Debug Navigation Vectors"
 
 [node name="DrawCollisionBodyToggle" type="CheckButton" parent="PauseControl/OptionsPage/Dev/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 focus_mode = 0
-text = "Debug Collision Body Radius?"
+text = "Debug Collision Body Radius"
+
+[node name="DrawCollisionBoundingBoxToggle" type="CheckButton" parent="PauseControl/OptionsPage/Dev/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 0
+text = "Debug Collision Bounding Box"
 
 [node name="Spacer" type="Control" parent="PauseControl/OptionsPage/Dev"]
 layout_mode = 2

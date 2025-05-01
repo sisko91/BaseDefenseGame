@@ -61,7 +61,8 @@ public partial class NonPlayerCharacter : Character
 
     public override void _Process(double delta)
     {
-        if(Brain != null)
+        base._Process(delta);
+        if (Brain != null)
         {
             Brain.Think(delta);
         }

@@ -39,7 +39,7 @@ namespace AI
             private float GetAcceptableTargetDistance()
             {
                 // The NavAgent will never get closer than the combined radii of the NPC and its target enemy.
-                return (Owner.GetCollisionBodyRadius() + Brain.EnemyTarget.GetCollisionBodyRadius() + 5);
+                return (Owner.GetCollisionBodyRadius() + Brain.EnemyTarget.GetCollisionBodyRadius() + 10);
             }
 
             protected override void OnActivate()

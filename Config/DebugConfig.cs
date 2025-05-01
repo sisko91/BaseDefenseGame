@@ -46,6 +46,20 @@ public partial class DebugConfig : Node {
     }
     #endregion
 
+    #region DRAW_COLLISION_BOUNDING_BOX
+    private bool _drawCollisionBoundingBox = false;
+    public bool DRAW_COLLISION_BOUNDING_BOX  {
+        get => _drawCollisionBoundingBox;
+        set => SetDrawCollisionBoundingBox(value);
+    }
+    [Signal]
+    public delegate void DrawCollisionBoundingBoxChangedEventHandler();
+    public void SetDrawCollisionBoundingBox(bool bSet) {
+        _drawCollisionBoundingBox = bSet;
+        EmitSignal(SignalName.DrawCollisionBoundingBoxChanged);
+    }
+    #endregion
+
     public override void _Ready() {
         base._Ready();
 

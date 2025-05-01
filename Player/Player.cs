@@ -129,6 +129,7 @@ public partial class Player : Character
     // Called every rendered frame.
     public override void _Process(double delta)
     {
+        base._Process(delta);
         HandleAim(delta);
         SetShaderScreenUV();
     }
