@@ -129,9 +129,6 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 2
 select_mode = 2
-item_count = 2
-item_0/text = "test"
-item_1/text = "test2"
 metadata/_tab_index = 2
 
 [connection signal="pressed" from="PauseControl/MainMenu/HBoxContainer/VBoxContainer/ResumeButton" to="." method="ToggleDisplay"]

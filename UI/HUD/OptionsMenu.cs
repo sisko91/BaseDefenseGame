@@ -48,11 +48,15 @@ public partial class OptionsMenu : TabContainer
 
         var dbgRenderer = DebugNodeExtensions.GetDebugDrawCallRenderer();
         foreach(var groupName in dbgRenderer.DebugDrawCallGroupNames) {
-            if (dbgRenderer.IsGroupEmpty(groupName)) {
+            int drawCallCount = dbgRenderer.GetGroupSize(groupName);
+            if (drawCallCount == 0) {
                 continue; // don't bother listing empty groups.
             }
             var groupIdx = groupsList.AddItem(groupName);
-            if(dbgRenderer.DisabledDrawCallGroups.Contains(groupName)) {
+            // There doesn't seem to be a good way to add additional text that isn't part of the item's identity/key (which is its text). But the tooltip is a handy place
+            // to put the total drawcall count (if someone wants to see it).
+            groupsList.SetItemTooltip(groupIdx, $"Draw calls in group: {drawCallCount}");
+            if (dbgRenderer.DisabledDrawCallGroups.Contains(groupName)) {
                 groupsList.Deselect(groupIdx);
             }
             else {

@@ -36,6 +36,7 @@ public partial class DebugDrawCallRenderer : Control
 
     private Dictionary<string, List<DebugDrawCallEntry>> DebugDrawCallGroups = new Dictionary<string, List<DebugDrawCallEntry>>();
 
+    // Used for access to all call group names without exposing DebugDrawCallGroups publicly (which would require exposing inner types).
     public IEnumerable<string> DebugDrawCallGroupNames {
         get {
             return DebugDrawCallGroups.Keys;
@@ -44,6 +45,11 @@ public partial class DebugDrawCallRenderer : Control
 
     // DrawCall groups that will be skipped when the renderer ticks. Used to disable / enable call rendering at runtime.
     public HashSet<string> DisabledDrawCallGroups = [];
+
+    // Used to count draw calls in a group without exposing DebugDrawCallGroups publicly (which would require exposing inner types).
+    public int GetGroupSize(string groupName) {
+        return DebugDrawCallGroups.TryGetValue(groupName, out var list) ? list.Count : 0;
+    }
 
     private void PushDrawCall(DrawCallType type, Vector2 origin, Vector2 endpoint, Color color, bool fillInterior, double lifetime, string group) {
         if (!DebugDrawCallGroups.ContainsKey(group)) {
@@ -153,9 +159,5 @@ public partial class DebugDrawCallRenderer : Control
     public void Clear(string group) {
         if (!DebugDrawCallGroups.ContainsKey(group)) { return; }
         DebugDrawCallGroups[group].Clear();
-    }
-
-    public bool IsGroupEmpty(string group) {
-        return !DebugDrawCallGroups.TryGetValue(group, out var list) || list.Count == 0;
     }
 }
