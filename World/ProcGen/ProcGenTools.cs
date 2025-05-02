@@ -126,10 +126,10 @@ namespace Gurdy.ProcGen
         //
         public static PointFilter OverlapsAnyRect(IEnumerable<Rect2> rects, float additionalPointSkirt = 0.0f) {
             return (pointCloud, candidate) => {
-                var testRect = new Rect2(candidate, pointCloud.PointSize).Grow(additionalPointSkirt);
-                if (pointCloud.AnchorPointAtCenter) {
-                    testRect.Position -= pointCloud.PointSize / 2f;
-                }
+                var testRect = new Rect2(
+                    position: candidate-pointCloud.PointTestOffset, 
+                    size: pointCloud.PointSize)
+                    .Grow(additionalPointSkirt);
                 return rects.Any(rect => rect.Intersects(testRect));
             };
         }
@@ -155,11 +155,10 @@ namespace Gurdy.ProcGen
             Vector2[] pathPoints = pathMesh.Path.Curve.TessellateEvenLength(toleranceLength: pathStepLength);
             return (pointCloud, candidate) => {
                 // Any point on the curve that's close to the candidate means the candidate is rejected.
-                var testRect = new Rect2(candidate, pointCloud.PointSize).Grow(minClearance + additionalPointSkirt);
-                if(pointCloud.AnchorPointAtCenter) {
-                    testRect.Position -= pointCloud.PointSize / 2f;
-                }
-
+                var testRect = new Rect2(
+                    position: candidate-pointCloud.PointTestOffset, 
+                    size: pointCloud.PointSize)
+                    .Grow(minClearance + additionalPointSkirt);
                 return pathPoints.Any(pathPoint => testRect.HasPoint(pathPoint));
             };
         }
@@ -170,10 +169,10 @@ namespace Gurdy.ProcGen
         //       Points will be anchored according to how AnchorPointAtCenter is configured.
         public static PointFilter WithinBounds(Rect2 bounds, float additionalPointSkirt = 0.0f) {
             return (pointCloud, candidate) => {
-                var testRect = new Rect2(candidate, pointCloud.PointSize).Grow(additionalPointSkirt);
-                if (pointCloud.AnchorPointAtCenter) {
-                    testRect.Position -= pointCloud.PointSize / 2f;
-                }
+                var testRect = new Rect2(
+                    position: candidate-pointCloud.PointTestOffset, 
+                    size: pointCloud.PointSize)
+                    .Grow(additionalPointSkirt);
                 return bounds.Encloses(testRect);
             };
         } 

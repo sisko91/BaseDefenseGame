@@ -47,12 +47,14 @@ namespace Gurdy.ProcGen
         // The configured size of each point, stored on the cloud as all points share a consistent size for the same operation.
         public Vector2 PointSize;
 
-        // When point size > 1, this determines whether the point's size extends from a central origin or from the top-left corner.
-        public bool AnchorPointAtCenter;
+        // Controls where the origin of the point is when enlarged to PointSize during tests.
+        // By default the point grows to PointSize on both positive axis (i.e. to the left and down). Set this to
+        // PointSize/2 to center the rectangle tested during operations.
+        public Vector2 PointTestOffset;
 
-        public PointCloud2D(Rect2 bounds, float spacing = 1f, Vector2? pointSize = null, bool anchorPointAtCenter = false) {
+        public PointCloud2D(Rect2 bounds, float spacing = 1f, Vector2? pointSize = null) {
             PointSize = pointSize ?? Vector2.One;
-            AnchorPointAtCenter = anchorPointAtCenter;
+            PointTestOffset = Vector2.Zero;
             Points2D = Extensions.GeneratePoints(bounds, spacing);
         }
 

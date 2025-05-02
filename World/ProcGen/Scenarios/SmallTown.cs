@@ -29,6 +29,8 @@ public partial class SmallTown : Node2D
 
     [ExportCategory("Forest")]
     [Export]
+    public PackedScene TreeSceneTemplate { get; protected set; } = null;
+    [Export]
     public Vector2 TreeFootprint { get; protected set; }
 
     [ExportCategory("Advanced")]
@@ -100,7 +102,7 @@ public partial class SmallTown : Node2D
         // Our points are shaped and sized according to the footprint of the buildings we're placing.
         points.PointSize = BuildingFootprint;
         // Our BuildingFootprint and BuildingTemplate both assume a top-left anchor point.
-        points.AnchorPointAtCenter = false;
+        points.PointTestOffset = Vector2.Zero;
 
         // Construct a filter for removing points from the cloud if a building wouldn't fit there while being fully inside the world.
         var worldBoundsFilter = Filters.WithinBounds(new Rect2(world.GlobalPosition - world.RegionBounds / 2f, world.RegionBounds))
@@ -155,7 +157,6 @@ public partial class SmallTown : Node2D
         var placements = GetPlacementLocations(points,
             boundaryRect: new Rect2(world.GlobalPosition - world.RegionBounds / 2f, world.RegionBounds),
             footprint: BuildingFootprint,
-            desiredCount: DesiredBuildingCount,
             // minFootprintSpacing: We use the footprint dimensions again because we don't want buildings right on top of each other.
             minFootprintSpacing: Mathf.Min(BuildingFootprint.X, BuildingFootprint.Y));
 
@@ -193,10 +194,11 @@ public partial class SmallTown : Node2D
 
         // Our points are shaped and sized according to the footprint of the trees we're placing.
         points.PointSize = TreeFootprint;
-        // Our trees have their origin point set to the center of their trunk.
-        points.AnchorPointAtCenter = true;
+        // Our trees have their origin point centered.
+        // TODO: This is defined on the tree scene. Figure out how to determine it once.
+        points.PointTestOffset = TreeFootprint/2f;
 
-        // Construct a filter for removing points from the cloud if a building wouldn't fit there while being fully inside the world.
+        // Construct a filter for removing points from the cloud if a point wouldn't fit there while being fully inside the world.
         var worldBoundsFilter = Filters.WithinBounds(new Rect2(world.GlobalPosition - world.RegionBounds / 2f, world.RegionBounds))
                                        .Inverted();
 
@@ -206,8 +208,7 @@ public partial class SmallTown : Node2D
         var allExcludedRects = placedBuildingRects.Concat(excludedRegions.Select((regionRect) => regionRect.GetGlobalRect()));
         // Construct a filter for removing points from the cloud if they overlap any of our exclusion rects.
         var excludedRectsFilter = Filters.OverlapsAnyRect(
-            rects: allExcludedRects,
-            additionalPointSkirt: TreeFootprint.Length());
+            rects: allExcludedRects);
 
         // Construct a filter for removing points if they overlap the main path (or are too close).
         var mainPathFilter = Filters.OverlapsPathMesh(
@@ -236,12 +237,30 @@ public partial class SmallTown : Node2D
         // Filter out points where the tree would be outside of the world.
         points = points.FilterOut(Filters.MatchAny(worldBoundsFilter, excludedRectsFilter, mainPathFilter));
 
-        if(GenerateDebugInfo) {
-            foreach (var point in points.Points2D) {
-                this.DrawDebugCircle(point, TreeFootprint.Length(), Colors.HotPink, group: DebugDrawCallGroup_Trees);
+        // Determine possible placements for the trees we want to spawn in the world; Using a custom spacing rule to prevent
+        // trees from spawning too close together.
+        var placements = GetPlacementLocations(points,
+            boundaryRect: new Rect2(world.GlobalPosition - world.RegionBounds / 2f, world.RegionBounds),
+            footprint: TreeFootprint,
+            // minFootprintSpacing: We use the footprint dimensions again because we don't want buildings right on top of each other.
+            minFootprintSpacing: Mathf.Min(TreeFootprint.X, TreeFootprint.Y)/8f);
+
+        List<Rect2> placed = [];
+        if (TreeSceneTemplate != null) {
+            var parent = PlacementContainer ?? this;
+            foreach (var point in placements) {
+                var tree = TreeSceneTemplate.Instantiate<Node2D>();
+                parent.AddChild(tree);
+                tree.GlobalPosition = point;
+
+                placed.Add(new Rect2(point, TreeFootprint));
+
+                if (GenerateDebugInfo) {
+                    this.DrawDebugRect(point, TreeFootprint, Colors.HotPink, group: DebugDrawCallGroup_Trees, centerOrigin: true);
+                }
             }
         }
-        
+
     }
 
     // Returns a PointTransform function that can be used to weight all points in the point cloud based on criteria for placing buildings:
@@ -280,17 +299,12 @@ public partial class SmallTown : Node2D
     // placed the desired number of times without overlapping footprints.
     // Note this does NOT place anything in the world, it only identifies a set of points where rectangular regions can exist without
     // overlap.
-    protected List<Vector2> GetPlacementLocations(PointCloud2D pointCloud, Rect2 boundaryRect, Vector2 footprint, 
-        int desiredCount, float minFootprintSpacing = 0.0f, float minWeightCutoff = 0.0f) {
+    protected List<Vector2> GetPlacementLocations(PointCloud2D pointCloud, Rect2 boundaryRect, Vector2 footprint, float minFootprintSpacing = 0.0f) {
         var placed = new List<Vector2>();
         var count = 0;
         // We iterate 2D points because weights don't matter here. We just use the cloud in the order it was sorted in so far.
         foreach (var weightedPoint in pointCloud.Points) {
             count++;
-            if(weightedPoint.Z <= minWeightCutoff) {
-                continue;
-            }
-
             var point = weightedPoint.XY();
             // Footprint extends from point in top-left corner. Growing the rect by minFootprintSpacing gives it equal spacing
             // on all sides.

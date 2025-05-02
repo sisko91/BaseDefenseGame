@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=38 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
@@ -26,6 +26,7 @@
 [ext_resource type="Script" uid="uid://ul68if3kp7vg" path="res://World/ProcGen/Scenarios/SmallTown.cs" id="12_qx1mc"]
 [ext_resource type="Script" uid="uid://duyw2hn54xkre" path="res://World/ProcGen/RectRegion.cs" id="14_80b3c"]
 [ext_resource type="Shader" uid="uid://7akcch5ndkta" path="res://Shaders/silhouette.gdshader" id="20_hkmll"]
+[ext_resource type="PackedScene" uid="uid://cltv6jcg62lux" path="res://World/Environment/test_tree.tscn" id="27_782py"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_fn2eg"]
 frequency = 0.0075
@@ -119,7 +120,9 @@ MainPathMesh = NodePath("RoadPathMesh")
 BuildingSceneTemplate = ExtResource("6_lhns8")
 BuildingFootprint = Vector2(500, 250)
 DesiredBuildingCount = 25
-TreeFootprint = Vector2(10, 10)
+TreeSceneTemplate = ExtResource("27_782py")
+TreeFootprint = Vector2(168, 67.2)
+PointCloudSpacing = 50.0
 ExcludedRegionsGroup = "SmallTown.Exclude"
 PlacementContainer = NodePath("../YSort")
 DebugPointRadius = 5.0
@@ -146,7 +149,7 @@ curve = SubResource("Curve2D_cdkb4")
 position = Vector2(-682, -458)
 scale = Vector2(0.578354, 0.508114)
 script = ExtResource("14_80b3c")
-Size = Vector2(2450, 2050)
+Size = Vector2(2366.31, 2061.53)
 AutoregisterGroup = "SmallTown.Exclude"
 EditorDrawColor = Color(0.798375, 0, 0.201584, 1)
 metadata/_custom_type_script = "uid://duyw2hn54xkre"
@@ -213,5 +216,8 @@ metadata/_edit_use_anchors_ = true
 
 [node name="TestFireplace" parent="YSort" instance=ExtResource("7_8h8jw")]
 position = Vector2(0, 51)
+
+[node name="TestTree" parent="YSort" instance=ExtResource("27_782py")]
+position = Vector2(352, 445)
 
 [editable path="YSort/TestBuilding"]
