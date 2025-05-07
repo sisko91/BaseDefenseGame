@@ -86,6 +86,9 @@ public partial class Building : Node2D
         //regions and stairs)
         Callable.From(() => {
             Moveable m = body as Moveable;
+            if (m == null) {
+                return;
+            }
             HashSet<uint> ignoredLayers = new HashSet<uint>() {0, (uint)Math.Pow(2, m.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR + CollisionConfig.INTERACTIONS_LAYER - 1) };
             if (m == null || ignoredLayers.Contains(m.CollisionLayer) || m.IsQueuedForDeletion()) {
                 return;
@@ -131,6 +134,10 @@ public partial class Building : Node2D
     private void OnBodyExitedRegion(Node2D body, BuildingRegion region)
     {
         Moveable m = body as Moveable;
+        if (m == null) {
+            return;
+        }
+
         //Some projectiles disable collisions as part of their functionality (e.g. grenades, barbs)
         //This triggers an exit event, but we don't want to remove these from the region. Same for expiring projectiles
         HashSet<uint> ignoredLayers = new HashSet<uint>() { 0, (uint)Math.Pow(2, m.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR + CollisionConfig.INTERACTIONS_LAYER - 1) };

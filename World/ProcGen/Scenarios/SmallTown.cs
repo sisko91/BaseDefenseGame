@@ -101,8 +101,8 @@ public partial class SmallTown : Node2D
 
         // Our points are shaped and sized according to the footprint of the buildings we're placing.
         points.PointSize = BuildingFootprint;
-        // Our BuildingFootprint and BuildingTemplate both assume a top-left anchor point.
-        points.PointTestOffset = Vector2.Zero;
+        // Our BuildingFootprint and BuildingTemplate both assume a center anchor point.
+        points.PointTestOffset = BuildingFootprint / 2f;
 
         // Construct a filter for removing points from the cloud if a building wouldn't fit there while being fully inside the world.
         var worldBoundsFilter = Filters.WithinBounds(new Rect2(world.GlobalPosition - world.RegionBounds / 2f, world.RegionBounds))
@@ -171,7 +171,7 @@ public partial class SmallTown : Node2D
             foreach (var point in placements) {
                 var newBuilding = BuildingSceneTemplate.Instantiate<Node2D>();
                 parent.AddChild(newBuilding);
-                newBuilding.GlobalPosition = point;
+                newBuilding.GlobalPosition = point + BuildingFootprint / 2f;
 
                 placed.Add(new Rect2(point, BuildingFootprint));
                 if (placed.Count >= DesiredBuildingCount) {

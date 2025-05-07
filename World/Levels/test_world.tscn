@@ -173,7 +173,7 @@ script = ExtResource("11_dghf1")
 MaxHealth = 100.0
 
 [node name="TestBuilding" parent="YSort" instance=ExtResource("6_lhns8")]
-position = Vector2(-566, -305)
+position = Vector2(-311, -163)
 
 [node name="Ground" parent="YSort/TestBuilding/Floor1" index="1"]
 position = Vector2(33, 32)
@@ -192,7 +192,7 @@ collision_mask = 16
 ShopItems = Array[Resource]([ExtResource("8_lquev"), ExtResource("9_hjxpo"), ExtResource("10_cdkb4")])
 
 [node name="TestBuilding2" parent="YSort" instance=ExtResource("6_lhns8")]
-position = Vector2(58, -305)
+position = Vector2(313, -163)
 
 [node name="Overhang" type="Sprite2D" parent="YSort"]
 light_mask = 2
