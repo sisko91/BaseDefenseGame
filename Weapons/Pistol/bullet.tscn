@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://cksfixrug8ht1"]
+[gd_scene load_steps=7 format=3 uid="uid://cksfixrug8ht1"]
 
 [ext_resource type="Script" uid="uid://besoheoqrvcgm" path="res://Weapons/Pistol/Bullet.cs" id="1_jfrxl"]
 [ext_resource type="Shader" uid="uid://c6kodin14qwfb" path="res://Shaders/projectile.gdshader" id="1_rep0m"]
@@ -19,15 +19,6 @@ height = 20
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 
-[sub_resource type="Gradient" id="Gradient_qydnl"]
-offsets = PackedFloat32Array(0, 0.623377, 1)
-colors = PackedColorArray(0, 0, 0, 0.203922, 0, 0, 0, 0.282353, 0, 0, 0, 0)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_pd6um"]
-gradient = SubResource("Gradient_qydnl")
-fill = 1
-fill_from = Vector2(0.5, 0.5)
-
 [node name="Bullet" type="CharacterBody2D"]
 material = SubResource("ShaderMaterial_rep0m")
 collision_layer = 2
@@ -43,12 +34,6 @@ scale = Vector2(1, 0.5)
 texture = SubResource("GradientTexture2D_t3qvy")
 
 [node name="CollisionShape2D" type="CollisionPolygon2D" parent="."]
-position = Vector2(0, 24)
+position = Vector2(0, -3)
 scale = Vector2(2, 1)
-polygon = PackedVector2Array(0, 2, 3, 2, 4, 3, 3, 4, 0, 4, -2.5, 4, -3.5, 3, -2.5, 2)
-
-[node name="Sprite2D2" type="Sprite2D" parent="."]
-use_parent_material = true
-position = Vector2(0, 27)
-scale = Vector2(0.272971, 0.0756817)
-texture = SubResource("GradientTexture2D_pd6um")
+polygon = PackedVector2Array(0, 0, 3.5, 1, 4, 3, 3.5, 5, 0, 6, -3.5, 5, -4, 3, -3.5, 1)
