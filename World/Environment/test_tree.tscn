@@ -1,6 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://6prx14s7d1am"]
+[gd_scene load_steps=5 format=3 uid="uid://6prx14s7d1am"]
 
+[ext_resource type="Shader" uid="uid://7akcch5ndkta" path="res://Shaders/silhouette.gdshader" id="1_6kw5i"]
 [ext_resource type="Texture2D" uid="uid://dpw6r0aqfx4a7" path="res://art/World/tree_no_shadow.png" id="1_t1lge"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ijnyt"]
+shader = ExtResource("1_6kw5i")
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_2i4js"]
 radius = 184.0
@@ -10,6 +14,7 @@ collision_layer = 2147483649
 collision_mask = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_ijnyt")
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("1_t1lge")
 centered = false
