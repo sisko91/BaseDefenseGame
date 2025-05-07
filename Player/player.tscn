@@ -113,16 +113,18 @@ sprite_frames = SubResource("SpriteFrames_pisgm")
 animation = &"idle_down"
 autoplay = "idle_down"
 frame_progress = 0.896812
+offset = Vector2(0, -10)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, 29.75)
 shape = SubResource("RectangleShape2D_od3ui")
 
 [node name="HitboxTODO" type="CollisionShape2D" parent="."]
+position = Vector2(0, -30)
 shape = SubResource("CapsuleShape2D_od3ui")
 disabled = true
 
 [node name="WeaponRing" type="Node2D" parent="."]
+position = Vector2(0, -30)
 script = ExtResource("4_q66cr")
 AttachmentRadius = 80.0
 
