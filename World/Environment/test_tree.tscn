@@ -1,18 +1,20 @@
-[gd_scene load_steps=3 format=3 uid="uid://cltv6jcg62lux"]
+[gd_scene load_steps=3 format=3 uid="uid://6prx14s7d1am"]
 
-[ext_resource type="Texture2D" uid="uid://c6yg0eabm6fvs" path="res://art/World/tree_full.png" id="1_62g74"]
+[ext_resource type="Texture2D" uid="uid://dpw6r0aqfx4a7" path="res://art/World/tree_no_shadow.png" id="1_t1lge"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_62g74"]
-radius = 84.0
+[sub_resource type="CircleShape2D" id="CircleShape2D_2i4js"]
+radius = 184.0
 
 [node name="TestTree" type="StaticBody2D"]
 collision_layer = 2147483649
 collision_mask = 3
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("1_62g74")
-offset = Vector2(-11.05, -78.82)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("1_t1lge")
+centered = false
+offset = Vector2(-512, -846)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-scale = Vector2(1, 0.4)
-shape = SubResource("CircleShape2D_62g74")
+scale = Vector2(0.25, 0.075)
+shape = SubResource("CircleShape2D_2i4js")

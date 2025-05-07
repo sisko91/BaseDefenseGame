@@ -26,7 +26,7 @@
 [ext_resource type="Script" uid="uid://ul68if3kp7vg" path="res://World/ProcGen/Scenarios/SmallTown.cs" id="12_qx1mc"]
 [ext_resource type="Script" uid="uid://duyw2hn54xkre" path="res://World/ProcGen/RectRegion.cs" id="14_80b3c"]
 [ext_resource type="Shader" uid="uid://7akcch5ndkta" path="res://Shaders/silhouette.gdshader" id="20_hkmll"]
-[ext_resource type="PackedScene" uid="uid://cltv6jcg62lux" path="res://World/Environment/test_tree.tscn" id="27_782py"]
+[ext_resource type="PackedScene" uid="uid://6prx14s7d1am" path="res://World/Environment/test_tree.tscn" id="28_fbbf8"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_fn2eg"]
 frequency = 0.0075
@@ -120,8 +120,8 @@ MainPathMesh = NodePath("RoadPathMesh")
 BuildingSceneTemplate = ExtResource("6_lhns8")
 BuildingFootprint = Vector2(500, 250)
 DesiredBuildingCount = 25
-TreeSceneTemplate = ExtResource("27_782py")
-TreeFootprint = Vector2(168, 67.2)
+TreeSceneTemplate = ExtResource("28_fbbf8")
+TreeFootprint = Vector2(96, 32)
 PointCloudSpacing = 50.0
 ExcludedRegionsGroup = "SmallTown.Exclude"
 PlacementContainer = NodePath("../YSort")
@@ -217,7 +217,7 @@ metadata/_edit_use_anchors_ = true
 [node name="TestFireplace" parent="YSort" instance=ExtResource("7_8h8jw")]
 position = Vector2(0, 51)
 
-[node name="TestTree" parent="YSort" instance=ExtResource("27_782py")]
-position = Vector2(352, 445)
+[node name="TestTree2" parent="YSort" instance=ExtResource("28_fbbf8")]
+position = Vector2(515, 449)
 
 [editable path="YSort/TestBuilding"]
