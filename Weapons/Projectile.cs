@@ -75,7 +75,7 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
         ProjectileTimer.Timeout += OnLifetimeExpired;
         AddChild(ProjectileTimer);
 
-        this.GetGameWorld().AddChild(this);
+        this.GetGameWorld().YSortNode.AddChild(this);
         ProjectileTimer.Start();
 
         OnStart();
