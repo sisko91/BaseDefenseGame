@@ -193,7 +193,7 @@ public partial class Player : Character
         }
         else
         {
-            float mouseAim = (GetGlobalMousePosition() - GlobalPosition).Angle();
+            float mouseAim = (GetGlobalMousePosition() - WeaponRing.GlobalPosition).Angle();
             WeaponRing.AimAngle = mouseAim;
         }
     }

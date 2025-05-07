@@ -8,6 +8,10 @@ public partial class WeaponRing : Node2D
 	[Export]
 	public float AttachmentRadius = 25.0f;
 
+    // The point of attachment that weapons are made children of. This allows the WeaponRing to maintain a static offset (set in the editor by us) and still control
+    // the offset of the weapon separately (without manipulating the weapon node any time that it's changed/swapped).
+    private Node2D AttachmentPoint = null;
+
 	// Cached reference to the currently equipped weapon.
 	public Weapon EquippedWeapon { get; private set; }
 
@@ -16,22 +20,12 @@ public partial class WeaponRing : Node2D
 	public Weapon LastEquippedWeapon { get; private set; }
 
     // The current angle (radians) that the equipped weapon is being aimed in.
-    // Aim angle for the weapon ring is wherever the ring's Node2D location is relative to its parent. If for some reason the parent doesn't have a position then we assume the rotation of the ring directs the aim.
+    // Aim angle for the weapon ring is wherever the ring's AttachmentPoint location is relative to the ring itself.
     public float AimAngle { 
-		get
+		get => _aimAngle;
+        set
 		{
-			return _aimAngle;
-		}
-		set
-		{
-            if (GetParent() is Node2D parent2D)
-            {
-				Position = Vector2.FromAngle(value)*AttachmentRadius;
-            }
-			else
-			{
-				Rotation = value;
-            }
+            AttachmentPoint.Position = Vector2.FromAngle(value)*AttachmentRadius;
 			_aimAngle = value;
         }
 	}
@@ -42,17 +36,20 @@ public partial class WeaponRing : Node2D
 		LastEquippedWeapon = EquippedWeapon;
 		if(EquippedWeapon != null)
 		{
-			RemoveChild(EquippedWeapon);
+			AttachmentPoint.RemoveChild(EquippedWeapon);
 		}
 
 		EquippedWeapon = weapon;
-		AddChild(weapon);
+        AttachmentPoint.AddChild(weapon);
 	}
     
 	// Called when the node enters the scene tree for the first time.
     public override void _Ready()
-	{
-	}
+    {
+        AttachmentPoint = new Node2D();
+        AttachmentPoint.Name = "AttachmentPoint";
+        AddChild(AttachmentPoint);
+    }
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
