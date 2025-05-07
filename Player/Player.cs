@@ -292,6 +292,8 @@ public partial class Player : Character
         copy.LightMask = playerSprite.LightMask;
         copy.UseParentMaterial = false;
         copy.Material = Material;
+        copy.Position = playerSprite.Position;
+        copy.Offset = playerSprite.Offset;
 
         return copy;
     }
@@ -300,7 +302,6 @@ public partial class Player : Character
         Main.GetActiveCamera().ForceUpdateTransform();
 
         var currentSprite = GetSpriteCopy();
-
         var screenTopLeft = GetGlobalTransformWithCanvas() * (currentSprite.GetRect().Position * currentSprite.Scale);
         var screenBottomRight = GetGlobalTransformWithCanvas() * (currentSprite.GetRect().End * currentSprite.Scale);
         var normalizedStart = screenTopLeft / GetViewport().GetVisibleRect().Size;
