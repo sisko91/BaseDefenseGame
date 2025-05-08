@@ -162,7 +162,7 @@ public partial class SmallTown : Node2D
 
         foreach (var point in placements) {
             if (GenerateDebugInfo) {
-                this.DrawDebugRect(point, BuildingFootprint, Colors.Green, centerOrigin: false, group: DebugDrawCallGroup_Buildings);
+                this.DrawDebugRect(point, BuildingFootprint, Colors.Green, centerOrigin: true, group: DebugDrawCallGroup_Buildings);
             }
         }
         List<Rect2> placed = [];
@@ -171,9 +171,11 @@ public partial class SmallTown : Node2D
             foreach (var point in placements) {
                 var newBuilding = BuildingSceneTemplate.Instantiate<Node2D>();
                 parent.AddChild(newBuilding);
-                newBuilding.GlobalPosition = point + BuildingFootprint / 2f;
+                newBuilding.GlobalPosition = point;
 
-                placed.Add(new Rect2(point, BuildingFootprint));
+                // The points were tested as centerpoints for the building based on PointTestOffset, so the rects we record here
+                // for use during tree placement need to be adjusted based on that expectation.
+                placed.Add(new Rect2(point-points.PointTestOffset, BuildingFootprint));
                 if (placed.Count >= DesiredBuildingCount) {
                     break;
                 }
@@ -308,7 +310,7 @@ public partial class SmallTown : Node2D
             var point = weightedPoint.XY();
             // Footprint extends from point in top-left corner. Growing the rect by minFootprintSpacing gives it equal spacing
             // on all sides.
-            Rect2 candidateRect = new Rect2(point, footprint).Grow(minFootprintSpacing);
+            Rect2 candidateRect = new Rect2(point - pointCloud.PointTestOffset, footprint).Grow(minFootprintSpacing);
 
             // 1. Check for overlap or proximity (via intersecting padded rectangles)
             bool tooClose = placed.Any(existing => {
