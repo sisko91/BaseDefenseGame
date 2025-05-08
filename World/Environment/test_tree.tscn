@@ -1,7 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://6prx14s7d1am"]
+[gd_scene load_steps=7 format=3 uid="uid://6prx14s7d1am"]
 
 [ext_resource type="Shader" uid="uid://7akcch5ndkta" path="res://Shaders/silhouette.gdshader" id="1_6kw5i"]
+[ext_resource type="Script" uid="uid://d2yt05ht15iv2" path="res://World/ProcGen/Placeable.cs" id="1_di3hm"]
 [ext_resource type="Texture2D" uid="uid://dpw6r0aqfx4a7" path="res://art/World/tree_no_shadow.png" id="1_t1lge"]
+[ext_resource type="Script" uid="uid://duyw2hn54xkre" path="res://World/ProcGen/RectRegion.cs" id="4_rtutk"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ijnyt"]
 shader = ExtResource("1_6kw5i")
@@ -12,6 +14,7 @@ radius = 184.0
 [node name="TestTree" type="StaticBody2D"]
 collision_layer = 2147483649
 collision_mask = 3
+script = ExtResource("1_di3hm")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 material = SubResource("ShaderMaterial_ijnyt")
@@ -23,3 +26,9 @@ offset = Vector2(-512, -846)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 scale = Vector2(0.25, 0.075)
 shape = SubResource("CircleShape2D_2i4js")
+
+[node name="PlacedFootprint" type="Node2D" parent="."]
+position = Vector2(-50, -25)
+script = ExtResource("4_rtutk")
+Size = Vector2(100, 50)
+metadata/_custom_type_script = "uid://duyw2hn54xkre"

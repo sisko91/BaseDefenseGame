@@ -18,11 +18,6 @@ public partial class SmallTown : Node2D
     [Export]
     public PackedScene BuildingSceneTemplate { get; protected set; } = null;
 
-    // Size of a bounding rectangle to use for approximating building sizes when placing buildings in the scenario. 
-    // This needs to be at least as large as all geometry contained within BuildingSceneTemplate at standard 1:1 scale for correct behavior.
-    [Export]
-    public Vector2 BuildingFootprint { get; protected set; }
-
     // How many buildings to place.
     [Export]
     public int DesiredBuildingCount { get; protected set; } = 10;
@@ -30,8 +25,6 @@ public partial class SmallTown : Node2D
     [ExportCategory("Forest")]
     [Export]
     public PackedScene TreeSceneTemplate { get; protected set; } = null;
-    [Export]
-    public Vector2 TreeFootprint { get; protected set; }
 
     [ExportCategory("Advanced")]
     // How far apart each point in the initial point cloud must be.
@@ -98,11 +91,15 @@ public partial class SmallTown : Node2D
             // Always start with the debug draw calls disabled, they can be enabled later if/when needed.
             DebugNodeExtensions.DisableDebugDrawCallGroup(DebugDrawCallGroup_Buildings);
         }
+        
+        // Instantiate a single building from the template so that we can extract information about it.
+        var buildingPrefabScene = BuildingSceneTemplate.Instantiate<Placeable>();
+        var footprintSize = buildingPrefabScene.PlacedFootprint.Size;
 
         // Our points are shaped and sized according to the footprint of the buildings we're placing.
-        points.PointSize = BuildingFootprint;
-        // Our BuildingFootprint and BuildingTemplate both assume a center anchor point.
-        points.PointTestOffset = BuildingFootprint / 2f;
+        points.PointSize = footprintSize;
+        // The building footprint's local position is our offset.
+        points.PointTestOffset = -buildingPrefabScene.PlacedFootprint.Position;
 
         // Construct a filter for removing points from the cloud if a building wouldn't fit there while being fully inside the world.
         var worldBoundsFilter = Filters.WithinBounds(new Rect2(world.GlobalPosition - world.RegionBounds / 2f, world.RegionBounds))
@@ -115,7 +112,7 @@ public partial class SmallTown : Node2D
             // additionalPointSkirt: Additional spacing between points and the path. This is added to the pointSize to ensure that even
             //                       a building placed as close as "possible" to the path still has at least minDistanceBetween its
             //                       closest edge and the path's boundary.
-            additionalPointSkirt: Mathf.Min(BuildingFootprint.X, BuildingFootprint.Y));
+            additionalPointSkirt: Mathf.Min(footprintSize.X, footprintSize.Y));
 
         // Construct a filter for removing points if they overlap the main path (or are too close).
         var mainPathFilter = Filters.OverlapsPathMesh(
@@ -123,9 +120,9 @@ public partial class SmallTown : Node2D
             // pathStepLength: We want this to be the smaller of the two footprint dimensions because this is the distance between 
             //                 consecutive points we are testing along the path's length. If it were larger than any span of the footprint,
             //                 we'd miss filtering out some points.
-            pathStepLength: Mathf.Min(BuildingFootprint.X, BuildingFootprint.Y),
+            pathStepLength: Mathf.Min(footprintSize.X, footprintSize.Y),
             // additionalPointSkirt: Same as on the excludedRegionsFilter above.
-            additionalPointSkirt: Mathf.Min(BuildingFootprint.X, BuildingFootprint.Y));
+            additionalPointSkirt: Mathf.Min(footprintSize.X, footprintSize.Y));
 
         if (GenerateDebugInfo) {
             // Wrap the filters in callbacks that use different colors so that we can see what points are identified by each.
@@ -146,8 +143,8 @@ public partial class SmallTown : Node2D
         points = points.FilterOut(Filters.MatchAny(worldBoundsFilter, excludedRegionsFilter, mainPathFilter));
 
         // Weight the remaining points according to how close they are to the path and the center of the world (to keep things close).
-        var maxDistanceFromPath = BuildingFootprint.Length() * 3;
-        points = points.Transform(WeightPointsForPlacementFunc(maxDistanceFromMainPath: BuildingFootprint.Length() * 3));
+        var maxDistanceFromPath = footprintSize.Length() * 3;
+        points = points.Transform(WeightPointsForPlacementFunc(maxDistanceFromMainPath: footprintSize.Length() * 3));
 
         // Reorder the points in the point cloud according to their weight, with higher weights earlier in the sequence.
         points.Points = points.Points.OrderBy(p => 1.0 - p.Z);
@@ -156,13 +153,13 @@ public partial class SmallTown : Node2D
         // buildings from spawning too close together.
         var placements = GetPlacementLocations(points,
             boundaryRect: new Rect2(world.GlobalPosition - world.RegionBounds / 2f, world.RegionBounds),
-            footprint: BuildingFootprint,
+            footprint: footprintSize,
             // minFootprintSpacing: We use the footprint dimensions again because we don't want buildings right on top of each other.
-            minFootprintSpacing: Mathf.Min(BuildingFootprint.X, BuildingFootprint.Y));
+            minFootprintSpacing: Mathf.Min(footprintSize.X, footprintSize.Y));
 
         foreach (var point in placements) {
             if (GenerateDebugInfo) {
-                this.DrawDebugRect(point, BuildingFootprint, Colors.Green, centerOrigin: true, group: DebugDrawCallGroup_Buildings);
+                this.DrawDebugRect(point-points.PointTestOffset, footprintSize, Colors.Green, centerOrigin: false, group: DebugDrawCallGroup_Buildings);
             }
         }
         List<Rect2> placed = [];
@@ -173,9 +170,9 @@ public partial class SmallTown : Node2D
                 parent.AddChild(newBuilding);
                 newBuilding.GlobalPosition = point;
 
-                // The points were tested as centerpoints for the building based on PointTestOffset, so the rects we record here
-                // for use during tree placement need to be adjusted based on that expectation.
-                placed.Add(new Rect2(point-points.PointTestOffset, BuildingFootprint));
+                // The points were tested based on PointTestOffset, so the rects we record here for use during tree
+                // placement later on need to be adjusted based on that expectation.
+                placed.Add(new Rect2(point-points.PointTestOffset, footprintSize));
                 if (placed.Count >= DesiredBuildingCount) {
                     break;
                 }
@@ -193,12 +190,14 @@ public partial class SmallTown : Node2D
             // Always start with the debug draw calls disabled, they can be enabled later if/when needed.
             DebugNodeExtensions.DisableDebugDrawCallGroup(DebugDrawCallGroup_Trees);
         }
+        
+        // Instantiate a single building from the template so that we can extract information about it.
+        var treePrefabScene = TreeSceneTemplate.Instantiate<Placeable>();
+        var footprintSize = treePrefabScene.PlacedFootprint.Size;
 
         // Our points are shaped and sized according to the footprint of the trees we're placing.
-        points.PointSize = TreeFootprint;
-        // Our trees have their origin point centered.
-        // TODO: This is defined on the tree scene. Figure out how to determine it once.
-        points.PointTestOffset = TreeFootprint/2f;
+        points.PointSize = footprintSize;
+        points.PointTestOffset = -treePrefabScene.PlacedFootprint.Position;
 
         // Construct a filter for removing points from the cloud if a point wouldn't fit there while being fully inside the world.
         var worldBoundsFilter = Filters.WithinBounds(new Rect2(world.GlobalPosition - world.RegionBounds / 2f, world.RegionBounds))
@@ -215,8 +214,8 @@ public partial class SmallTown : Node2D
         // Construct a filter for removing points if they overlap the main path (or are too close).
         var mainPathFilter = Filters.OverlapsPathMesh(
             pathMesh: MainPathMesh,
-            pathStepLength: TreeFootprint.Length(),
-            additionalPointSkirt: TreeFootprint.Length());
+            pathStepLength: footprintSize.Length(),
+            additionalPointSkirt: footprintSize.Length());
 
         if (GenerateDebugInfo) {
             // Wrap the filters in callbacks that use different colors so that we can see what points are identified by each.
@@ -234,7 +233,7 @@ public partial class SmallTown : Node2D
         }
 
         // Transform (translate) candidate tree positions by a random amount to add variety.
-        points = points.Transform((pc, p) => { return p + TreeFootprint * new Vector2(GD.RandRange(-1, 1), GD.RandRange(-1, 1)); });
+        points = points.Transform((pc, p) => { return p + footprintSize * new Vector2(GD.RandRange(-1, 1), GD.RandRange(-1, 1)); });
 
         // Filter out points where the tree would be outside of the world.
         points = points.FilterOut(Filters.MatchAny(worldBoundsFilter, excludedRectsFilter, mainPathFilter));
@@ -243,9 +242,9 @@ public partial class SmallTown : Node2D
         // trees from spawning too close together.
         var placements = GetPlacementLocations(points,
             boundaryRect: new Rect2(world.GlobalPosition - world.RegionBounds / 2f, world.RegionBounds),
-            footprint: TreeFootprint,
+            footprint: footprintSize,
             // minFootprintSpacing: We use the footprint dimensions again because we don't want buildings right on top of each other.
-            minFootprintSpacing: Mathf.Min(TreeFootprint.X, TreeFootprint.Y)/8f);
+            minFootprintSpacing: Mathf.Min(footprintSize.X, footprintSize.Y)/8f);
 
         List<Rect2> placed = [];
         if (TreeSceneTemplate != null) {
@@ -255,10 +254,10 @@ public partial class SmallTown : Node2D
                 parent.AddChild(tree);
                 tree.GlobalPosition = point;
 
-                placed.Add(new Rect2(point, TreeFootprint));
+                placed.Add(new Rect2(point, footprintSize));
 
                 if (GenerateDebugInfo) {
-                    this.DrawDebugRect(point, TreeFootprint, Colors.HotPink, group: DebugDrawCallGroup_Trees, centerOrigin: true);
+                    this.DrawDebugRect(point-points.PointTestOffset, footprintSize, Colors.HotPink, group: DebugDrawCallGroup_Trees, centerOrigin: false);
                 }
             }
         }

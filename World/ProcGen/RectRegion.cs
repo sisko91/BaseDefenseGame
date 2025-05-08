@@ -10,9 +10,8 @@ public sealed partial class RectRegion : Node2D
     [Export]
     public Vector2 Size { get; set; }
 
-    // The group that this region belongs to (if any). If defined this region will be added to the group automatically during play.
-    [Export]
-    public string AutoregisterGroup { get; set; } = null;
+    // Each tag is a group that the region will be registered with automatically on startup.
+    [Export] public Godot.Collections.Array<string> Tags = [];
 
     [ExportCategory("Editor View")]
     [Export]
@@ -27,8 +26,9 @@ public sealed partial class RectRegion : Node2D
     public override void _Ready() {
         base._Ready();
 
-        if(AutoregisterGroup != null) {
-            AddToGroup(AutoregisterGroup);
+        foreach (var tag in Tags)
+        {
+            AddToGroup(tag);
         }
 
         if(Engine.IsEditorHint()) {

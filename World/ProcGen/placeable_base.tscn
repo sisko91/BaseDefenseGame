@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://b1c7tu7ctxu05"]
+
+[ext_resource type="Script" uid="uid://d2yt05ht15iv2" path="res://World/ProcGen/Placeable.cs" id="1_hdm0q"]
+[ext_resource type="Script" uid="uid://duyw2hn54xkre" path="res://World/ProcGen/RectRegion.cs" id="2_yys04"]
+
+[node name="PlaceableBase" type="Node2D"]
+editor_description = "PlaceableBase is just an empty scene for Placeable.cs containing the prerequisite child node(s)."
+script = ExtResource("1_hdm0q")
+
+[node name="PlacedFootprint" type="Node2D" parent="."]
+script = ExtResource("2_yys04")
+Size = Vector2(50, 50)
+metadata/_custom_type_script = "uid://duyw2hn54xkre"

@@ -3,9 +3,10 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Gurdy.ProcGen;
 
 // A building has at least one interior region.
-public partial class Building : Node2D
+public partial class Building : Placeable
 {
     [Export]
     public int BuildingHeight;
@@ -52,6 +53,7 @@ public partial class Building : Node2D
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        base._Ready();
         Exits = new List<Door>();
 
         // Configure our visibility reset timer, this is not started by default but gets (re)scheduled when players leave the building's
