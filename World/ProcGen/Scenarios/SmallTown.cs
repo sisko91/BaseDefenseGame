@@ -152,7 +152,6 @@ public partial class SmallTown : Node2D
         // Determine possible placements for the buildings we want to spawn in the world; Using a custom spacing rule to prevent
         // buildings from spawning too close together.
         var placements = GetPlacementLocations(points,
-            boundaryRect: new Rect2(world.GlobalPosition - world.RegionBounds / 2f, world.RegionBounds),
             footprint: footprintSize,
             // minFootprintSpacing: We use the footprint dimensions again because we don't want buildings right on top of each other.
             minFootprintSpacing: Mathf.Min(footprintSize.X, footprintSize.Y));
@@ -241,7 +240,6 @@ public partial class SmallTown : Node2D
         // Determine possible placements for the trees we want to spawn in the world; Using a custom spacing rule to prevent
         // trees from spawning too close together.
         var placements = GetPlacementLocations(points,
-            boundaryRect: new Rect2(world.GlobalPosition - world.RegionBounds / 2f, world.RegionBounds),
             footprint: footprintSize,
             // minFootprintSpacing: We use the footprint dimensions again because we don't want buildings right on top of each other.
             minFootprintSpacing: Mathf.Min(footprintSize.X, footprintSize.Y)/8f);
@@ -300,7 +298,7 @@ public partial class SmallTown : Node2D
     // placed the desired number of times without overlapping footprints.
     // Note this does NOT place anything in the world, it only identifies a set of points where rectangular regions can exist without
     // overlap.
-    protected List<Vector2> GetPlacementLocations(PointCloud2D pointCloud, Rect2 boundaryRect, Vector2 footprint, float minFootprintSpacing = 0.0f) {
+    protected List<Vector2> GetPlacementLocations(PointCloud2D pointCloud, Vector2 footprint, float minFootprintSpacing = 0.0f) {
         var placed = new List<Vector2>();
         var count = 0;
         // We iterate 2D points because weights don't matter here. We just use the cloud in the order it was sorted in so far.
