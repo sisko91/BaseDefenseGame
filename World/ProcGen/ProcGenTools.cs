@@ -25,11 +25,6 @@ namespace Gurdy.ProcGen
                 }
             }
         }
-
-        // Produce a set of points, uniformly distributed across the bounds of the world for use during ProcGen routines.
-        public static PointCloud2D GeneratePoints(this World worldNode, float spacing = 1f) {
-            return new PointCloud2D(new Rect2(worldNode.GlobalPosition - worldNode.RegionBounds / 2f, worldNode.RegionBounds), spacing);
-        }
     }
 
     public static class Filters {

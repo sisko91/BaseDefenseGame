@@ -4,13 +4,17 @@ using Gurdy.ProcGen;
 using System.Collections.Generic;
 using System.Linq;
 
-// Small town generates a random assortment of buildings along a general path defined for the scenario.
+// SmallTown is a Placeable node which generates a random assortment of buildings along a general path defined for the scenario. The surrounding area is populated by trees and other foliage.
+// SmallTown's PlacedFootprint defines the boundary within which ProcGen entities may be generated and placed.
 // TODO: Scenario base class?
-public partial class SmallTown : Node2D
+public partial class SmallTown : Placeable
 {
     // The PathMesh defining the main road / path through the town.
     [Export]
     public PathMesh MainPathMesh { get; protected set; } = null;
+
+    // Nothing will be spawned in regions discovered containing this tag.
+    [Export] public string GlobalExclusionTag { get; protected set; } = "ProcGen.Exclude.All";
 
     [ExportCategory("Structures")]
     // The building scene to instantiate along the path.
@@ -86,6 +90,9 @@ public partial class SmallTown : Node2D
             GD.PrintErr($"No game World instance found in {Name}'s scene tree. Cannot generate scenario.");
             return;
         }
+        
+        // SmallTown itself is a placeable, and we examine its Placed and Secondary footprints along with everything else.
+        AllPlaceables.Add(this);
 
         // Ensure that generation runs after the world has been initially set up.
         Callable.From(Generate).CallDeferred();
@@ -98,7 +105,7 @@ public partial class SmallTown : Node2D
             return;
         }
         // Produce a set of candidate points, uniformly distributed across the bounds of the world.
-        var points = world.GeneratePoints(PointCloudSpacing);
+        var points = new PointCloud2D(PlacedFootprint.GetGlobalRect(), PointCloudSpacing);
 
         // Generate a neighborhood of buildings placed around the world, using the initial point cloud as a basis.
         var placedBuildingRects = GenerateNeighborhood(world, points);
@@ -125,12 +132,11 @@ public partial class SmallTown : Node2D
         // The building footprint's local position is our offset.
         points.PointTestOffset = -buildingPrefabScene.PlacedFootprint.Position;
 
-        // Construct a filter for removing points from the cloud if a building wouldn't fit there while being fully inside the world.
-        var worldBoundsFilter = Filters.WithinBounds(new Rect2(world.GlobalPosition - world.RegionBounds / 2f, world.RegionBounds))
-                                       .Inverted();
+        // Construct a filter for removing points from the cloud if a building wouldn't fit there while being fully inside the scenario.
+        var scenarioBoundsFilter = Filters.WithinBounds(PlacedFootprint.GetGlobalRect()).Inverted();
 
         // Construct a filter for removing points from the cloud if they overlap any of our exclusion regions.
-        var excludedRegions = GetTree().GetTypedNodesInGroup<RectRegion>(ExcludedRegionsGroup);
+        var excludedRegions = PlaceableRegionsWithTag(GlobalExclusionTag);
         var excludedRegionsFilter = Filters.OverlapsAnyRectRegion(
             rectRegions: excludedRegions,
             // additionalPointSkirt: Additional spacing between points and the path. This is added to the pointSize to ensure that even
@@ -164,7 +170,7 @@ public partial class SmallTown : Node2D
         }
 
         // Remove all points that match one of the filters we created above.
-        points = points.FilterOut(Filters.MatchAny(worldBoundsFilter, excludedRegionsFilter, mainPathFilter));
+        points = points.FilterOut(Filters.MatchAny(scenarioBoundsFilter, excludedRegionsFilter, mainPathFilter));
 
         // Weight the remaining points according to how close they are to the path and the center of the world (to keep things close).
         var maxDistanceFromPath = footprintSize.Length() * 3;
@@ -220,14 +226,12 @@ public partial class SmallTown : Node2D
         points.PointSize = footprintSize;
         points.PointTestOffset = -treePrefabScene.PlacedFootprint.Position;
 
-        // Construct a filter for removing points from the cloud if a point wouldn't fit there while being fully inside the world.
-        var worldBoundsFilter = Filters.WithinBounds(new Rect2(world.GlobalPosition - world.RegionBounds / 2f, world.RegionBounds))
-                                       .Inverted();
+        // Construct a filter for removing points from the cloud if a point wouldn't fit there while being fully inside the scenario.
+        var scenarioBoundsFilter = Filters.WithinBounds(PlacedFootprint.GetGlobalRect()).Inverted();
 
-        // Compose a list of all excluded region rects based on 1) excluded RectRegions configured on SmallTown, and 2) any rects for
-        // buildings already placed.
-        var excludedRegions = GetTree().GetTypedNodesInGroup<RectRegion>(ExcludedRegionsGroup);
-        var allExcludedRects = PlaceableRegionsWithTag(ForestExclusionTag).Concat(excludedRegions)
+        // Compose a list of all excluded region rects based on 1) global exclusions within SmallTown, and 2) any regions for Placeables already placed.
+        var allExcludedRects = PlaceableRegionsWithTag(GlobalExclusionTag)
+            .Concat(PlaceableRegionsWithTag(ForestExclusionTag))
             .Select(regionRect => regionRect.GetGlobalRect());
         
         // Construct a filter for removing points from the cloud if they overlap any of our exclusion rects.
@@ -259,7 +263,7 @@ public partial class SmallTown : Node2D
         points = points.Transform((pc, p) => { return p + footprintSize * new Vector2(GD.RandRange(-1, 1), GD.RandRange(-1, 1)); });
 
         // Filter out points where the tree would be outside of the world.
-        points = points.FilterOut(Filters.MatchAny(worldBoundsFilter, excludedRectsFilter, mainPathFilter));
+        points = points.FilterOut(Filters.MatchAny(scenarioBoundsFilter, excludedRectsFilter, mainPathFilter));
 
         // Determine possible placements for the trees we want to spawn in the world; Using a custom spacing rule to prevent
         // trees from spawning too close together.

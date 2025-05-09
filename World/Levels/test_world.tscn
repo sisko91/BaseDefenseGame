@@ -127,6 +127,24 @@ DebugPointRadius = 5.0
 ViablePointsColor = Color(0, 1, 0, 1)
 NearPathMeshColor = Color(1, 0.583333, 0, 1)
 
+[node name="PlacedFootprint" type="Node2D" parent="ScenarioContainer"]
+position = Vector2(-3000, -3000)
+script = ExtResource("14_80b3c")
+Size = Vector2(6000, 6000)
+EditorDrawColor = Color(0.507362, 0.411281, 0.231056, 1)
+metadata/_custom_type_script = "uid://duyw2hn54xkre"
+
+[node name="SecondaryFootprints" type="Node2D" parent="ScenarioContainer"]
+
+[node name="ExcludeStartZone" type="Node2D" parent="ScenarioContainer/SecondaryFootprints"]
+position = Vector2(-682, -458)
+scale = Vector2(0.578354, 0.508114)
+script = ExtResource("14_80b3c")
+Size = Vector2(2366.31, 2061.53)
+Tags = Array[String](["ProcGen.Exclude.All"])
+EditorDrawColor = Color(0.798375, 0, 0.201584, 1)
+metadata/_custom_type_script = "uid://duyw2hn54xkre"
+
 [node name="RoadPathMesh" type="Node2D" parent="ScenarioContainer" node_paths=PackedStringArray("Path")]
 script = ExtResource("5_hjxpo")
 Path = NodePath("SourcePath2D")
@@ -140,17 +158,6 @@ TexCoordsRepeatDistance = 1000.0
 position = Vector2(-40, 188)
 scale = Vector2(1.0022, 0.999438)
 curve = SubResource("Curve2D_cdkb4")
-
-[node name="ExclusionZones" type="Node2D" parent="ScenarioContainer"]
-
-[node name="ExcludeStartZone" type="Node2D" parent="ScenarioContainer/ExclusionZones"]
-position = Vector2(-682, -458)
-scale = Vector2(0.578354, 0.508114)
-script = ExtResource("14_80b3c")
-Size = Vector2(2366.31, 2061.53)
-AutoRegisterGroups = Array[String](["SmallTown.Exclude"])
-EditorDrawColor = Color(0.798375, 0, 0.201584, 1)
-metadata/_custom_type_script = "uid://duyw2hn54xkre"
 
 [node name="ShamblerSpawnZone" type="Node2D" parent="." node_paths=PackedStringArray("SpawnContainerReference")]
 position = Vector2(7, 0)
