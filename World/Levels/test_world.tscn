@@ -121,7 +121,6 @@ BuildingSceneTemplate = ExtResource("6_lhns8")
 DesiredBuildingCount = 25
 TreeSceneTemplate = ExtResource("28_fbbf8")
 PointCloudSpacing = 50.0
-ExcludedRegionsGroup = "SmallTown.Exclude"
 PlacementContainer = NodePath("../YSort")
 DebugPointRadius = 5.0
 ViablePointsColor = Color(0, 1, 0, 1)

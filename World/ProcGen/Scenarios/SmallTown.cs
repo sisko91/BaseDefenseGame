@@ -36,9 +36,6 @@ public partial class SmallTown : Placeable
     // How far apart each point in the initial point cloud must be.
     [Export]
     public float PointCloudSpacing { get; protected set; } = 100.0f;
-    // The group containing RegionRects specifying where the town is not allowed to place objects.
-    [Export]
-    public string ExcludedRegionsGroup { get; protected set; } = null;
 
     // Reference to another node in the scene that will serve as the container / parent for any nodes placed by the town's generation.
     // If this is null, all placed nodes will be children of this SmallTown node.
@@ -100,23 +97,22 @@ public partial class SmallTown : Placeable
 
     protected void Generate() {
         var world = this.GetGameWorld();
-        if (!world.GlobalScale.IsEqualApprox(Vector2.One) || !world.GlobalPosition.IsZeroApprox()) {
-            GD.PushError($"SmallTown ProcGen only works with an identity coordinate system. (Current Scale={world.GlobalScale}, Current Position={world.GlobalPosition}");
+        if (!world.GlobalScale.IsEqualApprox(Vector2.One)) {
+            GD.PushError($"SmallTown ProcGen only works with an identity world scale. (Current Scale={world.GlobalScale}");
             return;
         }
         // Produce a set of candidate points, uniformly distributed across the bounds of the world.
         var points = new PointCloud2D(PlacedFootprint.GetGlobalRect(), PointCloudSpacing);
 
         // Generate a neighborhood of buildings placed around the world, using the initial point cloud as a basis.
-        var placedBuildingRects = GenerateNeighborhood(world, points);
+        GenerateNeighborhood(points);
         // Place trees throughout the world, using the same initial point cloud as the basis and avoiding any areas where buildings have
         // already been placed by earlier steps.
-        GenerateTrees(world, points, placedBuildingRects);
+        GenerateTrees(points);
     }
 
     // Procedurally generates and places a neighborhood of buildings within the world using the provided pointcloud as a basis.
-    // Returns a list of (global) Rect2s containing the positions and bounds of any placed buildings.
-    protected List<Placeable> GenerateNeighborhood(World world, PointCloud2D points) {
+    protected void GenerateNeighborhood(PointCloud2D points) {
         if (GenerateDebugInfo) {
             DebugNodeExtensions.ClearDebugDrawCallGroup(DebugDrawCallGroup_Buildings);
             // Always start with the debug draw calls disabled, they can be enabled later if/when needed.
@@ -208,10 +204,9 @@ public partial class SmallTown : Placeable
             }
         }
         AllPlaceables.AddRange(placed);
-        return placed;
     }
 
-    protected void GenerateTrees(World world, PointCloud2D points, IEnumerable<Placeable> placedBuildings) {
+    protected void GenerateTrees(PointCloud2D points) {
         if (GenerateDebugInfo) {
             DebugNodeExtensions.ClearDebugDrawCallGroup(DebugDrawCallGroup_Trees);
             // Always start with the debug draw calls disabled, they can be enabled later if/when needed.
