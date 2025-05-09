@@ -11,3 +11,5 @@ script = ExtResource("1_hdm0q")
 script = ExtResource("2_yys04")
 Size = Vector2(50, 50)
 metadata/_custom_type_script = "uid://duyw2hn54xkre"
+
+[node name="SecondaryFootprints" type="Node2D" parent="."]

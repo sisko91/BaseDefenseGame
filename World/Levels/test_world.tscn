@@ -148,7 +148,7 @@ position = Vector2(-682, -458)
 scale = Vector2(0.578354, 0.508114)
 script = ExtResource("14_80b3c")
 Size = Vector2(2366.31, 2061.53)
-Tags = Array[String](["SmallTown.Exclude"])
+AutoRegisterGroups = Array[String](["SmallTown.Exclude"])
 EditorDrawColor = Color(0.798375, 0, 0.201584, 1)
 metadata/_custom_type_script = "uid://duyw2hn54xkre"
 

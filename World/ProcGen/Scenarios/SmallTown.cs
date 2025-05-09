@@ -14,7 +14,6 @@ public partial class SmallTown : Node2D
 
     [ExportCategory("Structures")]
     // The building scene to instantiate along the path.
-    // TODO: Might need a self-describing format that doesn't require instantiation - like a Resource that we can query for size and other details.
     [Export]
     public PackedScene BuildingSceneTemplate { get; protected set; } = null;
 
@@ -25,6 +24,9 @@ public partial class SmallTown : Node2D
     [ExportCategory("Forest")]
     [Export]
     public PackedScene TreeSceneTemplate { get; protected set; } = null;
+    
+    // The forest will not be spawned in regions discovered containing this tag.
+    [Export] public string ForestExclusionTag { get; protected set; } = "ProcGen.Exclude.Forest";
 
     [ExportCategory("Advanced")]
     // How far apart each point in the initial point cloud must be.
@@ -51,6 +53,28 @@ public partial class SmallTown : Node2D
     public Color NearPathMeshColor = Colors.Orange;
     [Export]
     public Color NearExclusionsColor = Colors.Red;
+
+    // A running list of every Placeable this scenario has instantiated within the world (not counting dummy instances used for data extraction).
+    protected List<Placeable> AllPlaceables = [];
+
+    // Returns all RectRegions defined on any placeable this scenario created which contain the matching tag. Both PlacedFootprint and SecondaryFootprints are included in the tag check.
+    protected IEnumerable<RectRegion> PlaceableRegionsWithTag(string regionTag)
+    {
+        foreach (var placeable in AllPlaceables)
+        {
+            if (placeable.PlacedFootprint.Tags.Contains(regionTag))
+            {
+                yield return placeable.PlacedFootprint;
+            }
+            foreach (var footprint in placeable.SecondaryFootprints)
+            {
+                if (footprint.Tags.Contains(regionTag))
+                {
+                    yield return footprint;
+                }
+            }
+        }
+    }
 
     private const string DebugDrawCallGroup_Buildings = "SmallTown.Buildings";
     private const string DebugDrawCallGroup_Trees = "SmallTown.Trees";
@@ -85,7 +109,7 @@ public partial class SmallTown : Node2D
 
     // Procedurally generates and places a neighborhood of buildings within the world using the provided pointcloud as a basis.
     // Returns a list of (global) Rect2s containing the positions and bounds of any placed buildings.
-    protected List<Rect2> GenerateNeighborhood(World world, PointCloud2D points) {
+    protected List<Placeable> GenerateNeighborhood(World world, PointCloud2D points) {
         if (GenerateDebugInfo) {
             DebugNodeExtensions.ClearDebugDrawCallGroup(DebugDrawCallGroup_Buildings);
             // Always start with the debug draw calls disabled, they can be enabled later if/when needed.
@@ -161,17 +185,14 @@ public partial class SmallTown : Node2D
                 this.DrawDebugRect(point-points.PointTestOffset, footprintSize, Colors.Green, centerOrigin: false, group: DebugDrawCallGroup_Buildings);
             }
         }
-        List<Rect2> placed = [];
+        List<Placeable> placed = [];
         if (BuildingSceneTemplate != null) {
             var parent = PlacementContainer ?? this;
             foreach (var point in placements) {
-                var newBuilding = BuildingSceneTemplate.Instantiate<Node2D>();
+                var newBuilding = BuildingSceneTemplate.Instantiate<Placeable>();
                 parent.AddChild(newBuilding);
                 newBuilding.GlobalPosition = point;
-
-                // The points were tested based on PointTestOffset, so the rects we record here for use during tree
-                // placement later on need to be adjusted based on that expectation.
-                placed.Add(new Rect2(point-points.PointTestOffset, footprintSize));
+                placed.Add(newBuilding);
                 if (placed.Count >= DesiredBuildingCount) {
                     break;
                 }
@@ -180,10 +201,11 @@ public partial class SmallTown : Node2D
                 GD.Print($"{Name}[{GetType()}] placed {placed.Count} buildings {placements.Count} options matching criteria.");
             }
         }
+        AllPlaceables.AddRange(placed);
         return placed;
     }
 
-    protected void GenerateTrees(World world, PointCloud2D points, IEnumerable<Rect2> placedBuildingRects) {
+    protected void GenerateTrees(World world, PointCloud2D points, IEnumerable<Placeable> placedBuildings) {
         if (GenerateDebugInfo) {
             DebugNodeExtensions.ClearDebugDrawCallGroup(DebugDrawCallGroup_Trees);
             // Always start with the debug draw calls disabled, they can be enabled later if/when needed.
@@ -205,7 +227,9 @@ public partial class SmallTown : Node2D
         // Compose a list of all excluded region rects based on 1) excluded RectRegions configured on SmallTown, and 2) any rects for
         // buildings already placed.
         var excludedRegions = GetTree().GetTypedNodesInGroup<RectRegion>(ExcludedRegionsGroup);
-        var allExcludedRects = placedBuildingRects.Concat(excludedRegions.Select((regionRect) => regionRect.GetGlobalRect()));
+        var allExcludedRects = PlaceableRegionsWithTag(ForestExclusionTag).Concat(excludedRegions)
+            .Select(regionRect => regionRect.GetGlobalRect());
+        
         // Construct a filter for removing points from the cloud if they overlap any of our exclusion rects.
         var excludedRectsFilter = Filters.OverlapsAnyRect(
             rects: allExcludedRects);
@@ -244,22 +268,21 @@ public partial class SmallTown : Node2D
             // minFootprintSpacing: We use the footprint dimensions again because we don't want buildings right on top of each other.
             minFootprintSpacing: Mathf.Min(footprintSize.X, footprintSize.Y)/8f);
 
-        List<Rect2> placed = [];
+        List<Placeable> placed = [];
         if (TreeSceneTemplate != null) {
             var parent = PlacementContainer ?? this;
             foreach (var point in placements) {
-                var tree = TreeSceneTemplate.Instantiate<Node2D>();
+                var tree = TreeSceneTemplate.Instantiate<Placeable>();
                 parent.AddChild(tree);
                 tree.GlobalPosition = point;
-
-                placed.Add(new Rect2(point, footprintSize));
+                placed.Add(tree);
 
                 if (GenerateDebugInfo) {
                     this.DrawDebugRect(point-points.PointTestOffset, footprintSize, Colors.HotPink, group: DebugDrawCallGroup_Trees, centerOrigin: false);
                 }
             }
         }
-
+        AllPlaceables.AddRange(placed);
     }
 
     // Returns a PointTransform function that can be used to weight all points in the point cloud based on criteria for placing buildings:

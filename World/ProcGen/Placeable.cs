@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Godot;
 
 namespace Gurdy.ProcGen
@@ -7,10 +9,14 @@ namespace Gurdy.ProcGen
     // during ProcGen point tests to determine where the entity will fit without conflicting with other placed entities or spawning constraints.
     public partial class Placeable : Node2D
     {
-        // PlacedFootprint is used to determine overlaps and constraints such as and out of bounds locations where this scene cannot be placed by
-        // a ProcGen routine. The footprint can be offset and smaller/larger than the actual Placeable scene to finely control placement logic depending on where the
-        // origin of the Placeable scene and other constituents are.
+        // PlacedFootprint is used to determine overlaps and constraints such as overlaps and out of bounds locations where this scene cannot be placed
+        // by a ProcGen routine. The footprint can be offset and smaller/larger than the actual Placeable scene to finely control placement logic
+        // depending on where the origin of the Placeable scene and other constituents are.
         public RectRegion PlacedFootprint => GetNode<RectRegion>("PlacedFootprint");
+
+        // A dynamically-generated list of all RectRegions parented under /SecondaryFootprints on the Placeable scene.
+        // These are inspected during ProcGen routines.
+        public IEnumerable<RectRegion> SecondaryFootprints => GetNodeOrNull("SecondaryFootprints")?.GetChildren().OfType<RectRegion>() ?? [];
 
         public override void _Ready()
         {

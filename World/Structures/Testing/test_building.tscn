@@ -339,4 +339,23 @@ sdf_collision = false
 position = Vector2(-256, -128)
 script = ExtResource("8_4jyrl")
 Size = Vector2(512, 256)
+Tags = Array[String](["ProcGen.Exclude.Forest"])
+metadata/_custom_type_script = "uid://duyw2hn54xkre"
+
+[node name="SecondaryFootprints" type="Node2D" parent="."]
+
+[node name="NoForestRegion1" type="Node2D" parent="SecondaryFootprints"]
+position = Vector2(-384, -100)
+script = ExtResource("8_4jyrl")
+Size = Vector2(768, 384)
+Tags = Array[String](["ProcGen.Exclude.Forest"])
+EditorDrawColor = Color(0.132127, 0.514264, 0, 1)
+metadata/_custom_type_script = "uid://duyw2hn54xkre"
+
+[node name="NoForestRegion2" type="Node2D" parent="SecondaryFootprints"]
+position = Vector2(-92, 0)
+script = ExtResource("8_4jyrl")
+Size = Vector2(184, 384)
+Tags = Array[String](["ProcGen.Exclude.Forest"])
+EditorDrawColor = Color(0, 0.518316, 0.139405, 1)
 metadata/_custom_type_script = "uid://duyw2hn54xkre"
