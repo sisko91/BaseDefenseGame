@@ -55,7 +55,7 @@ namespace Gurdy.ProcGen
         public PointCloud2D(Rect2 bounds, float spacing = 1f, Vector2? pointSize = null) {
             PointSize = pointSize ?? Vector2.One;
             PointTestOffset = Vector2.Zero;
-            Points2D = Extensions.GeneratePoints(bounds, spacing);
+            Points2D = Extensions.GeneratePoints(bounds, spacing).ToList();
         }
 
         // Runs the specified 2D point filter over each point in the cloud and retains points which pass the filter (it returns true).

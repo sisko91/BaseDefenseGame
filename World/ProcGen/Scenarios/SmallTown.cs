@@ -157,7 +157,7 @@ public partial class SmallTown : Placeable
         // Construct a filter for removing points from the cloud if they overlap any of our exclusion regions.
         var excludedRegions = PlaceableRegionsWithTag(GlobalExclusionTag);
         var excludedRegionsFilter = Filters.OverlapsAnyRectRegion(
-            rectRegions: excludedRegions,
+            rectRegions: excludedRegions.ToList(),
             // additionalPointSkirt: Additional spacing between points and the path. This is added to the pointSize to ensure that even
             //                       a building placed as close as "possible" to the path still has at least minDistanceBetween its
             //                       closest edge and the path's boundary.
