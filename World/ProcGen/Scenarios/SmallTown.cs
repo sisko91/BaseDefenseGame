@@ -28,7 +28,7 @@ public partial class SmallTown : Placeable
 
     [ExportCategory("Forest")]
     [Export]
-    public PackedScene TreeSceneTemplate { get; protected set; } = null;
+    public Godot.Collections.Dictionary<PackedScene, int> TreeSceneTemplates { get; protected set; } = [];
     
     // The forest will not be spawned in regions discovered containing this tag.
     [Export] public string ForestExclusionTag { get; protected set; } = "ProcGen.Exclude.Forest";
@@ -122,7 +122,13 @@ public partial class SmallTown : Placeable
         // Place trees throughout the world, using the same initial point cloud as the basis and avoiding any areas where buildings have
         // already been placed by earlier steps.
         Profiler?.BeginBlock("Generate Forest");
-        GenerateTrees(points);
+        int pass = 1;
+        foreach (var treeEntry in TreeSceneTemplates)
+        {
+            Profiler?.BeginBlock($"Pass {pass}");
+            GenerateTrees(points, treeEntry.Key, treeEntry.Value);
+            Profiler?.EndBlock();
+        }
         Profiler?.EndBlock();
         
         if (GenerateDebugInfo)
@@ -195,11 +201,13 @@ public partial class SmallTown : Placeable
         Profiler?.EndBlock();
         
         Profiler?.BeginBlock("Place Buildings");
+        
+        // TEMPORARILY DISABLED: The building placement logic is overly simplistic and this isn't going to work long-term.
         // Weight the remaining points according to how close they are to the path and the center of the world (to keep things close).
-        points = points.Transform(WeightPointsForPlacementFunc(maxDistanceFromMainPath: footprintSize.Length() * 3));
-
+        //points = points.Transform(WeightPointsForPlacementFunc(maxDistanceFromMainPath: footprintSize.Length() * 3));
         // Reorder the points in the point cloud according to their weight, with higher weights earlier in the sequence.
-        points.Points = points.Points.OrderBy(p => 1.0 - p.Z);
+        //points.Points = points.Points.OrderBy(p => 1.0 - p.Z);
+        points.Points = points.Points.OrderBy(_ => GD.Randf());
 
         // Determine possible placements for the buildings we want to spawn in the world; Using a custom spacing rule to prevent
         // buildings from spawning too close together.
@@ -233,7 +241,13 @@ public partial class SmallTown : Placeable
         Profiler?.EndBlock();
     }
 
-    protected void GenerateTrees(PointCloud2D points) {
+    protected void GenerateTrees(PointCloud2D points, PackedScene treePrefabTemplate, int limit) {
+        if (limit == 0)
+        {
+            GD.PushWarning($"GenerateTrees was called with a limit of 0 for TreePrefabTemplate: `{treePrefabTemplate?.GetPath()}`");
+            return;
+        }
+        
         if (GenerateDebugInfo) {
             DebugNodeExtensions.ClearDebugDrawCallGroup(DebugDrawCallGroup_Trees);
             // Always start with the debug draw calls disabled, they can be enabled later if/when needed.
@@ -241,7 +255,7 @@ public partial class SmallTown : Placeable
         }
         
         // Instantiate a single building from the template so that we can extract information about it.
-        var treePrefabScene = TreeSceneTemplate.Instantiate<Placeable>();
+        var treePrefabScene = treePrefabTemplate.Instantiate<Placeable>();
         var footprintSize = treePrefabScene.PlacedFootprint.Size;
 
         // Our points are shaped and sized according to the footprint of the trees we're placing.
@@ -307,16 +321,23 @@ public partial class SmallTown : Placeable
             minFootprintSpacing: Mathf.Min(footprintSize.X, footprintSize.Y)/8f);
 
         List<Placeable> placed = [];
-        if (TreeSceneTemplate != null) {
-            var parent = PlacementContainer ?? this;
-            foreach (var point in placements) {
-                var tree = TreeSceneTemplate.Instantiate<Placeable>();
-                parent.AddChild(tree);
-                tree.GlobalPosition = point;
-                placed.Add(tree);
+        var parent = PlacementContainer ?? this;
+        foreach (var point in placements.OrderBy(_ => GD.Randf()))
+        {
+            var tree = treePrefabTemplate.Instantiate<Placeable>();
+            parent.AddChild(tree);
+            tree.GlobalPosition = point;
+            placed.Add(tree);
 
-                if (GenerateDebugInfo) {
-                    this.DrawDebugRect(point-points.PointTestOffset, footprintSize, Colors.HotPink, group: DebugDrawCallGroup_Trees, centerOrigin: false);
+            if (GenerateDebugInfo) {
+                this.DrawDebugRect(point-points.PointTestOffset, footprintSize, Colors.HotPink, group: DebugDrawCallGroup_Trees, centerOrigin: false);
+            }
+
+            if (limit > 0)
+            {
+                if (placed.Count >= limit)
+                {
+                    break;
                 }
             }
         }

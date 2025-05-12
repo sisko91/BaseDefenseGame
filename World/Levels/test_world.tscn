@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=39 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://ca1u833dx2dax" path="res://World/Structures/Testing/test_fireplace.tscn" id="7_8h8jw"]
 [ext_resource type="PackedScene" uid="uid://blio7x08xw4te" path="res://NPC/Merchant/merchant.tscn" id="7_8ojdi"]
 [ext_resource type="Texture2D" uid="uid://d1skfyo8wkj1a" path="res://art/World/test_road.png" id="7_b48bc"]
+[ext_resource type="PackedScene" uid="uid://cf0w6hmvqdiet" path="res://World/Environment/Testing/test_tree_dead.tscn" id="8_fbbf8"]
 [ext_resource type="Resource" uid="uid://eurmfqo548j4" path="res://World/ShopItems/pistol.tres" id="8_lquev"]
 [ext_resource type="Resource" uid="uid://wi0ppwstcfuk" path="res://World/ShopItems/scattergun.tres" id="9_hjxpo"]
 [ext_resource type="Texture2D" uid="uid://dwn5oow6sd10h" path="res://art/World/oil_barrel.png" id="9_j617i"]
@@ -26,7 +27,7 @@
 [ext_resource type="Script" uid="uid://ul68if3kp7vg" path="res://World/ProcGen/Scenarios/SmallTown.cs" id="12_qx1mc"]
 [ext_resource type="Script" uid="uid://duyw2hn54xkre" path="res://World/ProcGen/RectRegion.cs" id="14_80b3c"]
 [ext_resource type="Shader" uid="uid://7akcch5ndkta" path="res://Shaders/silhouette.gdshader" id="20_hkmll"]
-[ext_resource type="PackedScene" uid="uid://6prx14s7d1am" path="res://World/Environment/test_tree.tscn" id="28_fbbf8"]
+[ext_resource type="PackedScene" uid="uid://6prx14s7d1am" path="res://World/Environment/Testing/test_tree.tscn" id="28_fbbf8"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_fn2eg"]
 frequency = 0.0075
@@ -118,8 +119,11 @@ region_filter_clip_enabled = true
 script = ExtResource("12_qx1mc")
 MainPathMesh = NodePath("RoadPathMesh")
 BuildingSceneTemplate = ExtResource("6_lhns8")
-DesiredBuildingCount = 25
-TreeSceneTemplate = ExtResource("28_fbbf8")
+DesiredBuildingCount = 3
+TreeSceneTemplates = Dictionary[PackedScene, int]({
+ExtResource("8_fbbf8"): 400,
+ExtResource("28_fbbf8"): -1
+})
 PointCloudSpacing = 50.0
 PlacementContainer = NodePath("../YSort")
 DebugPointRadius = 5.0
