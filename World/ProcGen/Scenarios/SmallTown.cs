@@ -3,6 +3,7 @@ using Godot;
 using Gurdy.ProcGen;
 using System.Collections.Generic;
 using System.Linq;
+using Gurdy;
 
 // SmallTown is a Placeable node which generates a random assortment of buildings along a general path defined for the scenario. The surrounding area is populated by trees and other foliage.
 // SmallTown's PlacedFootprint defines the boundary within which ProcGen entities may be generated and placed.
@@ -79,36 +80,8 @@ public partial class SmallTown : Placeable
 
     private const string DebugDrawCallGroup_Buildings = "SmallTown.Buildings";
     private const string DebugDrawCallGroup_Trees = "SmallTown.Trees";
-
-    // Used to capture timing data about ProcGen routines.
-    protected struct TimingData
-    {
-        public string Name;
-        public float StartTimeMs;
-        public float EndTimeMs;
-        public List<TimingData> SubTimes;
-        public float DurationMs => EndTimeMs - StartTimeMs;
-
-        public TimingData(string name, float startTimeMs)
-        {
-            Name = name;
-            StartTimeMs = startTimeMs;
-            SubTimes = [];
-        }
-        public string PrettyPrint(int depth = 0)
-        {
-            string indent = new string('\t', depth); // depth=0 -> 0 tabs
-            string line = $"{indent}{DurationMs}ms - {Name}";
-            if (SubTimes != null)
-            {
-                foreach (var time in SubTimes)
-                {
-                    line += $"\n{time.PrettyPrint(depth+1)}";
-                }
-            }
-            return line;
-        }
-    }
+    
+    private SimpleProfiler Profiler = null;
 
     public override void _Ready() {
         base._Ready();
@@ -127,43 +100,40 @@ public partial class SmallTown : Placeable
 
     protected void Generate()
     {
-        TimingData totalTiming = new TimingData("Generate Map", Time.GetTicksMsec());
+        if (GenerateDebugInfo)
+        {
+            Profiler = new SimpleProfiler("SmallTown");
+        }
         var world = this.GetGameWorld();
         if (!world.GlobalScale.IsEqualApprox(Vector2.One)) {
             GD.PushError($"SmallTown ProcGen only works with an identity world scale. (Current Scale={world.GlobalScale}");
             return;
         }
         // Produce a set of candidate points, uniformly distributed across the bounds of the world.
-        TimingData pointTiming = new TimingData("Generate Points", Time.GetTicksMsec());
+        Profiler?.BeginBlock("Generate Points");
         var points = new PointCloud2D(PlacedFootprint.GetGlobalRect(), PointCloudSpacing);
-        pointTiming.EndTimeMs = Time.GetTicksMsec();
-        totalTiming.SubTimes.Add(pointTiming);
+        Profiler?.EndBlock();
 
         // Generate a neighborhood of buildings placed around the world, using the initial point cloud as a basis.
-        
-        var neighborhoodTiming = GenerateNeighborhood(points);
-        neighborhoodTiming.EndTimeMs = Time.GetTicksMsec();
-        totalTiming.SubTimes.Add(neighborhoodTiming);
+        Profiler?.BeginBlock("Generate Neighborhood");
+        GenerateNeighborhood(points);
+        Profiler?.EndBlock();
+
         // Place trees throughout the world, using the same initial point cloud as the basis and avoiding any areas where buildings have
         // already been placed by earlier steps.
-        TimingData treeTiming = new TimingData("Place Trees", Time.GetTicksMsec());
+        Profiler?.BeginBlock("Generate Forest");
         GenerateTrees(points);
-        treeTiming.EndTimeMs = Time.GetTicksMsec();
-        totalTiming.SubTimes.Add(treeTiming);
+        Profiler?.EndBlock();
         
-        totalTiming.EndTimeMs = Time.GetTicksMsec();
         if (GenerateDebugInfo)
         {
-            GD.Print($"ProcGen Timings for {Name}[{GetType()}]:\n{totalTiming.PrettyPrint(1)}");
+            GD.Print($"ProcGen Timings for {Name}[{GetType()}]:\n{Profiler?.EndAndReport()}");
         }
     }
 
     // Procedurally generates and places a neighborhood of buildings within the world using the provided pointcloud as a basis.
-    // Returns a list of TimingData sub-timings for measured aspects of this routine. if GenerateDebugInfo == false then the list is always empty.
-    protected TimingData GenerateNeighborhood(PointCloud2D points)
+    protected void GenerateNeighborhood(PointCloud2D points)
     {
-        TimingData totalTiming = new TimingData("Place Neighborhood", Time.GetTicksMsec());
-        List<TimingData> timings = [];
         if (GenerateDebugInfo) {
             DebugNodeExtensions.ClearDebugDrawCallGroup(DebugDrawCallGroup_Buildings);
             // Always start with the debug draw calls disabled, they can be enabled later if/when needed.
@@ -179,7 +149,7 @@ public partial class SmallTown : Placeable
         // The building footprint's local position is our offset.
         points.PointTestOffset = -buildingPrefabScene.PlacedFootprint.Position;
         
-        var constructFiltersTiming = new TimingData("Construct Filters", Time.GetTicksMsec());
+        Profiler?.BeginBlock("Construct Filters");
 
         // Construct a filter for removing points from the cloud if a building wouldn't fit there while being fully inside the scenario.
         var scenarioBoundsFilter = Filters.WithinBounds(PlacedFootprint.GetGlobalRect()).Inverted();
@@ -217,19 +187,15 @@ public partial class SmallTown : Placeable
                 }
             });
         }
-        
-        constructFiltersTiming.EndTimeMs = Time.GetTicksMsec();
-        totalTiming.SubTimes.Add(constructFiltersTiming);
 
-        var filterTiming = new TimingData("Execute Filters", Time.GetTicksMsec());
+        Profiler?.EndBlock();
+        Profiler?.BeginBlock("Execute Filters");
         // Remove all points that match one of the filters we created above.
         points = points.FilterOut(Filters.MatchAny(scenarioBoundsFilter, excludedRegionsFilter, mainPathFilter));
-        filterTiming.EndTimeMs = Time.GetTicksMsec();
-        totalTiming.SubTimes.Add(filterTiming);
+        Profiler?.EndBlock();
         
-        var placementTiming = new TimingData("Place Buildings", Time.GetTicksMsec());
+        Profiler?.BeginBlock("Place Buildings");
         // Weight the remaining points according to how close they are to the path and the center of the world (to keep things close).
-        var maxDistanceFromPath = footprintSize.Length() * 3;
         points = points.Transform(WeightPointsForPlacementFunc(maxDistanceFromMainPath: footprintSize.Length() * 3));
 
         // Reorder the points in the point cloud according to their weight, with higher weights earlier in the sequence.
@@ -264,9 +230,7 @@ public partial class SmallTown : Placeable
             }
         }
         AllPlaceables.AddRange(placed);
-        placementTiming.EndTimeMs = Time.GetTicksMsec();
-        totalTiming.SubTimes.Add(placementTiming);
-        return totalTiming;
+        Profiler?.EndBlock();
     }
 
     protected void GenerateTrees(PointCloud2D points) {
@@ -283,6 +247,8 @@ public partial class SmallTown : Placeable
         // Our points are shaped and sized according to the footprint of the trees we're placing.
         points.PointSize = footprintSize;
         points.PointTestOffset = -treePrefabScene.PlacedFootprint.Position;
+        
+        Profiler?.BeginBlock("Construct Filters");
 
         // Construct a filter for removing points from the cloud if a point wouldn't fit there while being fully inside the scenario.
         var scenarioBoundsFilter = Filters.WithinBounds(PlacedFootprint.GetGlobalRect()).Inverted();
@@ -315,13 +281,22 @@ public partial class SmallTown : Placeable
                 }
             });
         }
+        
+        Profiler?.EndBlock();
 
+        Profiler?.BeginBlock("Jitter Tree Locations");
         // Transform (translate) candidate tree positions by a random amount to add variety.
         points = points.Transform((pc, p) => { return p + footprintSize * new Vector2(GD.RandRange(-1, 1), GD.RandRange(-1, 1)); });
 
+        Profiler?.EndBlock();
+
+        Profiler?.BeginBlock("Execute Filters");
         // Filter out points where the tree would be outside of the world.
         points = points.FilterOut(Filters.MatchAny(scenarioBoundsFilter, excludedRectsFilter, mainPathFilter));
 
+        Profiler?.EndBlock();
+        
+        Profiler?.BeginBlock("Place Trees");
         // Determine possible placements for the trees we want to spawn in the world; Using a custom spacing rule to prevent
         // trees from spawning too close together.
         var placements = GetPlacementLocations(points,
@@ -344,6 +319,7 @@ public partial class SmallTown : Placeable
             }
         }
         AllPlaceables.AddRange(placed);
+        Profiler?.EndBlock();
     }
 
     // Returns a PointTransform function that can be used to weight all points in the point cloud based on criteria for placing buildings:
