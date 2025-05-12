@@ -80,6 +80,36 @@ public partial class SmallTown : Placeable
     private const string DebugDrawCallGroup_Buildings = "SmallTown.Buildings";
     private const string DebugDrawCallGroup_Trees = "SmallTown.Trees";
 
+    // Used to capture timing data about ProcGen routines.
+    protected struct TimingData
+    {
+        public string Name;
+        public float StartTimeMs;
+        public float EndTimeMs;
+        public List<TimingData> SubTimes;
+        public float DurationMs => EndTimeMs - StartTimeMs;
+
+        public TimingData(string name, float startTimeMs)
+        {
+            Name = name;
+            StartTimeMs = startTimeMs;
+            SubTimes = [];
+        }
+        public string PrettyPrint(int depth = 0)
+        {
+            string indent = new string('\t', depth); // depth=0 -> 0 tabs
+            string line = $"{indent}{DurationMs}ms - {Name}";
+            if (SubTimes != null)
+            {
+                foreach (var time in SubTimes)
+                {
+                    line += $"\n{time.PrettyPrint(depth+1)}";
+                }
+            }
+            return line;
+        }
+    }
+
     public override void _Ready() {
         base._Ready();
 
@@ -95,24 +125,45 @@ public partial class SmallTown : Placeable
         Callable.From(Generate).CallDeferred();
     }
 
-    protected void Generate() {
+    protected void Generate()
+    {
+        TimingData totalTiming = new TimingData("Generate Map", Time.GetTicksMsec());
         var world = this.GetGameWorld();
         if (!world.GlobalScale.IsEqualApprox(Vector2.One)) {
             GD.PushError($"SmallTown ProcGen only works with an identity world scale. (Current Scale={world.GlobalScale}");
             return;
         }
         // Produce a set of candidate points, uniformly distributed across the bounds of the world.
+        TimingData pointTiming = new TimingData("Generate Points", Time.GetTicksMsec());
         var points = new PointCloud2D(PlacedFootprint.GetGlobalRect(), PointCloudSpacing);
+        pointTiming.EndTimeMs = Time.GetTicksMsec();
+        totalTiming.SubTimes.Add(pointTiming);
 
         // Generate a neighborhood of buildings placed around the world, using the initial point cloud as a basis.
-        GenerateNeighborhood(points);
+        
+        var neighborhoodTiming = GenerateNeighborhood(points);
+        neighborhoodTiming.EndTimeMs = Time.GetTicksMsec();
+        totalTiming.SubTimes.Add(neighborhoodTiming);
         // Place trees throughout the world, using the same initial point cloud as the basis and avoiding any areas where buildings have
         // already been placed by earlier steps.
+        TimingData treeTiming = new TimingData("Place Trees", Time.GetTicksMsec());
         GenerateTrees(points);
+        treeTiming.EndTimeMs = Time.GetTicksMsec();
+        totalTiming.SubTimes.Add(treeTiming);
+        
+        totalTiming.EndTimeMs = Time.GetTicksMsec();
+        if (GenerateDebugInfo)
+        {
+            GD.Print($"ProcGen Timings for {Name}[{GetType()}]:\n{totalTiming.PrettyPrint(1)}");
+        }
     }
 
     // Procedurally generates and places a neighborhood of buildings within the world using the provided pointcloud as a basis.
-    protected void GenerateNeighborhood(PointCloud2D points) {
+    // Returns a list of TimingData sub-timings for measured aspects of this routine. if GenerateDebugInfo == false then the list is always empty.
+    protected TimingData GenerateNeighborhood(PointCloud2D points)
+    {
+        TimingData totalTiming = new TimingData("Place Neighborhood", Time.GetTicksMsec());
+        List<TimingData> timings = [];
         if (GenerateDebugInfo) {
             DebugNodeExtensions.ClearDebugDrawCallGroup(DebugDrawCallGroup_Buildings);
             // Always start with the debug draw calls disabled, they can be enabled later if/when needed.
@@ -127,6 +178,8 @@ public partial class SmallTown : Placeable
         points.PointSize = footprintSize;
         // The building footprint's local position is our offset.
         points.PointTestOffset = -buildingPrefabScene.PlacedFootprint.Position;
+        
+        var constructFiltersTiming = new TimingData("Construct Filters", Time.GetTicksMsec());
 
         // Construct a filter for removing points from the cloud if a building wouldn't fit there while being fully inside the scenario.
         var scenarioBoundsFilter = Filters.WithinBounds(PlacedFootprint.GetGlobalRect()).Inverted();
@@ -164,10 +217,17 @@ public partial class SmallTown : Placeable
                 }
             });
         }
+        
+        constructFiltersTiming.EndTimeMs = Time.GetTicksMsec();
+        totalTiming.SubTimes.Add(constructFiltersTiming);
 
+        var filterTiming = new TimingData("Execute Filters", Time.GetTicksMsec());
         // Remove all points that match one of the filters we created above.
         points = points.FilterOut(Filters.MatchAny(scenarioBoundsFilter, excludedRegionsFilter, mainPathFilter));
-
+        filterTiming.EndTimeMs = Time.GetTicksMsec();
+        totalTiming.SubTimes.Add(filterTiming);
+        
+        var placementTiming = new TimingData("Place Buildings", Time.GetTicksMsec());
         // Weight the remaining points according to how close they are to the path and the center of the world (to keep things close).
         var maxDistanceFromPath = footprintSize.Length() * 3;
         points = points.Transform(WeightPointsForPlacementFunc(maxDistanceFromMainPath: footprintSize.Length() * 3));
@@ -204,6 +264,9 @@ public partial class SmallTown : Placeable
             }
         }
         AllPlaceables.AddRange(placed);
+        placementTiming.EndTimeMs = Time.GetTicksMsec();
+        totalTiming.SubTimes.Add(placementTiming);
+        return totalTiming;
     }
 
     protected void GenerateTrees(PointCloud2D points) {
@@ -236,8 +299,7 @@ public partial class SmallTown : Placeable
         // Construct a filter for removing points if they overlap the main path (or are too close).
         var mainPathFilter = Filters.OverlapsPathMesh(
             pathMesh: MainPathMesh,
-            pathStepLength: footprintSize.Length(),
-            additionalPointSkirt: footprintSize.Length());
+            pathStepLength: footprintSize.Length());
 
         if (GenerateDebugInfo) {
             // Wrap the filters in callbacks that use different colors so that we can see what points are identified by each.
