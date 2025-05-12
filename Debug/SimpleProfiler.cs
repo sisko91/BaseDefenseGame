@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using Godot;
 
@@ -99,6 +100,19 @@ namespace Gurdy {
                 root = finished;
             }
         }
+        
+        public void AddCustomSubTiming(TimingData data)
+        {
+            if (root.Ended)
+            {
+                GD.PushWarning($"Profiler: `{root.Name} has already ended root block, cannot add another timing.");
+                return;
+            }
+            
+            var current = stack.Pop();
+            current.SubTimes.Add(data);
+            stack.Push(current);
+        }
 
         public string EndAndReport()
         {
@@ -107,6 +121,8 @@ namespace Gurdy {
                 GD.PushWarning($"Profiler: `{root.Name}` was asked to produce a report while non-root block `{stack.Peek().Name}` was still in progress.");
                 EndBlock();
             }
+
+            root.End();
             return root.PrettyPrint();
         }
     }

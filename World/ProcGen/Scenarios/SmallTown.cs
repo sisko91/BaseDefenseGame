@@ -254,11 +254,11 @@ public partial class SmallTown : Placeable
         var scenarioBoundsFilter = Filters.WithinBounds(PlacedFootprint.GetGlobalRect()).Inverted();
 
         // Compose a list of all excluded region rects based on 1) global exclusions within SmallTown, and 2) any regions for Placeables already placed.
-        // OPTIMIZATION: From profiling this code, it's important to cache the full List of rects returned by PlaceableRegionsWithTag because the associated calls
-        //               look up nodes in the scene which is inefficient to do many times (and this code iterates a lot).
-        var globalExcludes = PlaceableRegionsWithTag(GlobalExclusionTag).ToList();
-        var forestExcludes = PlaceableRegionsWithTag(ForestExclusionTag).ToList();
-        var allExcludedRects = globalExcludes.Concat(forestExcludes).Select(regionRect => regionRect.GetGlobalRect());
+        var allExcludedRects = PlaceableRegionsWithTag(GlobalExclusionTag).Concat(PlaceableRegionsWithTag(ForestExclusionTag))
+            .Select(regionRect => regionRect.GetGlobalRect())
+            // OPTIMIZATION: From profiling this code, it's important to cache the full List of rects returned here because the associated calls
+            //               look up nodes in the scene by path, which is inefficient to do many times (and this code iterates a lot).
+            .ToList();
         
         // Construct a filter for removing points from the cloud if they overlap any of our exclusion rects.
         var excludedRectsFilter = Filters.OverlapsAnyRect(

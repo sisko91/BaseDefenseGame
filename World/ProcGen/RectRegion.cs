@@ -140,6 +140,6 @@ public sealed partial class RectRegion : Node2D
     // Returns a Rect2 positioned and scaled to match the Size and GlobalTransform of this RectRegion.
     public Rect2 GetGlobalRect() {
         var regionSizeGlobal = GlobalTransform.BasisXform(Size);
-        return new Rect2(GlobalPosition, regionSizeGlobal);
+        return new Rect2(GlobalTransform.Origin, regionSizeGlobal);
     }
 }
