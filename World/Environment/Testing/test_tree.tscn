@@ -1,12 +1,17 @@
-[gd_scene load_steps=7 format=3 uid="uid://6prx14s7d1am"]
+[gd_scene load_steps=9 format=3 uid="uid://6prx14s7d1am"]
 
 [ext_resource type="Script" uid="uid://d2yt05ht15iv2" path="res://World/ProcGen/Placeable.cs" id="1_mt5o5"]
 [ext_resource type="Shader" uid="uid://7akcch5ndkta" path="res://Shaders/silhouette.gdshader" id="2_fc1lc"]
 [ext_resource type="Texture2D" uid="uid://dpw6r0aqfx4a7" path="res://art/World/tree_no_shadow.png" id="3_gct18"]
 [ext_resource type="Script" uid="uid://duyw2hn54xkre" path="res://World/ProcGen/RectRegion.cs" id="4_6eqvx"]
+[ext_resource type="Texture2D" uid="uid://ctphjpktt7gh7" path="res://art/World/tree_normal_map_2.png" id="4_fc1lc"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ijnyt"]
 shader = ExtResource("2_fc1lc")
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_gct18"]
+diffuse_texture = ExtResource("3_gct18")
+normal_texture = ExtResource("4_fc1lc")
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_2i4js"]
 radius = 184.0
@@ -19,7 +24,7 @@ script = ExtResource("1_mt5o5")
 [node name="Sprite2D" type="Sprite2D" parent="."]
 material = SubResource("ShaderMaterial_ijnyt")
 scale = Vector2(0.25, 0.25)
-texture = ExtResource("3_gct18")
+texture = SubResource("CanvasTexture_gct18")
 centered = false
 offset = Vector2(-512, -846)
 

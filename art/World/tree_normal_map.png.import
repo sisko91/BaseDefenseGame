@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ms33f4hemxmn"
-path="res://.godot/imported/tree_canopy.png-d08052409b39c34ca4e6071a2e5d715c.ctex"
+uid="uid://dd8fbkn0hujer"
+path="res://.godot/imported/tree_normal_map.png-cef541c151db8c5532a2969b876588ae.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://art/World/tree_canopy.png"
-dest_files=["res://.godot/imported/tree_canopy.png-d08052409b39c34ca4e6071a2e5d715c.ctex"]
+source_file="res://art/World/tree_normal_map.png"
+dest_files=["res://.godot/imported/tree_normal_map.png-cef541c151db8c5532a2969b876588ae.ctex"]
 
 [params]
 
