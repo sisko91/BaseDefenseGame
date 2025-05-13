@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=40 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
@@ -28,6 +28,7 @@
 [ext_resource type="Script" uid="uid://duyw2hn54xkre" path="res://World/ProcGen/RectRegion.cs" id="14_80b3c"]
 [ext_resource type="Shader" uid="uid://7akcch5ndkta" path="res://Shaders/silhouette.gdshader" id="20_hkmll"]
 [ext_resource type="PackedScene" uid="uid://6prx14s7d1am" path="res://World/Environment/Testing/test_tree.tscn" id="28_fbbf8"]
+[ext_resource type="PackedScene" uid="uid://thlbbsrf6pcr" path="res://World/Environment/Testing/test_grass_patch.tscn" id="29_qinvk"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_fn2eg"]
 frequency = 0.0075
@@ -176,7 +177,7 @@ StopAngleDegrees = 90.0
 y_sort_enabled = true
 
 [node name="CrystalTarget" parent="YSort" instance=ExtResource("7_8h8jj")]
-position = Vector2(-312, 146)
+position = Vector2(-312, 233.01)
 script = ExtResource("11_dghf1")
 MaxHealth = 100.0
 
@@ -227,5 +228,12 @@ position = Vector2(0, 51)
 
 [node name="TestTree2" parent="YSort" instance=ExtResource("28_fbbf8")]
 position = Vector2(515, 449)
+
+[node name="TestGrassPatch" parent="YSort" instance=ExtResource("29_qinvk")]
+position = Vector2(-651, 174)
+Bounds = Rect2(0, 0, 1536, 350)
+BladeRows = 30
+BladesPerRow = 1024
+BladeHeight = 24.0
 
 [editable path="YSort/TestBuilding"]
