@@ -2,6 +2,7 @@ using ExtensionMethods;
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 public partial class Merchant : Moveable
 {
@@ -15,6 +16,7 @@ public partial class Merchant : Moveable
     public override void _Ready()
     {
         merchantUI = this.GetGameHUD().GetNode<MerchantUI>("MerchantUI");
+        AddToGroup("NonHostile", true);
     }
 
     public override void _Process(double delta)

@@ -70,8 +70,8 @@ animations = [{
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_kgmmw"]
-radius = 16.0
-height = 34.0
+radius = 25.0
+height = 75.0
 
 [sub_resource type="SystemFont" id="SystemFont_7kxip"]
 subpixel_positioning = 0
@@ -81,23 +81,21 @@ script = ExtResource("1_7kxip")
 ShopItems = Array[Resource]([])
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_yg02f")
 autoplay = "default"
 frame_progress = 0.297527
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
-visible = false
-scale = Vector2(0.686429, 1.05117)
-polygon = PackedVector2Array(-13.1113, 14.2698, 13.1113, 14.2698, 16.025, 12.3672, 16.025, 9.51321, 18.9386, 7.61057, 18.9386, 0.951321, 16.025, -0.951321, -14.5681, -0.951321, -18.9386, 0.951321, -18.9386, 7.61057, -16.025, 10.4645, -16.025, 12.3672)
+polygon = PackedVector2Array(-21, 0, 22, 0, 25, 4, 25, 17, 21, 21, 21, 25, 18, 29, -19, 29, -21, 27, -21, 20, -26, 18, -26, 4)
 
 [node name="InteractionZone" type="Area2D" parent="." node_paths=PackedStringArray("InteractionPrompt")]
-collision_layer = 128
-collision_mask = 16
+collision_layer = 8
 script = ExtResource("3_utw2h")
 InteractionPrompt = NodePath("TextPrompt")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionZone"]
-position = Vector2(0, 5)
+position = Vector2(0, 18)
 shape = SubResource("CapsuleShape2D_kgmmw")
 
 [node name="TextPrompt" type="CenterContainer" parent="InteractionZone"]
@@ -108,9 +106,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -41.0
-offset_top = -42.0
+offset_top = -59.0
 offset_right = 48.0
-offset_bottom = -2.0
+offset_bottom = -19.0
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(1.00916, 1)
@@ -119,7 +117,7 @@ theme = ExtResource("4_ok5p4")
 [node name="TextLabel" type="Label" parent="InteractionZone/TextPrompt"]
 layout_mode = 2
 theme_override_fonts/font = SubResource("SystemFont_7kxip")
-theme_override_font_sizes/font_size = 10
+theme_override_font_sizes/font_size = 20
 text = "Come, have a look"
 horizontal_alignment = 1
 

@@ -344,17 +344,26 @@ public partial class Brain : Resource
                 {
                     continue;
                 }
-                var shape = wallDanger.GetNode<CollisionShape2D>("CollisionShape2D").Shape;
-                if (shape is RectangleShape2D)
-                {
-                    var rectShape = shape as RectangleShape2D;
 
-                    var wallDangerRange = 15;
-                    //Add the extents
-                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(rectShape.Size.X / 2 * wallDanger.Scale.X, 0).Rotated(wallDanger.Rotation), wallDangerRange);
-                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(-rectShape.Size.X / 2 * wallDanger.Scale.X, 0).Rotated(wallDanger.Rotation), wallDangerRange);
-                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(0, rectShape.Size.Y / 2 * wallDanger.Scale.Y).Rotated(wallDanger.Rotation), wallDangerRange);
-                    CheckAndAddDanger(potentialDanger.GlobalPosition + new Vector2(0, -rectShape.Size.Y / 2 * wallDanger.Scale.Y).Rotated(wallDanger.Rotation), wallDangerRange);
+                //TODO: A raycast solution would be simpler and more effective
+                foreach (Node node in wallDanger.GetChildren())
+                {
+                    if (node is CollisionShape2D collisionShape)
+                    {
+                        var shape = collisionShape.Shape;
+
+                        if (shape is RectangleShape2D)
+                        {
+                            var rectShape = shape as RectangleShape2D;
+
+                            var wallDangerRange = 15;
+                            //Add the extents
+                            CheckAndAddDanger(collisionShape.GlobalPosition + new Vector2(rectShape.Size.X / 2 * wallDanger.Scale.X, 0).Rotated(wallDanger.Rotation), wallDangerRange);
+                            CheckAndAddDanger(collisionShape.GlobalPosition + new Vector2(-rectShape.Size.X / 2 * wallDanger.Scale.X, 0).Rotated(wallDanger.Rotation), wallDangerRange);
+                            CheckAndAddDanger(collisionShape.GlobalPosition + new Vector2(0, rectShape.Size.Y / 2 * wallDanger.Scale.Y).Rotated(wallDanger.Rotation), wallDangerRange);
+                            CheckAndAddDanger(collisionShape.GlobalPosition + new Vector2(0, -rectShape.Size.Y / 2 * wallDanger.Scale.Y).Rotated(wallDanger.Rotation), wallDangerRange);
+                        }
+                    }
                 }
             }
             else

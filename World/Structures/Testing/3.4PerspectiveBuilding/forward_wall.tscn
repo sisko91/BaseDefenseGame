@@ -1,0 +1,29 @@
+[gd_scene load_steps=4 format=3 uid="uid://h45844cape7j"]
+
+[ext_resource type="Texture2D" uid="uid://bf7eu48h836y1" path="res://art/World/StoneWalls/wall_front.png" id="1_7wjad"]
+[ext_resource type="Texture2D" uid="uid://hhddsihnjo41" path="res://art/World/StoneWalls/wall_top.png" id="2_a2o8x"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_q17tf"]
+size = Vector2(256, 16)
+
+[node name="ForwardWall" type="StaticBody2D"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -3)
+shape = SubResource("RectangleShape2D_q17tf")
+
+[node name="Front" type="Sprite2D" parent="."]
+texture_repeat = 2
+position = Vector2(0, -54)
+scale = Vector2(2, 2)
+texture = ExtResource("1_7wjad")
+region_enabled = true
+region_rect = Rect2(0, 0, 128, 60)
+
+[node name="Top" type="Sprite2D" parent="."]
+texture_repeat = 2
+position = Vector2(0, -122)
+scale = Vector2(2, 2)
+texture = ExtResource("2_a2o8x")
+region_enabled = true
+region_rect = Rect2(0, 0, 128, 8)

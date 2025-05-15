@@ -310,7 +310,7 @@ public partial class Player : Character
         RenderingServer.GlobalShaderParameterSet("player_screen_uv_start", normalizedStart);
         RenderingServer.GlobalShaderParameterSet("player_screen_uv_end", normalizedEnd);
 
-        //TODO: Just update this when the animation texture changes
+        //TODO: Just update this when the animation texture changes. We can also cache these image textures so we only generate them one time
         var imageTex = ImageTexture.CreateFromImage(currentSprite.Texture.GetImage());
         RenderingServer.GlobalShaderParameterSet("player_texture", imageTex);
     }

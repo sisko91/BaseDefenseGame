@@ -80,8 +80,8 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_od3ui"]
-size = Vector2(30, 7.5)
+[sub_resource type="CircleShape2D" id="CircleShape2D_od3ui"]
+radius = 15.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_od3ui"]
 radius = 23.0
@@ -116,7 +116,8 @@ frame_progress = 0.896812
 offset = Vector2(0, -10)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("RectangleShape2D_od3ui")
+position = Vector2(0, -9)
+shape = SubResource("CircleShape2D_od3ui")
 
 [node name="HitboxTODO" type="CollisionShape2D" parent="."]
 position = Vector2(0, -30)

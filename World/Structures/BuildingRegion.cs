@@ -25,7 +25,7 @@ public partial class BuildingRegion : Area2D
     {
         Stairs = new Godot.Collections.Array<Stairs>();
         Doors = new Godot.Collections.Array<Door>();
-        foreach (var child in GetChildren()) {
+        foreach (var child in GetAllChildren(this)) {
             if (child is Stairs stairs) {
                 Stairs.Add(stairs);
                 stairs.OwningRegion = this;
@@ -51,8 +51,18 @@ public partial class BuildingRegion : Area2D
         return exits;
     }
 
-    // Called every frame. 'delta' is the elapsed time since the previous frame.
-    public override void _Process(double delta)
+    private List<Node> GetAllChildren(Node node)
     {
+        List<Node> children = new List<Node>();
+        foreach (Node child in node.GetChildren())
+        {
+            children.Add(child);
+            if (child.GetChildCount() > 0)
+            {
+                children.AddRange(GetAllChildren(child));
+            }
+        }
+
+        return children;
     }
 }

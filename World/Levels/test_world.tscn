@@ -5,30 +5,29 @@
 [ext_resource type="Shader" uid="uid://cudyiyn8n3ntx" path="res://Shaders/cloud.gdshader" id="2_vxmty"]
 [ext_resource type="Shader" uid="uid://cwkbk8kbjdbbj" path="res://Shaders/background.gdshader" id="3_dghf1"]
 [ext_resource type="Script" uid="uid://cv674n30j8ogj" path="res://World/PathMesh.cs" id="5_hjxpo"]
-[ext_resource type="Texture2D" uid="uid://oe3re6tn0ddh" path="res://art/World/woodfloor.png" id="6_11lc6"]
 [ext_resource type="PackedScene" uid="uid://2ctjrem32j1v" path="res://NPC/Shambler/shambler.tscn" id="6_a6glu"]
 [ext_resource type="Shader" uid="uid://wjxju78pf2j" path="res://Shaders/test_path_shader.gdshader" id="6_cdkb4"]
 [ext_resource type="PackedScene" uid="uid://h6mtv0wbug0t" path="res://World/Structures/Testing/test_building.tscn" id="6_lhns8"]
 [ext_resource type="Script" uid="uid://bnt0qsggcts86" path="res://World/RadialSpawner.cs" id="6_xi2eq"]
 [ext_resource type="PackedScene" uid="uid://dys3a163srv0l" path="res://Gameplay/crystal_target.tscn" id="7_8h8jj"]
 [ext_resource type="PackedScene" uid="uid://ca1u833dx2dax" path="res://World/Structures/Testing/test_fireplace.tscn" id="7_8h8jw"]
-[ext_resource type="PackedScene" uid="uid://blio7x08xw4te" path="res://NPC/Merchant/merchant.tscn" id="7_8ojdi"]
 [ext_resource type="Texture2D" uid="uid://d1skfyo8wkj1a" path="res://art/World/test_road.png" id="7_b48bc"]
 [ext_resource type="PackedScene" uid="uid://cf0w6hmvqdiet" path="res://World/Environment/Testing/test_tree_dead.tscn" id="8_fbbf8"]
-[ext_resource type="Resource" uid="uid://eurmfqo548j4" path="res://World/ShopItems/pistol.tres" id="8_lquev"]
-[ext_resource type="Resource" uid="uid://wi0ppwstcfuk" path="res://World/ShopItems/scattergun.tres" id="9_hjxpo"]
 [ext_resource type="Texture2D" uid="uid://dwn5oow6sd10h" path="res://art/World/oil_barrel.png" id="9_j617i"]
 [ext_resource type="Texture2D" uid="uid://bpy4i0vli8ewl" path="res://art/World/old_barrel.png" id="9_wh5fb"]
-[ext_resource type="Resource" uid="uid://b77gn5emtpi6g" path="res://World/ShopItems/barber.tres" id="10_cdkb4"]
 [ext_resource type="Script" uid="uid://b3g2d4jh4bxsj" path="res://World/ProcGen/Paths/PathDecalDecorator.cs" id="10_qx1mc"]
 [ext_resource type="Script" uid="uid://bunp1yq3jjjv7" path="res://World/DayNight/DayNight.cs" id="11_11lc6"]
-[ext_resource type="Script" uid="uid://cu0g6818gf7x1" path="res://World/ProcGen/Paths/PathDecorator.cs" id="11_80b3c"]
 [ext_resource type="Script" uid="uid://7x2lypek5o4l" path="res://Gameplay/CrystalTarget.cs" id="11_dghf1"]
 [ext_resource type="Script" uid="uid://ul68if3kp7vg" path="res://World/ProcGen/Scenarios/SmallTown.cs" id="12_qx1mc"]
+[ext_resource type="Script" uid="uid://cu0g6818gf7x1" path="res://World/ProcGen/Paths/PathDecorator.cs" id="13_wh5fb"]
 [ext_resource type="Script" uid="uid://duyw2hn54xkre" path="res://World/ProcGen/RectRegion.cs" id="14_80b3c"]
 [ext_resource type="Shader" uid="uid://7akcch5ndkta" path="res://Shaders/silhouette.gdshader" id="20_hkmll"]
 [ext_resource type="PackedScene" uid="uid://6prx14s7d1am" path="res://World/Environment/Testing/test_tree.tscn" id="28_fbbf8"]
 [ext_resource type="PackedScene" uid="uid://thlbbsrf6pcr" path="res://World/Environment/Testing/test_grass_patch.tscn" id="29_qinvk"]
+[ext_resource type="PackedScene" uid="uid://c88u38cjeos7d" path="res://World/Structures/Testing/3.4PerspectiveBuilding/test_building.tscn" id="21_wh5fb"]
+[ext_resource type="PackedScene" uid="uid://blio7x08xw4te" path="res://NPC/Merchant/merchant.tscn" id="22_hkmll"]
+[ext_resource type="Resource" uid="uid://wi0ppwstcfuk" path="res://World/ShopItems/scattergun.tres" id="23_80b3c"]
+[ext_resource type="Resource" uid="uid://b77gn5emtpi6g" path="res://World/ShopItems/barber.tres" id="24_782py"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_fn2eg"]
 frequency = 0.0075
@@ -68,18 +67,6 @@ _data = {
 }
 point_count = 5
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_hkmll"]
-shader = ExtResource("20_hkmll")
-
-[sub_resource type="Gradient" id="Gradient_80b3c"]
-offsets = PackedFloat32Array(0)
-colors = PackedColorArray(0.238088, 0.144595, 0.0765795, 1)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_782py"]
-gradient = SubResource("Gradient_80b3c")
-width = 119
-height = 26
-
 [node name="World" type="Node2D"]
 script = ExtResource("1_tr0n8")
 RegionBounds = Vector2(6000, 6000)
@@ -87,7 +74,6 @@ RegionBounds = Vector2(6000, 6000)
 [node name="DayNight" type="Node" parent="."]
 script = ExtResource("11_11lc6")
 DayStartTime = 0.0
-FreezeTime = true
 
 [node name="ParallaxBackground" type="Parallax2D" parent="."]
 light_mask = 2
@@ -141,10 +127,10 @@ metadata/_custom_type_script = "uid://duyw2hn54xkre"
 [node name="SecondaryFootprints" type="Node2D" parent="ScenarioContainer"]
 
 [node name="ExcludeStartZone" type="Node2D" parent="ScenarioContainer/SecondaryFootprints"]
-position = Vector2(-682, -458)
+position = Vector2(-711, -932)
 scale = Vector2(0.578354, 0.508114)
 script = ExtResource("14_80b3c")
-Size = Vector2(2366.31, 2061.53)
+Size = Vector2(2440.31, 3094.71)
 Tags = Array[String](["ProcGen.Exclude.All"])
 EditorDrawColor = Color(0.798375, 0, 0.201584, 1)
 metadata/_custom_type_script = "uid://duyw2hn54xkre"
@@ -153,7 +139,7 @@ metadata/_custom_type_script = "uid://duyw2hn54xkre"
 script = ExtResource("5_hjxpo")
 Path = NodePath("SourcePath2D")
 PathMeshMaterial = SubResource("ShaderMaterial_b48bc")
-Decorators = Array[ExtResource("11_80b3c")]([SubResource("Resource_hkmll")])
+Decorators = Array[ExtResource("13_wh5fb")]([SubResource("Resource_hkmll")])
 PathWidth = 400.0
 StretchTexCoords = false
 TexCoordsRepeatDistance = 1000.0
@@ -181,47 +167,15 @@ position = Vector2(-312, 233.01)
 script = ExtResource("11_dghf1")
 MaxHealth = 100.0
 
-[node name="TestBuilding" parent="YSort" instance=ExtResource("6_lhns8")]
-position = Vector2(-311, -163)
+[node name="TestBuilding" parent="YSort" instance=ExtResource("21_wh5fb")]
+position = Vector2(0, -300)
 
-[node name="Ground" parent="YSort/TestBuilding/Floor1" index="1"]
-position = Vector2(33, 32)
-scale = Vector2(0.25, 0.25)
-texture = ExtResource("6_11lc6")
-region_rect = Rect2(0, 0, 1792, 768)
+[node name="Merchant" parent="YSort/TestBuilding/Floor1/YSort" index="0" instance=ExtResource("22_hkmll")]
+position = Vector2(0, -199)
+ShopItems = Array[Resource]([ExtResource("23_80b3c"), ExtResource("24_782py")])
 
-[node name="Wall" parent="YSort/TestBuilding/Floor1" index="8"]
-position = Vector2(112, 192)
-
-[node name="Merchant" parent="YSort/TestBuilding/Floor1" index="14" instance=ExtResource("7_8ojdi")]
-position = Vector2(257, 66)
-scale = Vector2(2, 2)
-collision_layer = 16
-collision_mask = 16
-ShopItems = Array[Resource]([ExtResource("8_lquev"), ExtResource("9_hjxpo"), ExtResource("10_cdkb4")])
-
-[node name="TestBuilding2" parent="YSort" instance=ExtResource("6_lhns8")]
-position = Vector2(313, -163)
-
-[node name="Overhang" type="Sprite2D" parent="YSort"]
-light_mask = 2
-z_index = 1
-position = Vector2(-58, -244)
-
-[node name="Sprite2D" type="Sprite2D" parent="YSort/Overhang"]
-material = SubResource("ShaderMaterial_hkmll")
-position = Vector2(59, 13)
-texture = SubResource("GradientTexture2D_782py")
-
-[node name="Shadow" type="ColorRect" parent="YSort/Overhang"]
-light_mask = 0
-z_as_relative = false
-offset_top = 150.0
-offset_right = 119.0
-offset_bottom = 176.0
-mouse_filter = 2
-color = Color(0.25, 0.133333, 0, 1)
-metadata/_edit_use_anchors_ = true
+[node name="Roof" parent="YSort/TestBuilding" index="1"]
+visible = true
 
 [node name="TestFireplace" parent="YSort" instance=ExtResource("7_8h8jw")]
 position = Vector2(0, 51)

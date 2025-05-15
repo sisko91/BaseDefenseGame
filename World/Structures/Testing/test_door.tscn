@@ -25,6 +25,9 @@ color = Color(0.29, 0.29, 0.29, 1)
 collision_layer = 4
 collision_mask = 7
 
+[node name="BlockageShape" type="CollisionShape2D" parent="Blockage"]
+shape = SubResource("RectangleShape2D_pvkm4")
+
 [node name="DoorColor" type="ColorRect" parent="Blockage"]
 anchors_preset = 8
 anchor_left = 0.5
@@ -39,9 +42,6 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(0.185041, 0.113696, 0.0831003, 1)
-
-[node name="BlockageShape" type="CollisionShape2D" parent="Blockage"]
-shape = SubResource("RectangleShape2D_pvkm4")
 
 [node name="InteractionArea" type="Area2D" parent="." node_paths=PackedStringArray("InteractionPrompt")]
 collision_layer = 8

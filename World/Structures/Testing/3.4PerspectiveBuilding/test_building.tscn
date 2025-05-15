@@ -1,0 +1,141 @@
+[gd_scene load_steps=14 format=3 uid="uid://c88u38cjeos7d"]
+
+[ext_resource type="Script" uid="uid://drac3p47binwd" path="res://World/Structures/Building.cs" id="1_bgjah"]
+[ext_resource type="Texture2D" uid="uid://oe3re6tn0ddh" path="res://art/World/woodfloor.png" id="1_k4fc4"]
+[ext_resource type="PackedScene" uid="uid://h45844cape7j" path="res://World/Structures/Testing/3.4PerspectiveBuilding/forward_wall.tscn" id="1_vcw3q"]
+[ext_resource type="Script" uid="uid://cbfqcsyk76tqo" path="res://World/Structures/BuildingRegion.cs" id="2_ax5sx"]
+[ext_resource type="PackedScene" uid="uid://c4n7454yr5em8" path="res://World/Structures/Testing/3.4PerspectiveBuilding/forward_door.tscn" id="2_yk7ac"]
+[ext_resource type="PackedScene" uid="uid://bv3u8ojyyr6rm" path="res://World/Structures/Testing/3.4PerspectiveBuilding/side_wall.tscn" id="3_jwdmb"]
+[ext_resource type="Script" uid="uid://duyw2hn54xkre" path="res://World/ProcGen/RectRegion.cs" id="7_1ubww"]
+[ext_resource type="Shader" uid="uid://7akcch5ndkta" path="res://Shaders/silhouette.gdshader" id="7_3f0hn"]
+[ext_resource type="Texture2D" uid="uid://bf7eu48h836y1" path="res://art/World/StoneWalls/wall_front.png" id="8_breqi"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ax5sx"]
+size = Vector2(768, 480)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_breqi"]
+shader = ExtResource("7_3f0hn")
+
+[sub_resource type="Gradient" id="Gradient_k4fc4"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0.227451, 0.156863, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_bgjah"]
+gradient = SubResource("Gradient_k4fc4")
+width = 600
+height = 430
+
+[node name="TestBuilding" type="Node2D"]
+script = ExtResource("1_bgjah")
+
+[node name="Floor1" type="Area2D" parent="."]
+collision_layer = 8
+collision_mask = 3
+script = ExtResource("2_ax5sx")
+
+[node name="Boundary" type="CollisionShape2D" parent="Floor1"]
+position = Vector2(0, -54)
+shape = SubResource("RectangleShape2D_ax5sx")
+
+[node name="Ground" type="Sprite2D" parent="Floor1"]
+z_index = -1
+texture_repeat = 2
+position = Vector2(0, -54)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("1_k4fc4")
+region_enabled = true
+region_rect = Rect2(0, 0, 3072, 1920)
+
+[node name="YSort" type="Node2D" parent="Floor1"]
+y_sort_enabled = true
+
+[node name="LeftSideWall4" parent="Floor1/YSort" instance=ExtResource("3_jwdmb")]
+position = Vector2(-392, -188)
+
+[node name="LeftSideWall3" parent="Floor1/YSort" instance=ExtResource("3_jwdmb")]
+position = Vector2(-392, -60)
+
+[node name="LeftSideWall2" parent="Floor1/YSort" instance=ExtResource("3_jwdmb")]
+position = Vector2(-392, 68)
+
+[node name="LeftSideWall" parent="Floor1/YSort" instance=ExtResource("3_jwdmb")]
+position = Vector2(-392, 196)
+
+[node name="RightSideWall4" parent="Floor1/YSort" instance=ExtResource("3_jwdmb")]
+position = Vector2(392, -188)
+
+[node name="RightSideWall3" parent="Floor1/YSort" instance=ExtResource("3_jwdmb")]
+position = Vector2(392, -60)
+
+[node name="RightSideWall2" parent="Floor1/YSort" instance=ExtResource("3_jwdmb")]
+position = Vector2(392, 68)
+
+[node name="RightSideWall" parent="Floor1/YSort" instance=ExtResource("3_jwdmb")]
+position = Vector2(392, 196)
+
+[node name="BackWall" parent="Floor1/YSort" instance=ExtResource("1_vcw3q")]
+position = Vector2(256, -300)
+
+[node name="BackWall2" parent="Floor1/YSort" instance=ExtResource("1_vcw3q")]
+position = Vector2(-256, -300)
+
+[node name="BackWall3" parent="Floor1/YSort" instance=ExtResource("1_vcw3q")]
+position = Vector2(0, -300)
+
+[node name="Facade" type="Node2D" parent="Floor1/YSort"]
+y_sort_enabled = true
+position = Vector2(0, 193)
+
+[node name="FrontWall" parent="Floor1/YSort/Facade" instance=ExtResource("1_vcw3q")]
+position = Vector2(256, 3)
+
+[node name="FrontWall2" parent="Floor1/YSort/Facade" instance=ExtResource("1_vcw3q")]
+position = Vector2(-256, 3)
+
+[node name="FrontWallWithDoor" parent="Floor1/YSort/Facade" instance=ExtResource("2_yk7ac")]
+position = Vector2(0, 3)
+
+[node name="Roof" type="Area2D" parent="."]
+visible = false
+position = Vector2(0, 234)
+collision_layer = 128
+collision_mask = 48
+script = ExtResource("2_ax5sx")
+ElevationLevel = 1
+
+[node name="YSort" type="Node2D" parent="Roof"]
+y_sort_enabled = true
+
+[node name="Facade" type="Node2D" parent="Roof/YSort"]
+material = SubResource("ShaderMaterial_breqi")
+position = Vector2(0, -16)
+
+[node name="FrontRoof" type="Sprite2D" parent="Roof/YSort/Facade"]
+texture_repeat = 2
+use_parent_material = true
+position = Vector2(0, -196)
+scale = Vector2(2, 2)
+texture = ExtResource("8_breqi")
+region_enabled = true
+region_rect = Rect2(0, 0, 400, 60)
+
+[node name="RightRoof" type="Sprite2D" parent="Roof/YSort/Facade"]
+z_index = 1
+use_parent_material = true
+position = Vector2(207, -475)
+rotation = 1.5708
+skew = 0.272271
+texture = SubResource("GradientTexture2D_bgjah")
+
+[node name="LeftRoof" type="Sprite2D" parent="Roof/YSort/Facade"]
+z_index = 1
+use_parent_material = true
+position = Vector2(-207, -475)
+rotation = 1.5708
+skew = -0.272271
+texture = SubResource("GradientTexture2D_bgjah")
+
+[node name="PlacedFootprint" type="Node2D" parent="."]
+position = Vector2(-419, -417)
+script = ExtResource("7_1ubww")
+Size = Vector2(835.038, 513.002)
