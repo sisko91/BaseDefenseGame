@@ -17,12 +17,13 @@ public partial class GrassPatch : Node2D
     // How tall each blade of grass should be.
     [Export] public float BladeHeight = 16.0f;
 
-    public float BladeRowHeight => Bounds.Size.Y / BladeRows;
+    public float BladeRowHeight => Mathf.Min(Bounds.Size.Y / BladeRows, BladeHeight * BladeRows);
     
     public override void _Ready()
     {
         GenerateGrassRows();
     }
+    
     private void GenerateGrassRows()
     {
         for (int row = 0; row < BladeRows; row++)
@@ -30,7 +31,9 @@ public partial class GrassPatch : Node2D
             var grassRow = new GrassPatchRowMesh();
             grassRow.Position = new Vector2(Bounds.Position.X, Bounds.Position.Y + row * BladeRowHeight);
             grassRow.RowWidth = Bounds.Size.X;
-            grassRow.BladeMaterial = BladeMaterial;
+            // CRITICAL: CanvasItem shaders (2d) do not support per-instance uniforms so we have to duplicate the
+            // material to configure things per-row of grass.
+            grassRow.BladeMaterial = BladeMaterial.Duplicate() as ShaderMaterial;
             grassRow.BladeHeight = BladeHeight;
             grassRow.BladeWidth = BladeWidth;
             grassRow.BladeCount = BladesPerRow;

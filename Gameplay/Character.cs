@@ -79,9 +79,16 @@ public partial class Character : Moveable, IImpactMaterial
     // Nearby interaction areas that have announced themselves to this character. Interaction areas do this automatically for characters detected in their proximity.
     public Godot.Collections.Array<InteractionArea> NearbyInteractions;
 
+    // A hidden sprite every character registers with the DisplacementMaskViewport, so that environmental elements such as grass and snow can interact with the character.
+    public Node2D GrassDisplacementMarker { get; private set; } = null;
+    
+    // All characters use the same displacement marker scene.
+    private static PackedScene GrassDisplacementMarkerScene = GD.Load<PackedScene>("res://World/Environment/Rendering/grass_displacement_marker.tscn");
+
     protected float HitAnimationSeconds = 0.1f;
     protected Timer HitTimer;
     protected Timer StunTimer;
+    
 
     public override void _Ready()
     {
@@ -102,10 +109,15 @@ public partial class Character : Moveable, IImpactMaterial
 
         AddChild(HitTimer);
         AddChild(StunTimer);
+
+        RegisterGrassDisplacementMarker();
     }
 
     public override void _Process(double delta) {
         base._Process(delta);
+        
+        SyncGrassDisplacementMarker();
+        
         if (DebugConfig.Instance.DRAW_COLLISION_BODY_RADIUS) {
             DrawCollisionBodyRadius();
         }
@@ -229,6 +241,32 @@ public partial class Character : Moveable, IImpactMaterial
     public void DrawCollisionBodyRadius() {
         this.ClearDebugDrawCallGroup(GetPath() + "Radius");
         this.DrawDebugCircle(GlobalPosition, GetCollisionBodyRadius(), new Color(0, 0, 1), false, 1, GetPath() + "Radius");
+    }
+
+    private void RegisterGrassDisplacementMarker()
+    {
+        if (this is not Player)
+        {
+            //return;
+        }
+        if (GrassDisplacementMarker != null)
+        {
+            // TODO: Unregister old marker, register new marker?
+        }
+        GrassDisplacementMarker = GrassDisplacementMarkerScene.Instantiate<Node2D>();
+        // When this character is removed from the scene, remove their displacement marker as well.
+        TreeExited += () => GrassDisplacementMarker?.QueueFree();
+        Main.GetDisplacementMaskViewport().RegisterMarkerChild(GrassDisplacementMarker);
+        SyncGrassDisplacementMarker();
+    }
+
+    private void SyncGrassDisplacementMarker()
+    {
+        if (this is not Player)
+        {
+            //return;
+        }
+        GrassDisplacementMarker.GlobalPosition = GlobalPosition;
     }
 }
 

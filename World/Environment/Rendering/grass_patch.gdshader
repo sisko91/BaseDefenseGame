@@ -1,0 +1,104 @@
+shader_type canvas_item;
+
+/// Globals
+// The size of the screen in the world right now.
+global uniform vec4 screen_world_rect; // x, y = topleft; z, w = size
+// The displacement mask texture, which is configured and set globally.
+global uniform sampler2D displacement_mask_tex;
+
+/// Shader-specific uniforms.
+uniform float ambient_sway_amount = 3.0;
+uniform float ambient_sway_speed = 0.5;
+uniform float displacement_bend_intensity = 15.0;
+
+/// Shader-specific state.
+// The uv coordinates to sample on the displacement mask for the base of this
+// grass blade (the midpoint X at Y=0). Updated in the Vertex shader below for
+// use in the Fragment shader.
+varying flat vec2 base_displacement_uv;
+
+void vertex() {
+	// Unpack Vertex Color values. (See GrassPatchRowMesh.cs)
+	// Phase is our random seed per grass blade.
+   	float phase = COLOR.r;
+	// CenterX is the midpoint of the blade of grass at its base (Y=0). Green.
+	float centerX = COLOR.g;
+	
+	// Compute ambient sway (not caused by any direct influence).
+	float ambient_sway = sin(TIME * ambient_sway_speed + phase * TAU) * ambient_sway_amount;
+    
+    // Make bending effects stronger toward the tip of the blade (UV.y = 1) 
+	// and disabled at the base (UV.y = 0)
+    float vertical_weight = UV.y;
+	
+	// We always sample the displacement texture from the base of the blade of
+	// grass, rather from whatever vertex we're at. This way, all vertices of 
+	// the blade bend in the same direction with the same characteristics.
+	// Vertex global position in world space.
+	vec2 blade_base_pos = vec2(centerX, 0.0); // force Y to 0 (base of blade)
+	vec2 blade_base_world_pos = (MODEL_MATRIX * vec4(blade_base_pos, 0.0, 1.0)).xy;
+
+	// Compute relative UV coordinates of this vertex on the screen (as the 
+	// displacement texture is a full-screen buffer).
+	base_displacement_uv = (blade_base_world_pos - screen_world_rect.xy) / screen_world_rect.zw;
+	
+	// Compute a Displacement Gradient — how much displacement is changing across screen space
+	// We only take the R channel because the displacement mask is all black and white anyway (today).
+	// TODO: This is inefficient - we're sampling the displacement texture FIVE TIMES per pixel 
+	//       on the screen. Right now we draw a white circle with gradient fill for the displacement
+	//		 markers but what we COULD do instead is use that texture's color channels to encode
+	//       not only displacement intensity in R, but also direction in GB. Then we would only need
+	//		 to sample the point directly beneath the grass blade here.
+	vec2 texel_size = vec2(1.0) / vec2(textureSize(displacement_mask_tex, 0));
+	float center = texture(displacement_mask_tex, base_displacement_uv).r;
+	float right = texture(displacement_mask_tex, base_displacement_uv + vec2(texel_size.x, 0.0)).r;
+	float left  = texture(displacement_mask_tex, base_displacement_uv - vec2(texel_size.x, 0.0)).r;
+	float up    = texture(displacement_mask_tex, base_displacement_uv + vec2(0.0, texel_size.y)).r;
+	float down  = texture(displacement_mask_tex, base_displacement_uv - vec2(0.0, texel_size.y)).r;
+
+	vec2 gradient = -vec2(right - left, up - down);
+	//vec2 bend_direction = normalize(gradient); // <-- creates NaN errors if the gradient is 0
+	vec2 bend_direction = length(gradient) > 0.001 ? normalize(gradient) : vec2(0.0, 0.0); // default no bend
+	
+	// Displace based on ambient sway, but not when the displacement value is high.
+	VERTEX.x += ambient_sway * vertical_weight * (1.0 - center);
+	
+	// Bend away from the center.
+	vec2 right_vector = vec2(1.0, 0);
+	float bend_amount = dot(bend_direction, right_vector) * center * vertical_weight * ambient_sway_amount * 5.0;
+	VERTEX.x += bend_amount;
+	
+	// Alternative bending logic:
+	//vec2 bend_offset = bend_direction * center * vertical_weight * sway_amount * 3.0;
+    //VERTEX.xy += bend_offset;
+
+	// Uncomment to debug displacement amount.
+	//COLOR.r = displacementAmount;
+	//COLOR.gb = vec2(0,0);
+	
+	// Uncomment to debug screen uvs.
+	//COLOR.rg = base_displacement_uv;
+	//COLOR.b = 0.0;
+
+}
+
+void fragment()
+{
+	// Unpack Vertex Color values. (See GrassPatchRowMesh.cs)
+	// Phase is our random seed per grass blade.
+   	float phase = COLOR.r;
+	// TODO: Don't hardcode this color stuff.
+	COLOR.rgb = vec3(0.51, 0.97, 0.0) * clamp(phase, 0.6, 0.8) * 0.7;
+	
+	// Hide blades of grass near the displacement, but only for the tops of grass.
+	//float displacement_amount = texture(displacement_mask_tex, base_displacement_uv).r;
+	//COLOR.a = 1.0 - displacement_amount * UV.y;
+	
+	// Near the top, we want the tips to be slightly transparent.
+	float tip_transparency = 0.2;
+	float tip_fade = clamp((UV.y - 0.8) / 0.2, 0.0, 1.0); // 0 → 1 as UV.y goes from tip_transparency to 1.0
+	COLOR.a = mix(1.0, tip_transparency, tip_fade);
+	
+	// Uncomment to debug displacement.
+	//COLOR.b = displacement_amount;
+}

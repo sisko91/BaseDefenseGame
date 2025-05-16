@@ -91,14 +91,19 @@ public partial class GrassPatchRowMesh : Node2D
             UVs[vi + 2] = new Vector2(0, 1);
             UVs[vi + 3] = new Vector2(1, 1);
 
-            // TODO: Not really using phase yet but it's nice to have in place.
-            float phase = GD.Randf();
-            Color phaseColor = new Color(phase, 0, 0);
+            // We pack multiple values into the vertex Color channel, for interpretation within the shader:
+            // Red - "Phase" which is a random seed value computed per-blade.
+            // Green - "CenterX" - this is the centerpoint X value of the blade at its base (local coordinates) so that
+            //         Vertex (or Fragment) shaders can use that as a constant.
+            // Blue - Unused / future TBD.
+            float vertexPhase = GD.Randf();
+            float vertexCenterX = (bl.X + br.X) / 2f;
+            Color vertexColor = new Color(vertexPhase, vertexCenterX, 0);
 
-            Colors[vi + 0] = phaseColor;
-            Colors[vi + 1] = phaseColor;
-            Colors[vi + 2] = phaseColor;
-            Colors[vi + 3] = phaseColor;
+            Colors[vi + 0] = vertexColor;
+            Colors[vi + 1] = vertexColor;
+            Colors[vi + 2] = vertexColor;
+            Colors[vi + 3] = vertexColor;
 
             // Two triangles
             Indices[ii + 0] = vi + 0;

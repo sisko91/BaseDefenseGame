@@ -157,6 +157,10 @@ Cancel={
 3d/default_cell_size=1.0
 3d/default_cell_height=1.0
 
+[rendering]
+
+environment/defaults/default_clear_color=Color(0, 0, 0, 1)
+
 [shader_globals]
 
 day_night_color={
@@ -178,4 +182,12 @@ player_screen_uv_end={
 player_texture={
 "type": "sampler2D",
 "value": ""
+}
+displacement_mask_tex={
+"type": "sampler2D",
+"value": ""
+}
+screen_world_rect={
+"type": "vec4",
+"value": Vector4(0, 0, 0, 0)
 }

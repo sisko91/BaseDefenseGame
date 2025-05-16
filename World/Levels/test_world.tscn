@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=35 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
@@ -21,13 +21,12 @@
 [ext_resource type="Script" uid="uid://ul68if3kp7vg" path="res://World/ProcGen/Scenarios/SmallTown.cs" id="12_qx1mc"]
 [ext_resource type="Script" uid="uid://cu0g6818gf7x1" path="res://World/ProcGen/Paths/PathDecorator.cs" id="13_wh5fb"]
 [ext_resource type="Script" uid="uid://duyw2hn54xkre" path="res://World/ProcGen/RectRegion.cs" id="14_80b3c"]
-[ext_resource type="Shader" uid="uid://7akcch5ndkta" path="res://Shaders/silhouette.gdshader" id="20_hkmll"]
-[ext_resource type="PackedScene" uid="uid://6prx14s7d1am" path="res://World/Environment/Testing/test_tree.tscn" id="28_fbbf8"]
-[ext_resource type="PackedScene" uid="uid://thlbbsrf6pcr" path="res://World/Environment/Testing/test_grass_patch.tscn" id="29_qinvk"]
 [ext_resource type="PackedScene" uid="uid://c88u38cjeos7d" path="res://World/Structures/Testing/3.4PerspectiveBuilding/test_building.tscn" id="21_wh5fb"]
 [ext_resource type="PackedScene" uid="uid://blio7x08xw4te" path="res://NPC/Merchant/merchant.tscn" id="22_hkmll"]
 [ext_resource type="Resource" uid="uid://wi0ppwstcfuk" path="res://World/ShopItems/scattergun.tres" id="23_80b3c"]
 [ext_resource type="Resource" uid="uid://b77gn5emtpi6g" path="res://World/ShopItems/barber.tres" id="24_782py"]
+[ext_resource type="PackedScene" uid="uid://6prx14s7d1am" path="res://World/Environment/Testing/test_tree.tscn" id="28_fbbf8"]
+[ext_resource type="PackedScene" uid="uid://thlbbsrf6pcr" path="res://World/Environment/Testing/test_grass_patch.tscn" id="29_qinvk"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_fn2eg"]
 frequency = 0.0075
@@ -184,7 +183,7 @@ position = Vector2(0, 51)
 position = Vector2(515, 449)
 
 [node name="TestGrassPatch" parent="YSort" instance=ExtResource("29_qinvk")]
-position = Vector2(-651, 174)
+position = Vector2(-818, 150)
 Bounds = Rect2(0, 0, 1536, 350)
 BladeRows = 30
 BladesPerRow = 1024

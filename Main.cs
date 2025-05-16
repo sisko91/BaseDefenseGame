@@ -25,6 +25,8 @@ public partial class Main : Node
     [Export]
     public PackedScene PauseMenuTemplate { get; private set; }
 
+    public DisplacementMaskViewport DisplacementMaskViewport { get; private set; } = null;
+
     // Cached reference to the PauseMenu scene node defined on main.tscn.
     private PauseMenu pauseMenu = null;
 
@@ -35,9 +37,20 @@ public partial class Main : Node
     public Main() {
     }
 
+    public override void _EnterTree()
+    {
+        // We set this up in EnterTree so that it's already set by the time _Ready() executes (as _Ready() may spawn
+        // nodes that wish to access Main through static interfaces).
+        Instance = this;
+    }
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        // Fetch and configure the displacement viewport very first thing. Other things (like the player character) may
+        // want to access it so it's important that it's available right away on the Main scene.
+        DisplacementMaskViewport = GetNode<DisplacementMaskViewport>("DisplacementMaskViewport");
+        
         world = WorldScene.Instantiate<World>();
         world.Name = "World";
         world.ProcessMode = ProcessModeEnum.Pausable;
@@ -65,13 +78,14 @@ public partial class Main : Node
         playerCamera.Target = player;
         AddChild(playerCamera);
         MoveChild(playerCamera, 0);
+        
+        // Now that we have the player camera we can finish configuring the displacement viewport.
+        DisplacementMaskViewport.MainCamera = playerCamera;
 
         ShaderTimer = new Timer();
         ShaderTimer.WaitTime = 3600;
         ShaderTimer.Autostart = true;
         AddChild(ShaderTimer);
-
-        Instance = this;
     }
 
     private void OnPlayerHealthChanged(Character character, float newHealth, float oldHealth)
@@ -105,5 +119,10 @@ public partial class Main : Node
 
     public static Camera2D GetActiveCamera() {
         return Instance.playerCamera;
+    }
+
+    public static DisplacementMaskViewport GetDisplacementMaskViewport()
+    {
+        return Instance.DisplacementMaskViewport;
     }
 }
