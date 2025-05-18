@@ -1,9 +1,13 @@
-[gd_scene load_steps=12 format=3 uid="uid://c4n7454yr5em8"]
+[gd_scene load_steps=14 format=3 uid="uid://c4n7454yr5em8"]
 
 [ext_resource type="Texture2D" uid="uid://bf7eu48h836y1" path="res://art/World/StoneWalls/wall_front.png" id="1_p7v4f"]
+[ext_resource type="Shader" uid="uid://cwkbk8kbjdbbj" path="res://Shaders/background.gdshader" id="1_tg3q8"]
 [ext_resource type="Texture2D" uid="uid://hhddsihnjo41" path="res://art/World/StoneWalls/wall_top.png" id="2_ynqwj"]
 [ext_resource type="Script" uid="uid://b0k4rorbjvnri" path="res://World/Structures/Door.cs" id="3_gvmyq"]
 [ext_resource type="Script" uid="uid://bolljvejit73e" path="res://Gameplay/InteractionArea.cs" id="4_10wc5"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mgfry"]
+shader = ExtResource("1_tg3q8")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ynqwj"]
 size = Vector2(96, 16)
@@ -31,6 +35,7 @@ height = 91
 size = Vector2(64, 30)
 
 [node name="ForwardWallWithDoor" type="StaticBody2D"]
+material = SubResource("ShaderMaterial_mgfry")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-80, -2)
@@ -42,6 +47,7 @@ shape = SubResource("RectangleShape2D_ynqwj")
 
 [node name="Front" type="Sprite2D" parent="."]
 texture_repeat = 2
+use_parent_material = true
 position = Vector2(0, -54)
 scale = Vector2(2, 2)
 texture = ExtResource("1_p7v4f")
@@ -50,6 +56,7 @@ region_rect = Rect2(0, 0, 128, 60)
 
 [node name="Top" type="Sprite2D" parent="."]
 texture_repeat = 2
+use_parent_material = true
 position = Vector2(0, -122)
 scale = Vector2(2, 2)
 texture = ExtResource("2_ynqwj")
@@ -62,6 +69,7 @@ script = ExtResource("3_gvmyq")
 IsExit = true
 
 [node name="DoorOpen" type="Sprite2D" parent="Door"]
+use_parent_material = true
 position = Vector2(0, 14.5)
 texture = SubResource("GradientTexture2D_ynqwj")
 
@@ -74,6 +82,7 @@ position = Vector2(0, 55)
 shape = SubResource("RectangleShape2D_gvmyq")
 
 [node name="DoorClosed" type="Sprite2D" parent="Door/Blockage"]
+use_parent_material = true
 position = Vector2(0, 14.5)
 texture = SubResource("GradientTexture2D_10wc5")
 

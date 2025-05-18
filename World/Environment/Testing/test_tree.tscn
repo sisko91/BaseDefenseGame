@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://ctphjpktt7gh7" path="res://art/World/tree_normal_map_2.png" id="4_fc1lc"]
 [ext_resource type="Texture2D" uid="uid://xkj75w4027v1" path="res://art/World/tree_trunk.png" id="5_6eqvx"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_ijnyt"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gct18"]
 shader = ExtResource("2_fc1lc")
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_gct18"]
@@ -18,19 +18,21 @@ normal_texture = ExtResource("4_fc1lc")
 radius = 184.0
 
 [node name="TestTree" type="StaticBody2D"]
+material = SubResource("ShaderMaterial_gct18")
 collision_layer = 2147483649
 collision_mask = 3
 script = ExtResource("1_mt5o5")
 
 [node name="CanopySprite" type="Sprite2D" parent="."]
 z_index = 1
-material = SubResource("ShaderMaterial_ijnyt")
+use_parent_material = true
 scale = Vector2(0.25, 0.25)
 texture = SubResource("CanvasTexture_gct18")
 centered = false
 offset = Vector2(-512, -846)
 
 [node name="TrunkSprite" type="Sprite2D" parent="."]
+use_parent_material = true
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("5_6eqvx")
 centered = false
