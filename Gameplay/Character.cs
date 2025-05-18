@@ -161,9 +161,15 @@ public partial class Character : Moveable, IImpactMaterial
         }
         else
         {
-            //die
-            QueueFree();
+            Die();
         }
+    }
+
+    protected void Die()
+    {
+        //die
+        GrassDisplacementMarker?.QueueFree();
+        QueueFree();
     }
 
     public void InteractWithNearestObject() {
@@ -254,8 +260,6 @@ public partial class Character : Moveable, IImpactMaterial
             // TODO: Unregister old marker, register new marker?
         }
         GrassDisplacementMarker = GrassDisplacementMarkerScene.Instantiate<Node2D>();
-        // When this character is removed from the scene, remove their displacement marker as well.
-        TreeExited += () => GrassDisplacementMarker?.QueueFree();
         Main.GetDisplacementMaskViewport().RegisterMarkerChild(GrassDisplacementMarker);
         SyncGrassDisplacementMarker();
     }
