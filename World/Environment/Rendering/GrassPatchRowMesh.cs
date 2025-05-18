@@ -15,7 +15,7 @@ public partial class GrassPatchRowMesh : Node2D
     [Export] public float RowWidth = 100.0f;
     // The number of individual blades of grass to include in the row.
     [Export] public int BladeCount = 30;
-    // How wide each blade of grass should be. This has no bearing on density of blades created or each blade's position relative to the row's origin (though it will affect visual density).
+    // How wide each blade of grass should be. This has no bearing on density of blades created or each blade's position relative to the row's origin (though it will affect visual density).s
     [Export] public float BladeWidth = 4.0f;
     // How tall each blade of grass should be. This has no bearing on where each blade of grass is positioned relative to the row's origin.
     [Export] public float BladeHeight = 16.0f;
@@ -70,8 +70,7 @@ public partial class GrassPatchRowMesh : Node2D
         {
             // Jitter within each cell
             float jitterX = (float)GD.RandRange(-BladeCellWidth * 0.4f, BladeCellWidth * 0.4f);
-            float jitterY = (float)GD.RandRange(-BladeOriginRegionHeight * 0.4f, BladeOriginRegionHeight * 0.4f);
-            
+            float jitterY = (float)GD.RandRange(0, BladeOriginRegionHeight * 0.4f);
             float x = (col + 0.5f) * BladeCellWidth + jitterX;
             float y = jitterY;
             Vector2 basePos = new Vector2(x, y);

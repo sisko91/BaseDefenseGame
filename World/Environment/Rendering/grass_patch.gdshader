@@ -7,6 +7,7 @@ global uniform vec4 screen_world_rect; // x, y = topleft; z, w = size
 global uniform sampler2D displacement_mask_tex;
 
 /// Shader-specific uniforms.
+uniform vec4 blade_color = vec4(0.51, 0.97, 0.0, 1.0);
 uniform float ambient_sway_amount = 3.0;
 uniform float ambient_sway_speed = 0.5;
 uniform float displacement_bend_intensity = 15.0;
@@ -16,6 +17,9 @@ uniform float displacement_bend_intensity = 15.0;
 // grass blade (the midpoint X at Y=0). Updated in the Vertex shader below for
 // use in the Fragment shader.
 varying flat vec2 base_displacement_uv;
+
+varying float displacement_gradient_strength;
+varying vec2 bend_direction;
 
 void vertex() {
 	// Unpack Vertex Color values. (See GrassPatchRowMesh.cs)
@@ -58,15 +62,17 @@ void vertex() {
 
 	vec2 gradient = -vec2(right - left, up - down);
 	//vec2 bend_direction = normalize(gradient); // <-- creates NaN errors if the gradient is 0
-	vec2 bend_direction = length(gradient) > 0.001 ? normalize(gradient) : vec2(0.0, 0.0); // default no bend
+	displacement_gradient_strength = length(gradient);
+	bend_direction = displacement_gradient_strength > 0.001 ? normalize(gradient) : vec2(0.0, 0.0); // default no bend
 	
 	// Displace based on ambient sway, but not when the displacement value is high.
 	VERTEX.x += ambient_sway * vertical_weight * (1.0 - center);
 	
 	// Bend away from the center.
 	vec2 right_vector = vec2(1.0, 0);
-	float bend_amount = dot(bend_direction, right_vector) * center * vertical_weight * ambient_sway_amount * 5.0;
+	float bend_amount = dot(bend_direction, right_vector) * center * vertical_weight * displacement_bend_intensity;
 	VERTEX.x += bend_amount;
+	VERTEX.y += center * vertical_weight * displacement_bend_intensity / 2.0;
 	
 	// Alternative bending logic:
 	//vec2 bend_offset = bend_direction * center * vertical_weight * sway_amount * 3.0;
@@ -87,12 +93,29 @@ void fragment()
 	// Unpack Vertex Color values. (See GrassPatchRowMesh.cs)
 	// Phase is our random seed per grass blade.
    	float phase = COLOR.r;
-	// TODO: Don't hardcode this color stuff.
-	COLOR.rgb = vec3(0.51, 0.97, 0.0) * clamp(phase, 0.6, 0.8) * 0.7;
 	
-	// Hide blades of grass near the displacement, but only for the tops of grass.
-	//float displacement_amount = texture(displacement_mask_tex, base_displacement_uv).r;
-	//COLOR.a = 1.0 - displacement_amount * UV.y;
+	// 1. Base color.
+	COLOR = blade_color;
+	
+	float displacement_amount = texture(displacement_mask_tex, base_displacement_uv).r;
+	
+	// Falloff: reduce effect near the base and near low displacement
+	// The higher the exponent, the sharper the falloff. Lower for smoother fade.
+	float fade_strength = 1.0 - pow(displacement_amount * UV.y, 0.25);
+	
+	// Color blades based on phase.
+	COLOR.rgb *= max(1.0 - phase * (1.0 - UV.y), 0.3);
+
+	// 2. Gradient strength shimmer
+	//float gradient_highlight = clamp(displacement_gradient_strength * 2.0, 0.0, 1.0);
+	//vec3 highlight_color = vec3(0.6, 0.9, 0.3);
+	//COLOR.rgb = mix(COLOR.rgb, highlight_color, gradient_highlight * fade_strength);
+
+	// 3. Flicker if desired
+	float flicker = sin(TIME * 10.0 + phase * 6.2831) * 0.5 + 0.5;
+	float flicker_strength = displacement_amount * UV.y * flicker;
+	vec3 glow_color = vec3(0.8, 1.0, 0.7);
+	COLOR.rgb = mix(COLOR.rgb, glow_color, flicker_strength * 0.1);
 	
 	// Near the top, we want the tips to be slightly transparent.
 	float tip_transparency = 0.2;

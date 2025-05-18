@@ -5,12 +5,16 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qsub5"]
 shader = ExtResource("2_3aell")
+shader_parameter/blade_color = Vector4(0.51, 0.97, 0, 1)
 shader_parameter/ambient_sway_amount = 3.0
 shader_parameter/ambient_sway_speed = 0.5
 shader_parameter/displacement_bend_intensity = 15.0
 
-[node name="TestGrassPatch" type="Node2D"]
+[node name="TestGrassPatch" type="Sprite2D"]
 y_sort_enabled = true
+region_rect = Rect2(0, 0, 800, 600)
 script = ExtResource("1_o28rs")
 BladeMaterial = SubResource("ShaderMaterial_qsub5")
+BladeColor = Color(0.305684, 0.399799, 0, 1)
+EnableBackingTexture = true
 BladeWidth = 2.0

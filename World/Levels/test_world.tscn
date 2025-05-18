@@ -184,6 +184,7 @@ position = Vector2(515, 449)
 
 [node name="TestGrassPatch" parent="YSort" instance=ExtResource("29_qinvk")]
 position = Vector2(-818, 150)
+BladeColor = Color(0.306667, 0.4, 0, 1)
 Bounds = Rect2(0, 0, 1536, 350)
 BladeRows = 30
 BladesPerRow = 1024
