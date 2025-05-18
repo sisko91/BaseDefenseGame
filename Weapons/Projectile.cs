@@ -53,6 +53,8 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
 
     public override void _Ready() {
         AddToGroup(AllProjectilesGroup, true);
+        // Projectiles always at Z-index 1 so they render on top of the ground.
+        ZIndex = 1;
     }
 
     // Adds the projectile to the gameworld and initializes its position, velocity, etc.
