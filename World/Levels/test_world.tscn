@@ -73,6 +73,7 @@ RegionBounds = Vector2(6000, 6000)
 [node name="DayNight" type="Node" parent="."]
 script = ExtResource("11_11lc6")
 DayStartTime = 0.0
+FreezeTime = true
 
 [node name="ParallaxBackground" type="Parallax2D" parent="."]
 light_mask = 2
@@ -190,8 +191,6 @@ BladeHeight = 24.0
 [editable path="YSort/TestBuilding"]
 [editable path="YSort/TestBuilding/Floor1/YSort/WallTorch"]
 [editable path="YSort/TestBuilding/Floor1/YSort/WallTorch2"]
-[editable path="YSort/TestBuilding/Floor1/YSort/WallTorch3"]
-[editable path="YSort/TestBuilding/Floor1/YSort/WallTorch4"]
 [editable path="YSort/TestBuilding/Floor1/YSort/BackWall"]
 [editable path="YSort/TestBuilding/Floor1/YSort/BackWall2"]
 [editable path="YSort/TestBuilding/Floor1/YSort/BackWall3"]

@@ -29,6 +29,7 @@ region_enabled = true
 region_rect = Rect2(0, 0, 8, 60)
 
 [node name="Top" type="Sprite2D" parent="."]
+light_mask = 0
 texture_repeat = 2
 use_parent_material = true
 position = Vector2(0, -178)

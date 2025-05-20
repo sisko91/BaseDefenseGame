@@ -10,6 +10,7 @@
 shader = ExtResource("1_utw2h")
 shader_parameter/is_hit = false
 shader_parameter/is_inside = false
+shader_parameter/window_light_strength = 0.0
 shader_parameter/time_scale = 20.0
 shader_parameter/gb_ceil = 0.75
 

@@ -10,8 +10,6 @@ public partial class Building : Placeable
 {
     private static int WEATHER_Z_LAYER = 10;
 
-    private HashSet<Node2D> EntitiesInside = new HashSet<Node2D>();
-
     [Export]
     public int BuildingHeight;
     public List<Door> Exits;
@@ -101,8 +99,6 @@ public partial class Building : Placeable
             region.AddMonitoringException(body);
             m.Reparent(ySort != null ? ySort : region);
             region.RemoveMonitoringException(body);
-
-            EntitiesInside.Add(body);
             
             m.CurrentRegion = region;
             m.SetInside(region != null && region.InteriorRegion);
@@ -162,8 +158,6 @@ public partial class Building : Placeable
             region.AddMonitoringException(body);
             m.Reparent(this.GetGameWorld().YSortNode);
             region.RemoveMonitoringException(body);
-
-            EntitiesInside.Remove(body);
 
             //Fell off the roof
             if (!region.OverlapsBody(m))

@@ -2,11 +2,14 @@ using ExtensionMethods;
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 // Interior Regions define areas "within" a structure. They detect characters and players entering / leaving and provide other data and callbacks related to
 // defining inner zones.
 public partial class BuildingRegion : Area2D
 {
+    public static string INDOOR_GROUP_NAME = "IndoorNodes";
+
     // What "floor" of elevation this region is located on. 0 is the ground floor.
     [Export]
     public int ElevationLevel = 0;
@@ -22,6 +25,9 @@ public partial class BuildingRegion : Area2D
     public Building OwningBuilding { get; set; }
 
     private HashSet<Node2D> IgnoreMonitoringForNodes = new HashSet<Node2D>();
+
+    private int WindowsOpen = 0;
+    private HashSet<Node2D> IndoorNodes = new HashSet<Node2D>();
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -41,6 +47,23 @@ public partial class BuildingRegion : Area2D
                 }
                 Doors.Add(door);
             }
+
+            if (child is Window window && window.Open) {
+                WindowsOpen += 1;
+            }
+
+            if (child.IsInGroup(INDOOR_GROUP_NAME)) {
+                IndoorNodes.Add((Node2D) child);
+            }
+        }
+    }
+
+    public override void _Process(double delta) {
+        base._Process(delta);
+
+        var bodies = GetOverlappingBodies().Where(node => node is Moveable).ToList();
+        foreach (Node2D node in IndoorNodes.Concat(bodies)) {
+            node.Material.Set("shader_parameter/window_light_strength", DayNight.Instance.GetDayTime() + 0.2 * WindowsOpen);
         }
     }
 

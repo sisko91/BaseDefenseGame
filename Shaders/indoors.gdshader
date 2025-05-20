@@ -1,11 +1,14 @@
 shader_type canvas_item;
-const vec4 inside_color = vec4(0.25, 0.25, 0.25, 1);
+
+global uniform vec4 day_night_color : source_color;
+uniform float window_light_strength = 0.1;
 
 //Just dims/shades everything so we can light it up (with windows, indoor lights, etc)
 void fragment()
 {
     vec4 color = texture(TEXTURE, UV);
-	COLOR = color * inside_color;
+	vec4 day_night = vec4(day_night_color.rgb * window_light_strength, 1.0);
+	COLOR = color * day_night;
 }
 
 void light()

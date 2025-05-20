@@ -29,6 +29,10 @@ public partial class LightFlicker : Node2D
     [Export]
     private bool AutoEnableTimeOfDay = false;
 
+    //Dim the light during the day for a better indoor lighting look
+    [Export]
+    private bool DimTimeOfDay = false;
+
     public override void _Ready()
     {
         base._Ready();
@@ -54,14 +58,19 @@ public partial class LightFlicker : Node2D
         sprite.Animation = "on";
         light.Visible = true;
 
-        if (FlickerTimer.TimeLeft == 0)
-        {
+        if (FlickerTimer.TimeLeft == 0) {
             var nextFlickerTime = new Random().NextDouble() * (FlickerMaxTime - FlickerMinTime) + FlickerMaxTime;
             FlickerTimer.WaitTime = nextFlickerTime;
             FlickerTimer.Start();
         }
 
-        light.Energy = Mathf.Lerp(light.Energy, (float)(Energy * FlickerMultiplier), 0.05f);
+        float energyMult = 1;
+        if (DimTimeOfDay) {
+            var distFromNoon = 2 * Math.Abs(0.5f - DayNight.Instance.GetDayTime());
+            energyMult = (float)(0.1 + distFromNoon);
+        }
+
+        light.Energy = Mathf.Lerp(light.Energy, (float)(Energy * energyMult * FlickerMultiplier), 0.05f);
         light.TextureScale = Mathf.Lerp(light.TextureScale, (float)(TextureScale * FlickerMultiplier), 0.05f);
     }
 

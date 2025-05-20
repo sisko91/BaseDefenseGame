@@ -1,0 +1,61 @@
+[gd_scene load_steps=9 format=3 uid="uid://dmgtqhr44psvb"]
+
+[ext_resource type="Script" uid="uid://bpvu5lyqvvt74" path="res://World/Structures/Testing/3.4PerspectiveBuilding/Window.cs" id="1_ecdyk"]
+[ext_resource type="Texture2D" uid="uid://c7x8gaq0lan2p" path="res://art/World/windowlight.png" id="1_q6sgh"]
+
+[sub_resource type="Gradient" id="Gradient_q6sgh"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0.178181, 0.110478, 0.0161698, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_ecdyk"]
+gradient = SubResource("Gradient_q6sgh")
+
+[sub_resource type="Gradient" id="Gradient_pwysc"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_q6sgh"]
+gradient = SubResource("Gradient_pwysc")
+width = 60
+height = 60
+
+[sub_resource type="Gradient" id="Gradient_2oy11"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0.176471, 0.109804, 0.0156863, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_capjf"]
+gradient = SubResource("Gradient_2oy11")
+width = 2
+
+[node name="Window" type="Node2D"]
+script = ExtResource("1_ecdyk")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+light_mask = 0
+position = Vector2(0, -93)
+texture = SubResource("GradientTexture2D_ecdyk")
+
+[node name="Pane" type="Sprite2D" parent="."]
+light_mask = 0
+position = Vector2(0, -93)
+texture = SubResource("GradientTexture2D_q6sgh")
+
+[node name="Sprite2D3" type="Sprite2D" parent="."]
+light_mask = 0
+position = Vector2(0, -93)
+texture = SubResource("GradientTexture2D_capjf")
+
+[node name="Sprite2D4" type="Sprite2D" parent="."]
+light_mask = 0
+position = Vector2(0, -93)
+rotation = 1.5708
+texture = SubResource("GradientTexture2D_capjf")
+
+[node name="Light" type="PointLight2D" parent="."]
+position = Vector2(0, -157)
+energy = 0.3
+range_z_min = 9
+range_z_max = 10
+range_item_cull_mask = 3
+texture = ExtResource("1_q6sgh")
+texture_scale = 0.75

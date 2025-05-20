@@ -4,14 +4,16 @@ using System;
 
 public partial class DayNight : Node
 {
+    public static DayNight Instance;
 
-    GradientTexture2D LightGradient;
-    Timer DayTimer;
+    private GradientTexture2D LightGradient;
+    private Timer DayTimer;
 
     [Export]
     public int DayLengthSeconds = 300;
 
-    [Export]
+    //Slider that snaps to 1 hour increments (1 / 24)
+    [Export(PropertyHint.Range, "0,1,0.041666")]
     public float DayStartTime = 0.5f; //0 = midnight, 0.5 = noon, 1 = midnight
 
     [Export]
@@ -29,6 +31,7 @@ public partial class DayNight : Node
         AddChild(DayTimer);
 
         DayNightColor = new Color(0, 0, 0, 0);
+        Instance = this;
     }
 
     public override void _Process(double delta)

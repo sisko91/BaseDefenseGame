@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://c88u38cjeos7d"]
+[gd_scene load_steps=25 format=3 uid="uid://c88u38cjeos7d"]
 
 [ext_resource type="Script" uid="uid://drac3p47binwd" path="res://World/Structures/Building.cs" id="1_bgjah"]
 [ext_resource type="Texture2D" uid="uid://oe3re6tn0ddh" path="res://art/World/woodfloor.png" id="1_k4fc4"]
@@ -9,14 +9,31 @@
 [ext_resource type="PackedScene" uid="uid://bv3u8ojyyr6rm" path="res://World/Structures/Testing/3.4PerspectiveBuilding/side_wall.tscn" id="3_jwdmb"]
 [ext_resource type="Script" uid="uid://duyw2hn54xkre" path="res://World/ProcGen/RectRegion.cs" id="7_1ubww"]
 [ext_resource type="Shader" uid="uid://7akcch5ndkta" path="res://Shaders/silhouette.gdshader" id="7_3f0hn"]
+[ext_resource type="Shader" uid="uid://cwkbk8kbjdbbj" path="res://Shaders/background.gdshader" id="8_2kuhm"]
 [ext_resource type="Texture2D" uid="uid://bf7eu48h836y1" path="res://art/World/StoneWalls/wall_front.png" id="8_breqi"]
-[ext_resource type="PackedScene" uid="uid://c4cuetga8qjva" path="res://World/Structures/Testing/walll_torch.tscn" id="8_w16jq"]
+[ext_resource type="PackedScene" uid="uid://c4cuetga8qjva" path="res://World/Structures/Testing/wall_torch.tscn" id="8_w16jq"]
+[ext_resource type="PackedScene" uid="uid://dmgtqhr44psvb" path="res://World/Structures/Testing/3.4PerspectiveBuilding/window.tscn" id="12_trw5n"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ax5sx"]
 size = Vector2(768, 480)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_w16jq"]
 shader = ExtResource("3_i37up")
+shader_parameter/window_light_strength = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_trw5n"]
+shader = ExtResource("3_i37up")
+shader_parameter/window_light_strength = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_m31sn"]
+shader = ExtResource("8_2kuhm")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dv3a8"]
+shader = ExtResource("3_i37up")
+shader_parameter/window_light_strength = 0.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2kuhm"]
+shader = ExtResource("8_2kuhm")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_breqi"]
 size = Vector2(16, 512)
@@ -50,7 +67,7 @@ z_index = -1
 position = Vector2(0, -54)
 shape = SubResource("RectangleShape2D_ax5sx")
 
-[node name="Ground" type="Sprite2D" parent="Floor1"]
+[node name="Ground" type="Sprite2D" parent="Floor1" groups=["IndoorNodes"]]
 z_index = -1
 texture_repeat = 2
 material = SubResource("ShaderMaterial_w16jq")
@@ -69,11 +86,32 @@ position = Vector2(-200, -285)
 [node name="WallTorch2" parent="Floor1/YSort" instance=ExtResource("8_w16jq")]
 position = Vector2(200, -285)
 
-[node name="WallTorch3" parent="Floor1/YSort" instance=ExtResource("8_w16jq")]
-position = Vector2(200, 180)
+[node name="BackWall" parent="Floor1/YSort" groups=["IndoorNodes"] instance=ExtResource("1_vcw3q")]
+material = SubResource("ShaderMaterial_trw5n")
+position = Vector2(256, -300)
 
-[node name="WallTorch4" parent="Floor1/YSort" instance=ExtResource("8_w16jq")]
-position = Vector2(-200, 180)
+[node name="Top" parent="Floor1/YSort/BackWall" index="2"]
+light_mask = 0
+material = SubResource("ShaderMaterial_m31sn")
+use_parent_material = false
+
+[node name="BackWall2" parent="Floor1/YSort" groups=["IndoorNodes"] instance=ExtResource("1_vcw3q")]
+material = SubResource("ShaderMaterial_dv3a8")
+position = Vector2(-256, -300)
+
+[node name="Top" parent="Floor1/YSort/BackWall2" index="2"]
+light_mask = 0
+material = SubResource("ShaderMaterial_2kuhm")
+use_parent_material = false
+
+[node name="BackWall3" parent="Floor1/YSort" groups=["IndoorNodes"] instance=ExtResource("1_vcw3q")]
+material = SubResource("ShaderMaterial_dv3a8")
+position = Vector2(0, -300)
+
+[node name="Top" parent="Floor1/YSort/BackWall3" index="2"]
+light_mask = 0
+material = SubResource("ShaderMaterial_2kuhm")
+use_parent_material = false
 
 [node name="LeftSideWall4" parent="Floor1/YSort" instance=ExtResource("3_jwdmb")]
 position = Vector2(-392, -188)
@@ -99,30 +137,15 @@ position = Vector2(392, 68)
 [node name="RightSideWall" parent="Floor1/YSort" instance=ExtResource("3_jwdmb")]
 position = Vector2(392, 196)
 
-[node name="BackWall" parent="Floor1/YSort" instance=ExtResource("1_vcw3q")]
-position = Vector2(256, -300)
-
-[node name="Front" parent="Floor1/YSort/BackWall" index="1"]
-material = SubResource("ShaderMaterial_w16jq")
-use_parent_material = false
-
-[node name="BackWall2" parent="Floor1/YSort" instance=ExtResource("1_vcw3q")]
-position = Vector2(-256, -300)
-
-[node name="Front" parent="Floor1/YSort/BackWall2" index="1"]
-material = SubResource("ShaderMaterial_w16jq")
-use_parent_material = false
-
-[node name="BackWall3" parent="Floor1/YSort" instance=ExtResource("1_vcw3q")]
-position = Vector2(0, -300)
-
-[node name="Front" parent="Floor1/YSort/BackWall3" index="1"]
-material = SubResource("ShaderMaterial_w16jq")
-use_parent_material = false
-
 [node name="Facade" type="Node2D" parent="Floor1/YSort"]
 y_sort_enabled = true
 position = Vector2(0, 193)
+
+[node name="Window" parent="Floor1/YSort/Facade" instance=ExtResource("12_trw5n")]
+position = Vector2(-200, 43)
+
+[node name="Window2" parent="Floor1/YSort/Facade" instance=ExtResource("12_trw5n")]
+position = Vector2(200, 43)
 
 [node name="FrontWall" parent="Floor1/YSort/Facade" instance=ExtResource("1_vcw3q")]
 position = Vector2(256, 3)
@@ -199,8 +222,6 @@ Size = Vector2(835.038, 513.002)
 
 [editable path="Floor1/YSort/WallTorch"]
 [editable path="Floor1/YSort/WallTorch2"]
-[editable path="Floor1/YSort/WallTorch3"]
-[editable path="Floor1/YSort/WallTorch4"]
 [editable path="Floor1/YSort/BackWall"]
 [editable path="Floor1/YSort/BackWall2"]
 [editable path="Floor1/YSort/BackWall3"]
