@@ -62,8 +62,9 @@ public partial class BuildingRegion : Area2D
         base._Process(delta);
 
         var bodies = GetOverlappingBodies().Where(node => node is Moveable).ToList();
+        var distFromNoon = 2 * Math.Abs(0.5f - DayNight.Instance.GetDayTime());
         foreach (Node2D node in IndoorNodes.Concat(bodies)) {
-            node.Material.Set("shader_parameter/window_light_strength", DayNight.Instance.GetDayTime() + 0.2 * WindowsOpen);
+            node.Material.Set("shader_parameter/window_light_strength", 0.2 + (1 - distFromNoon) * 0.2 * WindowsOpen);
         }
     }
 
