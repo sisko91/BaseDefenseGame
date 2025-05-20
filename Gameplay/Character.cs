@@ -78,9 +78,6 @@ public partial class Character : Moveable, IImpactMaterial
 
     // Nearby interaction areas that have announced themselves to this character. Interaction areas do this automatically for characters detected in their proximity.
     public Godot.Collections.Array<InteractionArea> NearbyInteractions;
-    
-    // All characters use the same displacement marker scene for grass.
-    private static PackedScene GrassDisplacementMarkerScene = GD.Load<PackedScene>("res://World/Environment/Rendering/DisplacementMasks/Grass/grass_displacement_marker.tscn");
 
     protected float HitAnimationSeconds = 0.1f;
     protected Timer HitTimer;
@@ -89,6 +86,7 @@ public partial class Character : Moveable, IImpactMaterial
 
     public override void _Ready()
     {
+        base._Ready();
         CurrentHealth = MaxHealth;
         Stunned = false;
 
@@ -106,10 +104,6 @@ public partial class Character : Moveable, IImpactMaterial
 
         AddChild(HitTimer);
         AddChild(StunTimer);
-
-        // Create our grass displacement marker. This tracks the character itself so we don't need a stored reference.
-        var grassMarker = GrassDisplacementMarkerScene.Instantiate<DisplacementMaskMarker>();
-        grassMarker.RegisterOwner(this);
     }
 
     public override void _Process(double delta) {

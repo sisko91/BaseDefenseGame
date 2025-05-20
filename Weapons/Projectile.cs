@@ -51,7 +51,9 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
 
     private Timer ProjectileTimer;
 
-    public override void _Ready() {
+    public override void _Ready()
+    {
+        base._Ready();
         AddToGroup(AllProjectilesGroup, true);
         // Projectiles always at Z-index 1 so they render on top of the ground.
         ZIndex = 1;

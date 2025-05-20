@@ -8,6 +8,7 @@ public partial class DisplacementMaskMarker : Node2D
 {
     // The Node2D that this marker tracks the GlobalPosition of in the game world.
     public Node2D TrackedNode { get; private set; } = null;
+    
     public override void _Ready()
     {
         var sprite = this.GetChildrenOfType<Sprite2D>().FirstOrDefault();

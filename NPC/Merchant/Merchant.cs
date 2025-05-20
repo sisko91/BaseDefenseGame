@@ -15,6 +15,7 @@ public partial class Merchant : Moveable
 
     public override void _Ready()
     {
+        base._Ready();
         merchantUI = this.GetGameHUD().GetNode<MerchantUI>("MerchantUI");
         AddToGroup("NonHostile", true);
     }
