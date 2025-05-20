@@ -2,20 +2,32 @@ using ExtensionMethods;
 using Godot;
 using System;
 
-public partial class TestFireplace : StaticBody2D
+public partial class LightFlicker : Node2D
 {
-    double FlickerMinTime = 0.05;
-    double FlickerMaxTime = 0.3;
-    Timer FlickerTimer;
+    [Export]
+    private double FlickerMinTime = 0.05;
+    [Export]
+    private double FlickerMaxTime = 0.3;
 
+    private Timer FlickerTimer;
+
+    [Export]
     private double Energy = 3.0;
+    [Export]
     private double TextureScale = 3.0;
+    [Export]
     private double FlickerMinMultipler = 0.9;
+    [Export]
     private double FlickerMaxMultiplier = 1.1;
+    [Export]
     private double FlickerMultiplier = 1.0;
 
     private PointLight2D light;
     private AnimatedSprite2D sprite;
+
+    //Automatically turn on/off depending on time of day
+    [Export]
+    private bool AutoEnableTimeOfDay = false;
 
     public override void _Ready()
     {
@@ -33,7 +45,7 @@ public partial class TestFireplace : StaticBody2D
         base._Process(delta);
 
         var dayTime = this.GetGameWorld().DayNight.GetDayTime();
-        if (dayTime > 0.25 && dayTime < 0.75)
+        if (AutoEnableTimeOfDay && dayTime > 0.25 && dayTime < 0.75)
         {
             sprite.Animation = "off";
             light.Visible = false;

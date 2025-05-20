@@ -16,6 +16,9 @@ shader_parameter/is_inside = false
 shader_parameter/time_scale = 20.0
 shader_parameter/gb_ceil = 0.75
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_od3ui"]
+radius = 15.0
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_00tjw"]
 atlas = ExtResource("6_od3ui")
 region = Rect2(0, 0, 48, 64)
@@ -80,9 +83,6 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_od3ui"]
-radius = 15.0
-
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_od3ui"]
 radius = 23.0
 height = 82.0
@@ -104,6 +104,10 @@ ImpactResponseTable = Dictionary[int, PackedScene]({
 3: ExtResource("6_x3vf3")
 })
 
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -9)
+shape = SubResource("CircleShape2D_od3ui")
+
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 light_mask = 2
 use_parent_material = true
@@ -114,10 +118,6 @@ animation = &"idle_down"
 autoplay = "idle_down"
 frame_progress = 0.896812
 offset = Vector2(0, -10)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -9)
-shape = SubResource("CircleShape2D_od3ui")
 
 [node name="HitboxTODO" type="CollisionShape2D" parent="."]
 position = Vector2(0, -30)

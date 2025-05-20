@@ -8,16 +8,15 @@ using Gurdy.ProcGen;
 // A building has at least one interior region.
 public partial class Building : Placeable
 {
+    private static int WEATHER_Z_LAYER = 10;
+
+    private HashSet<Node2D> EntitiesInside = new HashSet<Node2D>();
+
     [Export]
     public int BuildingHeight;
-
-    private HashSet<Node2D> entitiesInside = new HashSet<Node2D>();
-
-    private Godot.Collections.Array<BuildingRegion> _allRegions = null;
-
     public List<Door> Exits;
 
-    private static int WEATHER_Z_LAYER = 10;
+    private Godot.Collections.Array<BuildingRegion> _allRegions = null;
     public Godot.Collections.Array<BuildingRegion> AllRegions 
     { 
         get
@@ -64,21 +63,31 @@ public partial class Building : Placeable
 
             Exits.AddRange(region.GetExits());
         }
+
+        //Light RangeZMin/Max is not relative, so we need to set it to the absolute value our building will be at when the player is inside
+        foreach (Node child in this.GetAllChildren()) {
+            if (child is Light2D light) {
+                light.RangeZMin = WEATHER_Z_LAYER;
+                light.RangeZMax = WEATHER_Z_LAYER + 1;
+            }
+        }
     }
 
     private void OnBodyEnteredRegion(Node2D body, BuildingRegion region)
     {
+        if (region.ShouldIgnoreNode(body)) {
+            return;
+        }
+
         //Reparent has to be deferred since this is called from a physics process
-        //Wrapping the rest of the area change logic in this block to avoid reparent issues (e.g. reparent causes an additional enter/exit event on
-        //regions and stairs)
         Callable.From(() => {
             Moveable m = body as Moveable;
             if (m == null) {
                 return;
             }
 
-            HashSet<uint> ignoredLayers = new HashSet<uint>() {0, (uint)Math.Pow(2, m.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR + CollisionConfig.INTERACTIONS_LAYER - 1) };
-            if (ignoredLayers.Contains(m.CollisionLayer) || m.IsQueuedForDeletion()) {
+            HashSet<uint> ignoredLayers = new HashSet<uint>() { 0, (uint)Math.Pow(2, m.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR + CollisionConfig.INTERACTIONS_LAYER - 1) };
+            if (!IsInstanceValid(m) || ignoredLayers.Contains(m.CollisionLayer)) {
                 return;
             }
 
@@ -87,14 +96,13 @@ public partial class Building : Placeable
                 return;
             }
 
-            //TODO: Just use YSort node after updating old test building
+            //TODO: Just use YSort node after updating old test building    
             var ySort = region.GetNodeOrNull("YSort");
-            var mCollisionLayer = m.CollisionLayer;
-            m.CollisionLayer = 0;
+            region.AddMonitoringException(body);
             m.Reparent(ySort != null ? ySort : region);
-            m.CollisionLayer = mCollisionLayer;
+            region.RemoveMonitoringException(body);
 
-            entitiesInside.Add(body);
+            EntitiesInside.Add(body);
             
             m.CurrentRegion = region;
             m.SetInside(region != null && region.InteriorRegion);
@@ -129,30 +137,33 @@ public partial class Building : Placeable
 
     private void OnBodyExitedRegion(Node2D body, BuildingRegion region)
     {
-        Moveable m = body as Moveable;
-        if (m == null) {
-            return;
-        }
-
-        //Some projectiles disable collisions as part of their functionality (e.g. grenades, barbs)
-        //This triggers an exit event, but we don't want to remove these from the region. Same for expiring projectiles
-        HashSet<uint> ignoredLayers = new HashSet<uint>() { 0, (uint)Math.Pow(2, m.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR + CollisionConfig.INTERACTIONS_LAYER - 1) };
-        if (ignoredLayers.Contains(m.CollisionLayer) || m.IsQueuedForDeletion()) {
-            return;
-        }
-
-        // We only want to look at events for the body's current elevation, and only bodies that have been reparented to this region
-        if (m.CurrentElevationLevel != region.ElevationLevel || m.CurrentRegion != region) {
+        if (region.ShouldIgnoreNode(body)) {
             return;
         }
 
         Callable.From(() => {
-            var mCollisionLayer = m.CollisionLayer;
-            m.CollisionLayer = 0;
-            m.Reparent(this.GetGameWorld().YSortNode);
-            m.CollisionLayer = mCollisionLayer;
+            Moveable m = body as Moveable;
+            if (m == null) {
+                return;
+            }
 
-            entitiesInside.Remove(body);
+            //Some projectiles disable collisions as part of their functionality (e.g. grenades, barbs)
+            //This triggers an exit event, but we don't want to remove these from the region. Same for expiring projectiles
+            HashSet<uint> ignoredLayers = new HashSet<uint>() { 0, (uint)Math.Pow(2, m.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR + CollisionConfig.INTERACTIONS_LAYER - 1) };
+            if (!IsInstanceValid(m) || ignoredLayers.Contains(m.CollisionLayer)) {
+                return;
+            }
+
+            // We only want to look at events for the body's current elevation, and only bodies that have been reparented to this region
+            if (m.CurrentElevationLevel != region.ElevationLevel || m.CurrentRegion != region) {
+                return;
+            }
+
+            region.AddMonitoringException(body);
+            m.Reparent(this.GetGameWorld().YSortNode);
+            region.RemoveMonitoringException(body);
+
+            EntitiesInside.Remove(body);
 
             //Fell off the roof
             if (!region.OverlapsBody(m))

@@ -1,3 +1,4 @@
+using ExtensionMethods;
 using Godot;
 using System;
 using System.Collections.Generic;
@@ -20,12 +21,15 @@ public partial class BuildingRegion : Area2D
 
     public Building OwningBuilding { get; set; }
 
+    private HashSet<Node2D> IgnoreMonitoringForNodes = new HashSet<Node2D>();
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
         Stairs = new Godot.Collections.Array<Stairs>();
         Doors = new Godot.Collections.Array<Door>();
-        foreach (var child in GetAllChildren(this)) {
+        this.GetGameWorld();
+        foreach (var child in this.GetAllChildren()) {
             if (child is Stairs stairs) {
                 Stairs.Add(stairs);
                 stairs.OwningRegion = this;
@@ -51,18 +55,15 @@ public partial class BuildingRegion : Area2D
         return exits;
     }
 
-    private List<Node> GetAllChildren(Node node)
-    {
-        List<Node> children = new List<Node>();
-        foreach (Node child in node.GetChildren())
-        {
-            children.Add(child);
-            if (child.GetChildCount() > 0)
-            {
-                children.AddRange(GetAllChildren(child));
-            }
-        }
+    public void AddMonitoringException(Node2D node) {
+        IgnoreMonitoringForNodes.Add(node);
+    }
 
-        return children;
+    public void RemoveMonitoringException(Node2D node) {
+        IgnoreMonitoringForNodes.Remove(node);
+    }
+
+    public bool ShouldIgnoreNode(Node2D node) {
+        return IgnoreMonitoringForNodes.Contains(node);
     }
 }

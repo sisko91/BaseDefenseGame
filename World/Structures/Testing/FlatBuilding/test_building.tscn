@@ -1,11 +1,11 @@
 [gd_scene load_steps=26 format=3 uid="uid://h6mtv0wbug0t"]
 
 [ext_resource type="Script" uid="uid://drac3p47binwd" path="res://World/Structures/Building.cs" id="1_7ffef"]
-[ext_resource type="PackedScene" uid="uid://cw48c72a4tsvk" path="res://World/Structures/Testing/test_wall.tscn" id="1_e2nee"]
+[ext_resource type="PackedScene" uid="uid://cw48c72a4tsvk" path="res://World/Structures/Testing/FlatBuilding/test_wall.tscn" id="1_e2nee"]
 [ext_resource type="Script" uid="uid://cbfqcsyk76tqo" path="res://World/Structures/BuildingRegion.cs" id="1_edy31"]
-[ext_resource type="PackedScene" uid="uid://chpuk4qnqqxm4" path="res://World/Structures/Testing/test_door.tscn" id="5_e5hgi"]
-[ext_resource type="PackedScene" uid="uid://boifro8bbs3lu" path="res://World/Structures/Testing/test_stairs.tscn" id="6_k5khk"]
-[ext_resource type="PackedScene" uid="uid://dgkvalqk6hieg" path="res://World/Structures/Testing/test_wall_small.tscn" id="6_mexbq"]
+[ext_resource type="PackedScene" uid="uid://chpuk4qnqqxm4" path="res://World/Structures/Testing/FlatBuilding/test_door.tscn" id="5_e5hgi"]
+[ext_resource type="PackedScene" uid="uid://boifro8bbs3lu" path="res://World/Structures/Testing/FlatBuilding/test_stairs.tscn" id="6_k5khk"]
+[ext_resource type="PackedScene" uid="uid://dgkvalqk6hieg" path="res://World/Structures/Testing/FlatBuilding/test_wall_small.tscn" id="6_mexbq"]
 [ext_resource type="Shader" uid="uid://7akcch5ndkta" path="res://Shaders/silhouette.gdshader" id="7_pvg10"]
 [ext_resource type="Script" uid="uid://duyw2hn54xkre" path="res://World/ProcGen/RectRegion.cs" id="8_4jyrl"]
 

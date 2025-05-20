@@ -1,17 +1,28 @@
-[gd_scene load_steps=14 format=3 uid="uid://c88u38cjeos7d"]
+[gd_scene load_steps=19 format=3 uid="uid://c88u38cjeos7d"]
 
 [ext_resource type="Script" uid="uid://drac3p47binwd" path="res://World/Structures/Building.cs" id="1_bgjah"]
 [ext_resource type="Texture2D" uid="uid://oe3re6tn0ddh" path="res://art/World/woodfloor.png" id="1_k4fc4"]
 [ext_resource type="PackedScene" uid="uid://h45844cape7j" path="res://World/Structures/Testing/3.4PerspectiveBuilding/forward_wall.tscn" id="1_vcw3q"]
 [ext_resource type="Script" uid="uid://cbfqcsyk76tqo" path="res://World/Structures/BuildingRegion.cs" id="2_ax5sx"]
 [ext_resource type="PackedScene" uid="uid://c4n7454yr5em8" path="res://World/Structures/Testing/3.4PerspectiveBuilding/forward_door.tscn" id="2_yk7ac"]
+[ext_resource type="Shader" uid="uid://2w4nawe78dfh" path="res://Shaders/indoors.gdshader" id="3_i37up"]
 [ext_resource type="PackedScene" uid="uid://bv3u8ojyyr6rm" path="res://World/Structures/Testing/3.4PerspectiveBuilding/side_wall.tscn" id="3_jwdmb"]
 [ext_resource type="Script" uid="uid://duyw2hn54xkre" path="res://World/ProcGen/RectRegion.cs" id="7_1ubww"]
 [ext_resource type="Shader" uid="uid://7akcch5ndkta" path="res://Shaders/silhouette.gdshader" id="7_3f0hn"]
 [ext_resource type="Texture2D" uid="uid://bf7eu48h836y1" path="res://art/World/StoneWalls/wall_front.png" id="8_breqi"]
+[ext_resource type="PackedScene" uid="uid://c4cuetga8qjva" path="res://World/Structures/Testing/walll_torch.tscn" id="8_w16jq"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ax5sx"]
 size = Vector2(768, 480)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_w16jq"]
+shader = ExtResource("3_i37up")
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_breqi"]
+size = Vector2(16, 512)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_i37up"]
+size = Vector2(768, 16)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_breqi"]
 shader = ExtResource("7_3f0hn")
@@ -29,17 +40,20 @@ height = 430
 script = ExtResource("1_bgjah")
 
 [node name="Floor1" type="Area2D" parent="."]
+position = Vector2(0, -103)
 collision_layer = 8
 collision_mask = 3
 script = ExtResource("2_ax5sx")
 
 [node name="Boundary" type="CollisionShape2D" parent="Floor1"]
+z_index = -1
 position = Vector2(0, -54)
 shape = SubResource("RectangleShape2D_ax5sx")
 
 [node name="Ground" type="Sprite2D" parent="Floor1"]
 z_index = -1
 texture_repeat = 2
+material = SubResource("ShaderMaterial_w16jq")
 position = Vector2(0, -54)
 scale = Vector2(0.25, 0.25)
 texture = ExtResource("1_k4fc4")
@@ -48,6 +62,18 @@ region_rect = Rect2(0, 0, 3072, 1920)
 
 [node name="YSort" type="Node2D" parent="Floor1"]
 y_sort_enabled = true
+
+[node name="WallTorch" parent="Floor1/YSort" instance=ExtResource("8_w16jq")]
+position = Vector2(-200, -285)
+
+[node name="WallTorch2" parent="Floor1/YSort" instance=ExtResource("8_w16jq")]
+position = Vector2(200, -285)
+
+[node name="WallTorch3" parent="Floor1/YSort" instance=ExtResource("8_w16jq")]
+position = Vector2(200, 180)
+
+[node name="WallTorch4" parent="Floor1/YSort" instance=ExtResource("8_w16jq")]
+position = Vector2(-200, 180)
 
 [node name="LeftSideWall4" parent="Floor1/YSort" instance=ExtResource("3_jwdmb")]
 position = Vector2(-392, -188)
@@ -76,11 +102,23 @@ position = Vector2(392, 196)
 [node name="BackWall" parent="Floor1/YSort" instance=ExtResource("1_vcw3q")]
 position = Vector2(256, -300)
 
+[node name="Front" parent="Floor1/YSort/BackWall" index="1"]
+material = SubResource("ShaderMaterial_w16jq")
+use_parent_material = false
+
 [node name="BackWall2" parent="Floor1/YSort" instance=ExtResource("1_vcw3q")]
 position = Vector2(-256, -300)
 
+[node name="Front" parent="Floor1/YSort/BackWall2" index="1"]
+material = SubResource("ShaderMaterial_w16jq")
+use_parent_material = false
+
 [node name="BackWall3" parent="Floor1/YSort" instance=ExtResource("1_vcw3q")]
 position = Vector2(0, -300)
+
+[node name="Front" parent="Floor1/YSort/BackWall3" index="1"]
+material = SubResource("ShaderMaterial_w16jq")
+use_parent_material = false
 
 [node name="Facade" type="Node2D" parent="Floor1/YSort"]
 y_sort_enabled = true
@@ -96,12 +134,31 @@ position = Vector2(-256, 3)
 position = Vector2(0, 3)
 
 [node name="Roof" type="Area2D" parent="."]
-visible = false
-position = Vector2(0, 234)
+position = Vector2(0, 131)
 collision_layer = 128
 collision_mask = 48
 script = ExtResource("2_ax5sx")
 ElevationLevel = 1
+
+[node name="Barrier" type="StaticBody2D" parent="Roof"]
+collision_layer = 64
+collision_mask = 48
+
+[node name="LeftBarrier" type="CollisionShape2D" parent="Roof/Barrier"]
+position = Vector2(-392, -408)
+shape = SubResource("RectangleShape2D_breqi")
+
+[node name="RightBarrier" type="CollisionShape2D" parent="Roof/Barrier"]
+position = Vector2(392, -408)
+shape = SubResource("RectangleShape2D_breqi")
+
+[node name="TopBarrier" type="CollisionShape2D" parent="Roof/Barrier"]
+position = Vector2(0, -656)
+shape = SubResource("RectangleShape2D_i37up")
+
+[node name="BottomBarrier" type="CollisionShape2D" parent="Roof/Barrier"]
+position = Vector2(0, -160)
+shape = SubResource("RectangleShape2D_i37up")
 
 [node name="YSort" type="Node2D" parent="Roof"]
 y_sort_enabled = true
@@ -136,6 +193,14 @@ skew = -0.272271
 texture = SubResource("GradientTexture2D_bgjah")
 
 [node name="PlacedFootprint" type="Node2D" parent="."]
-position = Vector2(-419, -417)
+position = Vector2(-419, -520)
 script = ExtResource("7_1ubww")
 Size = Vector2(835.038, 513.002)
+
+[editable path="Floor1/YSort/WallTorch"]
+[editable path="Floor1/YSort/WallTorch2"]
+[editable path="Floor1/YSort/WallTorch3"]
+[editable path="Floor1/YSort/WallTorch4"]
+[editable path="Floor1/YSort/BackWall"]
+[editable path="Floor1/YSort/BackWall2"]
+[editable path="Floor1/YSort/BackWall3"]

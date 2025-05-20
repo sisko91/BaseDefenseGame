@@ -1,9 +1,17 @@
-[gd_scene load_steps=16 format=3 uid="uid://blio7x08xw4te"]
+[gd_scene load_steps=18 format=3 uid="uid://blio7x08xw4te"]
 
 [ext_resource type="Script" uid="uid://diqhn05s0g7u4" path="res://NPC/Merchant/Merchant.cs" id="1_7kxip"]
+[ext_resource type="Shader" uid="uid://cfv027nbsnbss" path="res://Shaders/character.gdshader" id="1_utw2h"]
 [ext_resource type="Texture2D" uid="uid://u1volqeqe1y4" path="res://art/NPCs/Herbalist/Idle Adding.png" id="2_ok5p4"]
 [ext_resource type="Script" uid="uid://bolljvejit73e" path="res://Gameplay/InteractionArea.cs" id="3_utw2h"]
 [ext_resource type="Theme" uid="uid://caojc3dn4y8ny" path="res://art/theme.tres" id="4_ok5p4"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ujjgi"]
+shader = ExtResource("1_utw2h")
+shader_parameter/is_hit = false
+shader_parameter/is_inside = false
+shader_parameter/time_scale = 20.0
+shader_parameter/gb_ceil = 0.75
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_uet4w"]
 atlas = ExtResource("2_ok5p4")
@@ -77,10 +85,12 @@ height = 75.0
 subpixel_positioning = 0
 
 [node name="Merchant" type="CharacterBody2D"]
+material = SubResource("ShaderMaterial_ujjgi")
 script = ExtResource("1_7kxip")
 ShopItems = Array[Resource]([])
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+use_parent_material = true
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_yg02f")
 autoplay = "default"

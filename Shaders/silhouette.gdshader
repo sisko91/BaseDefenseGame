@@ -24,11 +24,11 @@ void fragment() {
 		//The latter provides more detail on pixel-y art. 0.25 looks good on this sprite,
 		//might be different for other sprites
 		if (player_color.a > 0.25) {
-			
+
 			color = vec4(color.rgb * 0.5, color.a);
 		}
 	}
-	
+
 	COLOR = color * day_night_color;
 }
 

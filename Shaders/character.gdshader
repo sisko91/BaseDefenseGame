@@ -6,6 +6,7 @@ uniform bool is_hit = false;
 //Day/night params
 global uniform vec4 day_night_color : source_color;
 uniform bool is_inside = false;
+const vec4 inside_color = vec4(0.25, 0.25, 0.25, 1);
 
 //hit shader config
 uniform float time_scale = 20; //Blink animation speed
@@ -33,6 +34,8 @@ void fragment() {
 
 	if (!is_inside) {
 		color = color * day_night_color;
+	} else {
+		color = color * inside_color;
 	}
 
 	COLOR = vec4(color.rgb, color.a * modulate.a);

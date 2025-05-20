@@ -41,6 +41,18 @@ namespace ExtensionMethods
         public static Vector2 XY(this Vector3 vec3) {
             return new Vector2(vec3.X, vec3.Y);
         }
+
+        public static List<Node> GetAllChildren(this Node node) {
+            List<Node> children = new List<Node>();
+            foreach (Node child in node.GetChildren()) {
+                children.Add(child);
+                if (child.GetChildCount() > 0) {
+                    children.AddRange(GetAllChildren(child));
+                }
+            }
+
+            return children;
+        }
     }
 }
 
