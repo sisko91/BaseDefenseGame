@@ -37,6 +37,18 @@ namespace ExtensionMethods
             }
         }
 
+        // Just like GetChildren(), but enforces a type constraint and only returns children which match.
+        public static IEnumerable<T> GetChildrenOfType<T>(this Node node)
+        {
+            foreach (var child in node.GetChildren())
+            {
+                if (child is T typedChild)
+                {
+                    yield return typedChild;
+                }
+            }
+        }
+
         // Tweens a Vector3 into a Vector2.
         public static Vector2 XY(this Vector3 vec3) {
             return new Vector2(vec3.X, vec3.Y);

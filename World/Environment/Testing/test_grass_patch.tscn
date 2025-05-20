@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://thlbbsrf6pcr"]
 
 [ext_resource type="Script" uid="uid://cifpavayybp72" path="res://World/Environment/Rendering/GrassPatch.cs" id="1_o28rs"]
-[ext_resource type="Shader" uid="uid://dpfrjcnn7bkp5" path="res://World/Environment/Rendering/grass_patch.gdshader" id="2_3aell"]
+[ext_resource type="Shader" uid="uid://dpfrjcnn7bkp5" path="res://World/Environment/Rendering/DisplacementMasks/Grass/grass_patch.gdshader" id="2_3aell"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qsub5"]
 shader = ExtResource("2_3aell")

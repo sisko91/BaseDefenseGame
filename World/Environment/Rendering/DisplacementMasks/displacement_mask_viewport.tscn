@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://buisol47tinii"]
 
-[ext_resource type="Script" uid="uid://cbhvrrg7h0sqh" path="res://World/Environment/Rendering/DisplacementMaskViewport.cs" id="1_0hq6r"]
+[ext_resource type="Script" uid="uid://cbhvrrg7h0sqh" path="res://World/Environment/Rendering/DisplacementMasks/DisplacementMaskViewport.cs" id="1_0hq6r"]
 
 [node name="DisplacementMaskViewport" type="SubViewport"]
 size = Vector2i(512, 288)

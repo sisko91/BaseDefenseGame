@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://h8frpggagysk" path="res://UI/HUD/hud.tscn" id="3_ipp5o"]
 [ext_resource type="PackedScene" uid="uid://bwskh2c74a37q" path="res://UI/HUD/pause_menu.tscn" id="3_lquwl"]
 [ext_resource type="PackedScene" uid="uid://b04mgna5y8q6l" path="res://UI/MerchantUI/MerchantUI.tscn" id="6_7mycd"]
-[ext_resource type="PackedScene" uid="uid://buisol47tinii" path="res://World/Environment/Rendering/displacement_mask_viewport.tscn" id="7_272bh"]
+[ext_resource type="PackedScene" uid="uid://buisol47tinii" path="res://World/Environment/Rendering/DisplacementMasks/displacement_mask_viewport.tscn" id="7_272bh"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_yq6fc")

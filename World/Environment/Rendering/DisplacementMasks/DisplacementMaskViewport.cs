@@ -73,12 +73,13 @@ public partial class DisplacementMaskViewport : SubViewport
         RenderingServer.GlobalShaderParameterSet("screen_world_rect", new Rect2(screenWorldTopLeft, screenWorldSize));
     }
 
-    public void RegisterMarkerChild(Node2D displacementMarker)
+    // Reparents the specified Marker under this Viewport and ensures it will render each frame.
+    public void RegisterMarker(DisplacementMaskMarker marker)
     {
-        if (displacementMarker.GetParent() != null)
+        if (marker.GetParent() != null)
         {
-            GD.PushWarning($"Re-parenting registered displacement marker `{displacementMarker.Name}` from its original parent ({displacementMarker.GetParent().Name}).");
+            GD.PushWarning($"Re-parenting registered displacement marker `{marker.Name}` from its original parent ({marker.GetParent().Name}).");
         }
-        markerRoot.AddChild(displacementMarker);
+        markerRoot.AddChild(marker);
     }
 }

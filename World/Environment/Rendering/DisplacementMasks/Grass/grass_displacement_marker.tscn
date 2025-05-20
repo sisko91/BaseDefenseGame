@@ -1,4 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://ba2lq8bscdo0p"]
+[gd_scene load_steps=4 format=3 uid="uid://ba2lq8bscdo0p"]
+
+[ext_resource type="Script" uid="uid://dv2s0ahvmbppe" path="res://World/Environment/Rendering/DisplacementMasks/DisplacementMaskMarker.cs" id="1_ghvd4"]
 
 [sub_resource type="Gradient" id="Gradient_gugok"]
 offsets = PackedFloat32Array(0, 0.757862)
@@ -6,12 +8,12 @@ colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_hj10s"]
 gradient = SubResource("Gradient_gugok")
-height = 48
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 1)
 
 [node name="GrassDisplacementMarker" type="Node2D"]
+script = ExtResource("1_ghvd4")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = SubResource("GradientTexture2D_hj10s")
