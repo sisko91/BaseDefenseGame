@@ -12,16 +12,30 @@ public partial class DisplacementMaskViewport : SubViewport
 {
     // The main camera in the scene.
     [Export] public Camera2D MainCamera { get; set; }
-    public Camera2D DisplacementCamera { get; private set; }
 
-    // The rect that this viewport is capturing/rendering, in global coordinates.
-    public Rect2 WorldRect { get; private set; }
+    // The clear color for the viewport texture each frame.
+    [Export] public Color ClearColor = Colors.Black;
+    public Camera2D DisplacementCamera { get; private set; }
     
     private Node2D markerRoot { get; set; }
+    private Sprite2D clearColorSprite = null;
     
     public override void _Ready()
     {
         markerRoot = GetNode<Node2D>("MarkerRoot");
+        // Set up the clear color sprite as a 1x1 pixel image that gets resized to fit the viewport each frame.
+        var clearColorTexture = new GradientTexture2D();
+        clearColorTexture.Gradient = new Gradient();
+        clearColorTexture.Gradient.AddPoint(0, ClearColor);
+        clearColorTexture.Gradient.AddPoint(1, ClearColor);
+        clearColorTexture.Width = 1;
+        clearColorTexture.Height = 1;
+        clearColorSprite = new Sprite2D();
+        clearColorSprite.Name = "ClearColorSprite";
+        clearColorSprite.SelfModulate = ClearColor;
+        clearColorSprite.Texture = clearColorTexture;
+        markerRoot.AddChild(clearColorSprite);
+
         DisplacementCamera = GetNode<Camera2D>("DisplacementCamera");
         
         // DisplacementCamera MUST be configured with these options in order to work.
@@ -54,14 +68,12 @@ public partial class DisplacementMaskViewport : SubViewport
         // GetScreenCenterPosition() is the final computed location where we want our tracking camera to reposition itself.
         DisplacementCamera.GlobalPosition = MainCamera.GetScreenCenterPosition();
         DisplacementCamera.Offset = MainCamera.Offset; // this is rarely used but might as well sync it, too.
+
+        if (clearColorSprite != null)
+        {
+            clearColorSprite.Scale = screenSize * (zoomScale);
+        }
         
-        // Calculate & cache the WorldRect for the viewport for this frame so that it's available for other logic.
-        Vector2 viewportSize = GetVisibleRect().Size;
-        Vector2 camZoom = DisplacementCamera.Zoom;
-        
-        Vector2 worldSize = viewportSize * camZoom;
-        Vector2 worldPos = DisplacementCamera.GlobalPosition - worldSize / 2.0f;
-        WorldRect = new Rect2(worldPos, worldSize);
         
         // Update the displacement mask texture.
         RenderingServer.GlobalShaderParameterSet("displacement_mask_tex", GetTexture());
