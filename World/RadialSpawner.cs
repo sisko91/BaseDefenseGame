@@ -58,7 +58,10 @@ public partial class RadialSpawner : Node2D
         set
         {
             _stopAngleDegrees = value;
-            QueueRedraw();
+            if (IsSelectedInEditor())
+            {
+                QueueRedraw();
+            }
         }
     }
     private float _stopAngleDegrees = 360;
@@ -76,6 +79,7 @@ public partial class RadialSpawner : Node2D
         // If we're in the editor we don't want this doing any actual work, we just want the rendering calls to happen.
         if (Engine.IsEditorHint())
         {
+            EditorInterface.Singleton.GetSelection().SelectionChanged += QueueRedraw;
             return;
         }
 
@@ -113,7 +117,11 @@ public partial class RadialSpawner : Node2D
 
     public override void _Draw()
     {
-        if (!Engine.IsEditorHint()) return; // Only draw in the editor
+        // We only draw when selected.
+        if (!IsSelectedInEditor())
+        {
+            return;
+        }
 
         // Draw a circle in the editor
         float arcAngle = Mathf.Abs(StopAngleDegrees - StartAngleDegrees);
@@ -145,5 +153,10 @@ public partial class RadialSpawner : Node2D
         }
 
         DrawPolygon(pointsArc, colors);
+    }
+
+    private bool IsSelectedInEditor()
+    {
+        return Engine.IsEditorHint() && EditorInterface.Singleton.GetSelection().GetSelectedNodes().Contains(this);
     }
 }
