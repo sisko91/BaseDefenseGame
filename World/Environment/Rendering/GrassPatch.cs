@@ -1,6 +1,7 @@
 using Godot;
 
 // GrassPatch renders grass within the defined bounds.
+[Tool]
 public partial class GrassPatch : Sprite2D
 {
     // The shader to use to render the grass.
@@ -10,7 +11,18 @@ public partial class GrassPatch : Sprite2D
     // If true, a flat texture will be rendered behind the grass blades over this row of grass up to the BladeOriginRegionHeight. The color of the texture is controlled by BladeColor.
     [Export] public bool EnableBackingTexture = false;
     // The bounds within which Grass should be rendered.
-    [Export] public Rect2 Bounds;
+    [Export]
+    public Vector2 Size
+    {
+        get => _size;
+        set
+        {
+            _size = value;
+            QueueRedraw();
+        }
+    }
+    private Vector2 _size;
+    
     // How many rows of grass to spawn. These are evenly distributed across the vertical bounds of the GrassPatch.
     // Increase BladeRows and/or BladeHeight to introduce more natural layering (at slight increased cost to render).
     [Export] public int BladeRows = 5;
@@ -21,21 +33,34 @@ public partial class GrassPatch : Sprite2D
     // How tall each blade of grass should be.
     [Export] public float BladeHeight = 16.0f;
 
-    public float BladeRowHeight => Mathf.Min(Bounds.Size.Y / BladeRows, BladeHeight * BladeRows);
+    public float BladeRowHeight => Mathf.Min(Size.Y / BladeRows, BladeHeight * BladeRows);
+
+    public override void _Draw()
+    {
+        if (IsSelectedInEditor())
+        {
+            DrawRect(new Rect2(Vector2.Zero, Size), BladeColor, true);
+        }
+    }
     
     public override void _Ready()
     {
+        if (Engine.IsEditorHint())
+        {
+            return; // Don't generate anything in the editor.
+        }
+        
         if (EnableBackingTexture)
         {
             GenerateBackingTexture();
-            Offset = Bounds.Size / 2f;
+            Offset = Size / 2f;
         }
 
         if (Texture != null)
         {
             // Stretch the texture to fit the bounds of the grass patch.
             RegionEnabled = true;
-            RegionRect = Bounds;
+            RegionRect = new Rect2(Vector2.Zero, Size);
         }
         GenerateGrassRows();
     }
@@ -58,8 +83,8 @@ public partial class GrassPatch : Sprite2D
         for (int row = 0; row <= BladeRows; row++)
         {
             var grassRow = new GrassPatchRowMesh();
-            grassRow.Position = new Vector2(Bounds.Position.X, Bounds.Position.Y + row * BladeRowHeight);
-            grassRow.RowWidth = Bounds.Size.X;
+            grassRow.Position = new Vector2(0, row * BladeRowHeight);
+            grassRow.RowWidth = Size.X;
             // CRITICAL: CanvasItem shaders (2d) do not support per-instance uniforms so we have to duplicate the
             // material to configure things per-row of grass.
             grassRow.BladeMaterial = BladeMaterial.Duplicate() as ShaderMaterial;
@@ -71,5 +96,10 @@ public partial class GrassPatch : Sprite2D
             grassRow.BladeOriginRegionHeight = BladeRowHeight;
             AddChild(grassRow);
         }
+    }
+    
+    private bool IsSelectedInEditor()
+    {
+        return Engine.IsEditorHint() && EditorInterface.Singleton.GetSelection().GetSelectedNodes().Contains(this);
     }
 }
