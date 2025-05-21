@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=35 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
@@ -20,6 +20,7 @@
 [ext_resource type="Script" uid="uid://7x2lypek5o4l" path="res://Gameplay/CrystalTarget.cs" id="11_dghf1"]
 [ext_resource type="Script" uid="uid://ul68if3kp7vg" path="res://World/ProcGen/Scenarios/SmallTown.cs" id="12_qx1mc"]
 [ext_resource type="Script" uid="uid://duyw2hn54xkre" path="res://World/ProcGen/RectRegion.cs" id="14_80b3c"]
+[ext_resource type="Script" uid="uid://cu0g6818gf7x1" path="res://World/ProcGen/Paths/PathDecorator.cs" id="14_782py"]
 [ext_resource type="PackedScene" uid="uid://c88u38cjeos7d" path="res://World/Structures/Testing/3.4PerspectiveBuilding/test_building.tscn" id="21_wh5fb"]
 [ext_resource type="PackedScene" uid="uid://blio7x08xw4te" path="res://NPC/Merchant/merchant.tscn" id="22_hkmll"]
 [ext_resource type="Resource" uid="uid://wi0ppwstcfuk" path="res://World/ShopItems/scattergun.tres" id="23_80b3c"]
@@ -138,7 +139,7 @@ metadata/_custom_type_script = "uid://duyw2hn54xkre"
 script = ExtResource("5_hjxpo")
 Path = NodePath("SourcePath2D")
 PathMeshMaterial = SubResource("ShaderMaterial_b48bc")
-Decorators = [SubResource("Resource_hkmll")]
+Decorators = Array[ExtResource("14_782py")]([SubResource("Resource_hkmll")])
 PathWidth = 400.0
 StretchTexCoords = false
 TexCoordsRepeatDistance = 1000.0

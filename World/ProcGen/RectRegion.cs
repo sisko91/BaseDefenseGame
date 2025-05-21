@@ -25,6 +25,7 @@ public sealed partial class RectRegion : Node2D
 
     private bool isDragging = false;
     private Vector2 dragAnchorOffset = Vector2.Zero;
+    private static RectRegion activeDragRegion = null; // only one region can be dragged around at a time.
 
     public override void _Ready() {
         base._Ready();
@@ -52,11 +53,12 @@ public sealed partial class RectRegion : Node2D
 
             bool isMousePressed = Input.IsMouseButtonPressed(MouseButton.Left);
             if(isMousePressed) {
-                if(!isDragging) {
+                if(!isDragging && activeDragRegion == null) {
                     Vector2 mousePos = EditorInterface.Singleton.GetEditorViewport2D().GetMousePosition();
                     if (IsMouseOverControlPoint(mousePos)) {
                         GD.Print("Drag-resize started.");
                         isDragging = true;
+                        activeDragRegion = this;
                         var globalSize = GlobalTransform.BasisXform(Size);
                         dragAnchorOffset = globalSize - mousePos;
                         // We don't want to select ANYTHING when we're dragging around, so wipe the editor's selection list clean.
@@ -73,6 +75,7 @@ public sealed partial class RectRegion : Node2D
                 if(isDragging) {
                     GD.Print("Drag-resize completed.");
                     isDragging = false;
+                    activeDragRegion = null;
                     // We want the region to be re-selected (and nothing else) after we're done dragging around.
                     EditorInterface.Singleton.GetSelection().Clear();
                     EditorInterface.Singleton.GetSelection().AddNode(this);
@@ -84,7 +87,7 @@ public sealed partial class RectRegion : Node2D
                 }
             }
 
-            if(isDragging) {
+            if(isDragging && activeDragRegion == this) {
                 Vector2 mousePos = EditorInterface.Singleton.GetEditorViewport2D().GetMousePosition();
                 Vector2 localMousePos = GlobalTransform.AffineInverse().BasisXform(mousePos + dragAnchorOffset);
                 Size = localMousePos;
