@@ -50,6 +50,9 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
     public string AllProjectilesGroup = "Projectiles";
 
     private Timer ProjectileTimer;
+    
+    // Overriding the default that all Moveables receive so that projectiles can have a different default size / shape.
+    protected override PackedScene DefaultGrassDisplacementMarkerScene => GD.Load<PackedScene>("res://World/Environment/Rendering/DisplacementMasks/Grass/projectile_grass_displacement_marker.tscn");
 
     public override void _Ready()
     {

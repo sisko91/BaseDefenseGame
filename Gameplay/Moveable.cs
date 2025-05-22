@@ -10,10 +10,16 @@ public partial class Moveable : CharacterBody2D, IEntity {
     public BuildingRegion CurrentRegion { get; set; }
 
     [ExportCategory("Grass Interaction")]
+    // Controls whether this moveable entity displaces grass patches that it travels through.
+    [Export] protected bool DisplaceGrass = true;
     // The GrassDisplacementMarker to instantiate if/when this moveable should be influencing grass that it moves through.
-    // All Moveables displace grass by default, using a default displacement marker. Set this to null (in editor or
-    // in code - prior to _Ready()) to disable grass influence.
-    [Export] protected PackedScene GrassDisplacementMarkerScene = GD.Load<PackedScene>("res://World/Environment/Rendering/DisplacementMasks/Grass/grass_displacement_marker.tscn");
+    // All Moveables displace grass by default when DisplaceGrass==true, using a default displacement marker. Instances
+    // can override the displacement marker and provide their own through this override.
+    [Export] protected PackedScene GrassDisplacementMarkerOverride = null;
+    
+    // The grass displacement marker to instantiate when DisplaceGrass==true and no GrassDisplacementMarkerOverride is
+    // configured. Subclasses can override this to provide a different default for their instances.
+    protected virtual PackedScene DefaultGrassDisplacementMarkerScene => GD.Load<PackedScene>("res://World/Environment/Rendering/DisplacementMasks/Grass/default_grass_displacement_marker.tscn");
 
     public Moveable() : base() {
         //Better for 2d top-down
@@ -23,11 +29,16 @@ public partial class Moveable : CharacterBody2D, IEntity {
     public override void _Ready()
     {
         base._Ready();
-        if (GrassDisplacementMarkerScene != null)
+        if (DisplaceGrass)
         {
             // Create our grass displacement marker. This tracks the character itself so we don't need a stored reference.
-            var grassMarker = GrassDisplacementMarkerScene.Instantiate<DisplacementMaskMarker>();
-            grassMarker.RegisterOwner(this);
+            var grassMarker = GrassDisplacementMarkerOverride?.Instantiate<DisplacementMaskMarker>() ?? 
+                              DefaultGrassDisplacementMarkerScene?.Instantiate<DisplacementMaskMarker>();
+            grassMarker?.RegisterOwner(this);
+            if (grassMarker == null)
+            {
+                GD.PushError($"{Name} had DisplaceGrass configured but provided no GrassDisplacementMarker (via Override or default).");
+            }
         }
     }
     

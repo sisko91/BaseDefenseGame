@@ -83,6 +83,8 @@ public partial class Character : Moveable, IImpactMaterial
     protected Timer HitTimer;
     protected Timer StunTimer;
     
+    // Overriding the default that all Moveables receive so that characters can have a different default size / shape.
+    protected override PackedScene DefaultGrassDisplacementMarkerScene => GD.Load<PackedScene>("res://World/Environment/Rendering/DisplacementMasks/Grass/character_grass_displacement_marker.tscn");
 
     public override void _Ready()
     {

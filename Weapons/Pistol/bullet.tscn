@@ -7,6 +7,7 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rep0m"]
 shader = ExtResource("1_rep0m")
 shader_parameter/is_inside = false
+shader_parameter/window_light_strength = 0.1
 
 [sub_resource type="Gradient" id="Gradient_pd6um"]
 offsets = PackedFloat32Array(0, 0.24026, 0.779221, 1)
