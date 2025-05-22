@@ -31,7 +31,7 @@ void fragment() {
 	if (color.a == 0.0) {
 		discard;
 	}
-	
+
 	if (is_hit) {
 		color = hit(color);
 	}

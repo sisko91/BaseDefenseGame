@@ -79,6 +79,17 @@ public partial class BuildingRegion : Area2D
         return exits;
     }
 
+    //Area2D.OverlapsBody is delayed 1 frame, so it's not useful for checking things the same frame they spawn in
+    //This is hardcoded for rectangle shapes, but can be modified to support collision polygons
+    public bool OverlapsBodyAccurate(Node2D node) {
+        var boundary = GetNode<CollisionShape2D>("Boundary");
+        RectangleShape2D shape = (RectangleShape2D)boundary.Shape;
+        var start = boundary.GlobalPosition - new Vector2(shape.Size.X / 2, shape.Size.Y / 2);
+        var end = boundary.GlobalPosition + new Vector2(shape.Size.X / 2, shape.Size.Y / 2);
+
+        return node.GlobalPosition.X >= start.X && node.GlobalPosition.Y >= start.Y && node.GlobalPosition.X <= end.X && node.GlobalPosition.Y <= end.Y;
+    }
+
     public void AddMonitoringException(Node2D node) {
         IgnoreMonitoringForNodes.Add(node);
     }

@@ -100,6 +100,9 @@ public partial class RadialSpawner : Node2D
 
         var instance = SpawnTemplate.Instantiate<Node2D>();
         SpawnContainerReference.AddChild(instance, true);
+        if (ZIndex > 0 && instance is Moveable m) {
+            m.ChangeFloor(ZIndex);
+        }
 
         // Calculate the angle as StartAngleDegrees + random % of the arc
         var angleRange = StopAngleDegrees - StartAngleDegrees;

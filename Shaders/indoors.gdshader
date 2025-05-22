@@ -1,7 +1,7 @@
 shader_type canvas_item;
 
 global uniform vec4 day_night_color : source_color;
-uniform float window_light_strength = 0.1;
+uniform float window_light_strength = 0.5;
 
 //Just dims/shades everything so we can light it up (with windows, indoor lights, etc)
 void fragment()

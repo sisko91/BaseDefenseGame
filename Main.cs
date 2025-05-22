@@ -1,6 +1,7 @@
 using ExtensionMethods;
 using Godot;
 using System;
+using System.Runtime.InteropServices;
 
 public partial class Main : Node
 {
@@ -34,6 +35,10 @@ public partial class Main : Node
 
     public static Main Instance { get; private set; }
 
+
+    [DllImport("kernel32.dll")]
+    static extern bool AllocConsole();
+
     public Main() {
     }
 
@@ -42,6 +47,9 @@ public partial class Main : Node
         // We set this up in EnterTree so that it's already set by the time _Ready() executes (as _Ready() may spawn
         // nodes that wish to access Main through static interfaces).
         Instance = this;
+
+        //GetTree().DebugCollisionsHint = true; //Same as turning on Visible Collision Shapes in the editor, but enables it when I debug from Visual Studio
+        //AllocConsole(); //Spawns a console that shows stdout, since I can't see it in Visual Studio (since the game is spawned as child process of the process VS monitors)
     }
 
     // Called when the node enters the scene tree for the first time.

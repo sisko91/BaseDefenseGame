@@ -158,6 +158,8 @@ namespace AI
                         //GD.Print($"{Owner?.Name}->{GetType().Name} no path to stairs");
                         Deactivate();
                     }
+                } else {
+                    Owner.NavAgent.TargetPosition = Brain.EnemyTarget.GlobalPosition;
                 }
             }
 

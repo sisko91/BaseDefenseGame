@@ -78,7 +78,6 @@ fill_from = Vector2(0.5, 0.5)
 
 [node name="TestBuilding" type="Node2D"]
 script = ExtResource("1_7ffef")
-BuildingHeight = 23
 
 [node name="Floor0" type="Area2D" parent="."]
 y_sort_enabled = true

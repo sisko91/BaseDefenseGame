@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://dy47gg8c687bv"]
+[gd_scene load_steps=24 format=3 uid="uid://dy47gg8c687bv"]
 
 [ext_resource type="Script" uid="uid://dsdu35x76daf1" path="res://Player/Player.cs" id="1_imx3i"]
 [ext_resource type="Shader" uid="uid://cfv027nbsnbss" path="res://Shaders/character.gdshader" id="1_od3ui"]
@@ -19,6 +19,17 @@ shader_parameter/gb_ceil = 0.75
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_od3ui"]
 radius = 15.0
+
+[sub_resource type="Gradient" id="Gradient_od3ui"]
+offsets = PackedFloat32Array(0.636364, 0.662338, 1)
+colors = PackedColorArray(0, 0, 0, 0.392157, 0, 0, 0, 0, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_00tjw"]
+gradient = SubResource("Gradient_od3ui")
+width = 32
+height = 16
+fill = 1
+fill_from = Vector2(0.5, 0.5)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_00tjw"]
 atlas = ExtResource("6_od3ui")
@@ -109,6 +120,11 @@ ImpactResponseTable = Dictionary[int, PackedScene]({
 position = Vector2(0, -9)
 shape = SubResource("CircleShape2D_od3ui")
 
+[node name="Shadow" type="Sprite2D" parent="."]
+position = Vector2(0, 2)
+scale = Vector2(1.1875, 0.3125)
+texture = SubResource("GradientTexture2D_00tjw")
+
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 light_mask = 2
 use_parent_material = true
@@ -121,6 +137,7 @@ frame_progress = 0.896812
 offset = Vector2(0, -10)
 
 [node name="HitboxTODO" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(0, -30)
 shape = SubResource("CapsuleShape2D_od3ui")
 disabled = true

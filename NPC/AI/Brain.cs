@@ -241,9 +241,13 @@ public partial class Brain : Resource
         }
 
         // look along the nav path if stuck
+        //TODO: Fix this, just need to implement some version of GetRealVelocity since it only works with
+        //MoveAndSlide
+        /*
         if (Owner.GetRealVelocity().Length() < 0.1f * Owner.MovementSpeed) {
             return lastNavPathDirection.Angle();
         }
+        */
 
         // Orient to face the direction the NPC is moving by default.
         return Owner.Velocity.Angle();

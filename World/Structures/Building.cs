@@ -10,8 +10,10 @@ public partial class Building : Placeable
 {
     private static int WEATHER_Z_LAYER = 10;
 
-    [Export]
-    public int BuildingHeight;
+    //It's a lot simpler if all floors/platforms are the same level up within a strictly 2D framework
+    //Can explore a more complex solution to support different floor heights for other buildings later
+    public static int FloorHeight = 120;
+
     public List<Door> Exits;
 
     private Godot.Collections.Array<BuildingRegion> _allRegions = null;
@@ -73,8 +75,12 @@ public partial class Building : Placeable
 
     private void OnBodyEnteredRegion(Node2D body, BuildingRegion region)
     {
-        if (region.ShouldIgnoreNode(body)) {
+        Moveable m = body as Moveable;
+        if (m == null) {
             return;
+        }
+        if (m.Falling && m.FallTime == 0) {
+            m.Falling = false;
         }
 
         //Reparent has to be deferred since this is called from a physics process
@@ -90,7 +96,7 @@ public partial class Building : Placeable
             }
 
             // We only want to look at events for the body's current elevation, and only bodies that have not yet been reparented to this region
-            if (m.CurrentElevationLevel != region.ElevationLevel || m.CurrentRegion == region) {
+            if (m.CurrentElevationLevel != region.ElevationLevel || m.GetParent().GetParent() == region) {
                 return;
             }
 
@@ -105,14 +111,15 @@ public partial class Building : Placeable
 
             if (body is Player player)
             {
+                ResetVisibility();
                 // Set all regions on this elevation to be visible, and all above this elevation to be invisible.
                 foreach (var other in AllRegions)
                 {
-                    other.Visible = other.ElevationLevel == region.ElevationLevel || !region.InteriorRegion;
-                    if (other.Visible)
+                    other.Visible = other.ElevationLevel <= region.ElevationLevel;
+                    if (other.Visible && other.ElevationLevel == region.ElevationLevel)
                     {
                         //Render above weather layer so we dont show clouds and stuff inside
-                        other.ZIndex = region.InteriorRegion ? WEATHER_Z_LAYER + 1 : 0;
+                        other.ZIndex = region.ElevationLevel + (region.InteriorRegion ? WEATHER_Z_LAYER + 1 : 0);
 
                         //Hide parts of this region that should be hidden when the player is inside
                         var facade = other.GetNodeOrNull<Node2D>("YSort/Facade");
@@ -159,27 +166,31 @@ public partial class Building : Placeable
             m.Reparent(this.GetGameWorld().YSortNode);
             region.RemoveMonitoringException(body);
 
-            //Fell off the roof
             if (!region.OverlapsBody(m))
             {
-                m.CurrentRegion = null;
-                m.ChangeFloor(0);
-                //TODO: Should model per floor height, not building height
-                m.GlobalPosition = m.GlobalPosition + new Vector2(0, BuildingHeight);
-            }
-
-            m.SetInside(m.CurrentRegion != null && m.CurrentRegion.InteriorRegion);
-
-            if (body is Player player)
-            {
-                ResetVisibility();
-                UpdateAllNonPlayerBodies();
-            }
-            else
-            {
-                UpdateNonPlayerBody(m);
+                if (m.CurrentElevationLevel > 0) {
+                    m.Falling = true;
+                    m.StartedFallingAction += (Moveable moveable) => { Exit(moveable); };
+                } else {
+                    Exit(m);
+                }
             }
         }).CallDeferred();
+    }
+
+    public void Exit(Moveable m) {
+        m.CurrentRegion = null;
+        //TODO: Handle falling multiple floors
+        m.ChangeFloor(0);
+
+        m.SetInside(m.CurrentRegion != null && m.CurrentRegion.InteriorRegion);
+
+        if (m is Player player) {
+            ResetVisibility();
+            UpdateAllNonPlayerBodies();
+        } else {
+            UpdateNonPlayerBody(m);
+        }
     }
 
     private void OnAreaEnteredRegion(Area2D area, BuildingRegion region)
@@ -239,7 +250,7 @@ public partial class Building : Placeable
         foreach (var region in AllRegions)
         {
             region.Visible = true;
-            region.ZIndex = 0;
+            region.ZIndex = region.ElevationLevel;
 
             var facade = region.GetNodeOrNull<Node2D>("YSort/Facade");
             if (facade != null)

@@ -2,6 +2,9 @@
 
 [ext_resource type="Script" uid="uid://cwqsayor2n4rq" path="res://World/Structures/Stairs.cs" id="1_1feta"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_unihn"]
+size = Vector2(64, 64)
+
 [sub_resource type="Gradient" id="Gradient_un72y"]
 offsets = PackedFloat32Array(0.662338, 1)
 colors = PackedColorArray(0.481789, 0.481789, 0.481789, 1, 0.180005, 0.180005, 0.180005, 1)
@@ -12,15 +15,13 @@ fill = 2
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0, 0)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_unihn"]
-size = Vector2(64, 64)
-
 [node name="TestStairs" type="Area2D"]
 collision_layer = 8
 script = ExtResource("1_1feta")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-texture = SubResource("GradientTexture2D_h27ra")
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_unihn")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+use_parent_material = true
+texture = SubResource("GradientTexture2D_h27ra")

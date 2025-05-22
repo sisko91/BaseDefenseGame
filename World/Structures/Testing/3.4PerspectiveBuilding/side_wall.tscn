@@ -1,14 +1,18 @@
-[gd_scene load_steps=6 format=3 uid="uid://bv3u8ojyyr6rm"]
+[gd_scene load_steps=8 format=3 uid="uid://bv3u8ojyyr6rm"]
 
 [ext_resource type="Shader" uid="uid://cwkbk8kbjdbbj" path="res://Shaders/background.gdshader" id="1_bw5qw"]
 [ext_resource type="Texture2D" uid="uid://bf7eu48h836y1" path="res://art/World/StoneWalls/wall_front.png" id="1_f56kc"]
 [ext_resource type="Texture2D" uid="uid://hhddsihnjo41" path="res://art/World/StoneWalls/wall_top.png" id="2_0oicv"]
+[ext_resource type="Shader" uid="uid://7akcch5ndkta" path="res://Shaders/silhouette.gdshader" id="3_wn0se"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_wn0se"]
 shader = ExtResource("1_bw5qw")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wn0se"]
 size = Vector2(16, 128)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_igo85"]
+shader = ExtResource("3_wn0se")
 
 [node name="SideWall" type="StaticBody2D"]
 material = SubResource("ShaderMaterial_wn0se")
@@ -31,7 +35,7 @@ region_rect = Rect2(0, 0, 8, 60)
 [node name="Top" type="Sprite2D" parent="."]
 light_mask = 0
 texture_repeat = 2
-use_parent_material = true
+material = SubResource("ShaderMaterial_igo85")
 position = Vector2(0, -178)
 scale = Vector2(2, 2)
 texture = ExtResource("2_0oicv")

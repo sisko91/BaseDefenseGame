@@ -28,9 +28,11 @@ public partial class Grenade : Projectile, IInstigated
     [Export]
     public PackedScene ExplosionTemplate { get; set; } = null;
 
-    public Grenade() {
+    public override void _Ready() {
+        base._Ready();
         // Grenades shouldn't destroy themselves after colliding. They handle this themselves within OnCollide(), Bounce(), and Settle().
         DestroyOnNextCollision = false;
+        AffectedByGravity = true;
     }
 
     protected override void OnStart() {

@@ -9,6 +9,28 @@ public partial class Moveable : CharacterBody2D, IEntity {
     public int CurrentElevationLevel = 0;
     public BuildingRegion CurrentRegion { get; set; }
 
+    private int FallSpeed = 600;
+    public double FallTime = 0f;
+    public bool AffectedByGravity = true;
+    private bool _falling;
+    public bool Falling {
+        get {
+            return _falling;
+        }
+        set {
+            _falling = value;
+            if (!_falling) {
+                StartedFallingAction = null;
+            }
+        }
+    }
+    public event Action<Moveable> StartedFallingAction;
+
+    private Vector2 CollisionShapePosition;
+    private CollisionShape2D CollisionShape;
+    private Vector2 ShadowPosition;
+    private Sprite2D Shadow;
+
     [ExportCategory("Grass Interaction")]
     // Controls whether this moveable entity displaces grass patches that it travels through.
     [Export] protected bool DisplaceGrass = true;
@@ -26,6 +48,13 @@ public partial class Moveable : CharacterBody2D, IEntity {
         MotionMode = MotionModeEnum.Floating;
     }
 
+    public Delegate[] GetStartFallingCallbacks() {
+        if (StartedFallingAction != null) {
+            return StartedFallingAction.GetInvocationList();
+        }
+        return new Delegate[] { };
+    }
+
     public override void _Ready()
     {
         base._Ready();
@@ -40,8 +69,54 @@ public partial class Moveable : CharacterBody2D, IEntity {
                 GD.PushError($"{Name} had DisplaceGrass configured but provided no GrassDisplacementMarker (via Override or default).");
             }
         }
+
+        Shadow = GetNodeOrNull<Sprite2D>("Shadow");
+        if (Shadow != null) {
+            ShadowPosition = Shadow.Position;
+        }
+        CollisionShape = GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
+        if (CollisionShape != null) {
+            CollisionShapePosition = CollisionShape.Position;
+        }
     }
-    
+
+    public Vector2 HandleFalling(double delta) {
+        float fallDist = Building.FloorHeight * 1;
+        var maxFallTime = fallDist / FallSpeed;
+        var distLeft = fallDist * (maxFallTime - FallTime) / maxFallTime;
+
+        
+        if (Shadow != null) {
+            Shadow.Position = new Vector2(ShadowPosition.X, ShadowPosition.Y + (float) distLeft);
+        }
+        if (CollisionShape != null) {
+            var offset = new Vector2(0, (float)distLeft + 5).Rotated(-Rotation);
+            CollisionShape.Position = new Vector2(CollisionShapePosition.X, CollisionShapePosition.Y) + offset;
+        }
+
+        if (FallTime == 0) {
+            StartedFallingAction(this);
+            StartedFallingAction = null;
+        }
+
+        FallTime += delta;
+
+        //TODO: Handle falling multiple floors
+
+        if (FallTime > maxFallTime) {
+            Falling = false;
+            FallTime = 0;
+            if (Shadow != null) {
+                Shadow.Position = ShadowPosition;
+            }
+            if (CollisionShape != null) {
+                CollisionShape.Position = CollisionShapePosition;
+            }
+        }
+
+        return Velocity + new Vector2(0, FallSpeed);
+    }
+
     public virtual void ChangeFloor(int targetFloor) {
         if (targetFloor == CurrentElevationLevel) {
             return;

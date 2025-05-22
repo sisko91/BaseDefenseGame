@@ -29,8 +29,7 @@ public partial class NonPlayerCharacter : Character
         NearbyBodySensor.PlayerSensed += OnPlayerSensed;
         NearbyBodySensor.NpcSensed += OnNpcSensed;
 
-        // SetupNavAgent awaits() a signal so we want to make sure we don't call it from _Ready().
-        Callable.From(SetupNavAgent).CallDeferred();
+        SetupNavAgent();
 
         if(Brain != null)
         {
@@ -40,10 +39,8 @@ public partial class NonPlayerCharacter : Character
         RotationGoal = GlobalRotation;
     }
 
-    private async void SetupNavAgent()
+    private void SetupNavAgent()
     {
-        await ToSignal(GetTree(), SceneTree.SignalName.PhysicsFrame);
-
         NavAgent = new NavigationAgent2D();
         NavAgent.DebugEnabled = DebugConfig.Instance.DRAW_NAVIGATION;
         // Update the NavAgent any time the debug config changes.
@@ -85,24 +82,24 @@ public partial class NonPlayerCharacter : Character
         {
             GlobalRotation = Mathf.LerpAngle(GlobalRotation, RotationGoal, physicsTickDelta * turnConstant);
         }
-        bool collided = MoveAndSlide();
-        if (collided)
-        {
-            OnCollide(GetLastSlideCollision());
+
+        Vector2 velocity;
+        if (Falling && AffectedByGravity) {
+            velocity = HandleFalling(delta);
+        } else {
+            velocity = Velocity;
+        }
+
+        var collision = MoveAndCollide(velocity * (float)delta);
+        if (collision != null) {
+            HandleCollision(collision);
         }
     }
 
-    public void OnCollide(KinematicCollision2D collision)
+    public void HandleCollision(KinematicCollision2D collision)
     {
-        //Transfer momentum when hitting other entities
         if (collision.GetCollider() is Character character) {
-            //var desiredVelocity = (Velocity - character.Velocity) / 2.0f;
-            //GD.Print($"Desired: {desiredVelocity}. Current: {Velocity}. Collided object velocity: {character.Velocity}");
-
             Callable.From(() => {
-                //GD.Print("Modifying velocity");
-                //Velocity = desiredVelocity;
-
                 //Make knocked back npcs bounce off other npcs
                 if (!Knockback.IsZeroApprox()) {
                     Velocity = Velocity.Bounce(collision.GetNormal());

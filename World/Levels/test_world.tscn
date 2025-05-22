@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=36 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
@@ -25,6 +25,7 @@
 [ext_resource type="PackedScene" uid="uid://blio7x08xw4te" path="res://NPC/Merchant/merchant.tscn" id="22_hkmll"]
 [ext_resource type="Resource" uid="uid://wi0ppwstcfuk" path="res://World/ShopItems/scattergun.tres" id="23_80b3c"]
 [ext_resource type="Resource" uid="uid://b77gn5emtpi6g" path="res://World/ShopItems/barber.tres" id="24_782py"]
+[ext_resource type="PackedScene" uid="uid://c70igcsd325bm" path="res://World/Structures/Testing/3.4PerspectiveBuilding/test_building_flat_roof.tscn" id="26_fbbf8"]
 [ext_resource type="PackedScene" uid="uid://6prx14s7d1am" path="res://World/Environment/Testing/test_tree.tscn" id="28_fbbf8"]
 [ext_resource type="PackedScene" uid="uid://thlbbsrf6pcr" path="res://World/Environment/Testing/test_grass_patch.tscn" id="29_qinvk"]
 
@@ -72,7 +73,6 @@ RegionBounds = Vector2(6000, 6000)
 
 [node name="DayNight" type="Node" parent="."]
 script = ExtResource("11_11lc6")
-DayStartTime = 0.0
 FreezeTime = true
 
 [node name="ParallaxBackground" type="Parallax2D" parent="."]
@@ -94,7 +94,6 @@ mouse_filter = 2
 metadata/_edit_use_anchors_ = true
 
 [node name="Background" type="Sprite2D" parent="."]
-z_index = -1
 texture_repeat = 2
 material = SubResource("ShaderMaterial_523qg")
 texture = ExtResource("2_rsvub")
@@ -127,10 +126,10 @@ metadata/_custom_type_script = "uid://duyw2hn54xkre"
 [node name="SecondaryFootprints" type="Node2D" parent="ScenarioContainer"]
 
 [node name="ExcludeStartZone" type="Node2D" parent="ScenarioContainer/SecondaryFootprints"]
-position = Vector2(-711, -932)
+position = Vector2(-1140, -1488)
 scale = Vector2(0.578354, 0.508114)
 script = ExtResource("14_80b3c")
-Size = Vector2(2440.31, 3094.71)
+Size = Vector2(3905.14, 4068.33)
 Tags = Array[String](["ProcGen.Exclude.All"])
 EditorDrawColor = Color(0.798375, 0, 0.201584, 1)
 metadata/_custom_type_script = "uid://duyw2hn54xkre"
@@ -149,16 +148,6 @@ position = Vector2(-40, 188)
 scale = Vector2(1.0022, 0.999438)
 curve = SubResource("Curve2D_cdkb4")
 
-[node name="ShamblerSpawnZone" type="Node2D" parent="." node_paths=PackedStringArray("SpawnContainerReference")]
-position = Vector2(7, 0)
-script = ExtResource("6_xi2eq")
-SpawnTemplate = ExtResource("6_a6glu")
-SpawnContainerReference = NodePath("../YSort")
-InnerRadius = 400.0
-OuterRadius = 500.0
-StartAngleDegrees = 270.0
-StopAngleDegrees = 90.0
-
 [node name="YSort" type="Node2D" parent="."]
 y_sort_enabled = true
 
@@ -168,14 +157,20 @@ script = ExtResource("11_dghf1")
 MaxHealth = 100.0
 
 [node name="TestBuilding" parent="YSort" instance=ExtResource("21_wh5fb")]
-position = Vector2(0, -160)
+position = Vector2(0, -1000)
 
 [node name="Merchant" parent="YSort/TestBuilding/Floor1" index="3" instance=ExtResource("22_hkmll")]
 position = Vector2(0.0317078, -239.143)
 ShopItems = Array[Resource]([ExtResource("23_80b3c"), ExtResource("24_782py")])
 
-[node name="TestFireplace" parent="YSort" instance=ExtResource("7_8h8jw")]
-position = Vector2(0, 51)
+[node name="TestBuildingFlatRoof2" parent="YSort" instance=ExtResource("26_fbbf8")]
+position = Vector2(525, -162)
+
+[node name="TestBuildingFlatRoof" parent="YSort" instance=ExtResource("26_fbbf8")]
+position = Vector2(-525, -162)
+
+[node name="TestCampfire" parent="YSort" instance=ExtResource("7_8h8jw")]
+position = Vector2(-704.891, -978.62)
 
 [node name="TestTree2" parent="YSort" instance=ExtResource("28_fbbf8")]
 position = Vector2(515, 449)
@@ -187,6 +182,29 @@ Size = Vector2(1536, 350)
 BladeRows = 30
 BladesPerRow = 1024
 BladeHeight = 24.0
+
+[node name="ShamblerSpawnZone" type="Node2D" parent="." node_paths=PackedStringArray("SpawnContainerReference")]
+position = Vector2(7, 0)
+script = ExtResource("6_xi2eq")
+SpawnTemplate = ExtResource("6_a6glu")
+SpawnContainerReference = NodePath("../YSort")
+InnerRadius = 400.0
+OuterRadius = 500.0
+StartAngleDegrees = 270.0
+StopAngleDegrees = 90.0
+InitialCount = 0
+
+[node name="RoofShamblerSpawnZone" type="Node2D" parent="." node_paths=PackedStringArray("SpawnContainerReference")]
+z_index = 1
+position = Vector2(-523, -620)
+script = ExtResource("6_xi2eq")
+SpawnTemplate = ExtResource("6_a6glu")
+SpawnContainerReference = NodePath("../YSort")
+InnerRadius = 300.0
+OuterRadius = 400.0
+StartAngleDegrees = 270.0
+StopAngleDegrees = 90.0
+InitialCount = 4
 
 [editable path="YSort/TestBuilding"]
 [editable path="YSort/TestBuilding/Floor1/YSort/WallTorch"]

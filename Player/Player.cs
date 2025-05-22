@@ -104,6 +104,8 @@ public partial class Player : Character
             isDashing = false;
             lastDashTime = Time.GetTicksUsec() / 1000000.0;
             dashGhostTimer.Stop();
+            AffectedByGravity = true;
+            Velocity = Velocity * MovementSpeed / DashSpeed;
         };
         AddChild(dashTimer);
 
@@ -123,7 +125,18 @@ public partial class Player : Character
     // Called every tick of the physics thread.
     public override void _PhysicsProcess(double delta)
     {
-        HandleMovement(delta);
+        Vector2 velocity;
+        if (Falling && AffectedByGravity) {
+            velocity = HandleFalling(delta);
+        } else {
+            HandleMovement(delta);
+            velocity = Velocity;
+        }
+
+        var collision = MoveAndCollide(velocity * (float)delta);
+        if (collision != null) {
+            HandleCollision(collision);
+        }
     }
 
     // Called every rendered frame.
@@ -169,13 +182,7 @@ public partial class Player : Character
             speed = MovementSpeed;
         }
 
-        Velocity = movement * speed * (float)delta;
-
-        var collision = MoveAndCollide(Velocity);
-        if (collision != null)
-        {
-            HandleCollision(collision);
-        }
+        Velocity = movement * speed;
     }
 
     private void HandleAim(double delta)
@@ -200,6 +207,8 @@ public partial class Player : Character
 
     private void HandleCollision(KinematicCollision2D collision)
     {
+        Node2D collider = (Node2D) collision.GetCollider();
+
         // For now we just default to sliding along surfaces the player collides with.
         Velocity = Velocity.Slide(collision.GetNormal());
     }
@@ -249,6 +258,7 @@ public partial class Player : Character
                 dashDirection = Vector2.Right.Rotated(WeaponRing.AimAngle);
             }
             isDashing = true;
+            AffectedByGravity = false;
             dashTimer.Start(DashDuration);
 
             SpawnDashGhost();

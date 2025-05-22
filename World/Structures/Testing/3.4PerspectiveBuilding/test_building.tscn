@@ -19,18 +19,18 @@ size = Vector2(768, 480)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_w16jq"]
 shader = ExtResource("3_i37up")
-shader_parameter/window_light_strength = 0.0
+shader_parameter/window_light_strength = 0.5
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_trw5n"]
 shader = ExtResource("3_i37up")
-shader_parameter/window_light_strength = 0.0
+shader_parameter/window_light_strength = 0.5
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_m31sn"]
 shader = ExtResource("8_2kuhm")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dv3a8"]
 shader = ExtResource("3_i37up")
-shader_parameter/window_light_strength = 0.0
+shader_parameter/window_light_strength = 0.5
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2kuhm"]
 shader = ExtResource("8_2kuhm")
@@ -44,12 +44,12 @@ size = Vector2(768, 16)
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_breqi"]
 shader = ExtResource("7_3f0hn")
 
-[sub_resource type="Gradient" id="Gradient_k4fc4"]
+[sub_resource type="Gradient" id="Gradient_2kuhm"]
 offsets = PackedFloat32Array(0)
 colors = PackedColorArray(0.227451, 0.156863, 0, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_bgjah"]
-gradient = SubResource("Gradient_k4fc4")
+gradient = SubResource("Gradient_2kuhm")
 width = 600
 height = 430
 
@@ -57,7 +57,6 @@ height = 430
 script = ExtResource("1_bgjah")
 
 [node name="Floor1" type="Area2D" parent="."]
-position = Vector2(0, -103)
 collision_layer = 8
 collision_mask = 3
 script = ExtResource("2_ax5sx")
@@ -68,7 +67,6 @@ position = Vector2(0, -54)
 shape = SubResource("RectangleShape2D_ax5sx")
 
 [node name="Ground" type="Sprite2D" parent="Floor1" groups=["IndoorNodes"]]
-z_index = -1
 texture_repeat = 2
 material = SubResource("ShaderMaterial_w16jq")
 position = Vector2(0, -54)
@@ -157,7 +155,6 @@ position = Vector2(-256, 3)
 position = Vector2(0, 3)
 
 [node name="Roof" type="Area2D" parent="."]
-position = Vector2(0, 131)
 collision_layer = 128
 collision_mask = 48
 script = ExtResource("2_ax5sx")
@@ -168,19 +165,19 @@ collision_layer = 64
 collision_mask = 48
 
 [node name="LeftBarrier" type="CollisionShape2D" parent="Roof/Barrier"]
-position = Vector2(-392, -408)
+position = Vector2(-392, -174)
 shape = SubResource("RectangleShape2D_breqi")
 
 [node name="RightBarrier" type="CollisionShape2D" parent="Roof/Barrier"]
-position = Vector2(392, -408)
+position = Vector2(392, -174)
 shape = SubResource("RectangleShape2D_breqi")
 
 [node name="TopBarrier" type="CollisionShape2D" parent="Roof/Barrier"]
-position = Vector2(0, -656)
+position = Vector2(0, -422)
 shape = SubResource("RectangleShape2D_i37up")
 
 [node name="BottomBarrier" type="CollisionShape2D" parent="Roof/Barrier"]
-position = Vector2(0, -160)
+position = Vector2(0, 74)
 shape = SubResource("RectangleShape2D_i37up")
 
 [node name="YSort" type="Node2D" parent="Roof"]
@@ -193,7 +190,7 @@ position = Vector2(0, -16)
 [node name="FrontRoof" type="Sprite2D" parent="Roof/YSort/Facade"]
 texture_repeat = 2
 use_parent_material = true
-position = Vector2(0, -196)
+position = Vector2(0, 38)
 scale = Vector2(2, 2)
 texture = ExtResource("8_breqi")
 region_enabled = true
@@ -202,7 +199,7 @@ region_rect = Rect2(0, 0, 400, 60)
 [node name="RightRoof" type="Sprite2D" parent="Roof/YSort/Facade"]
 z_index = 1
 use_parent_material = true
-position = Vector2(207, -475)
+position = Vector2(207, -241)
 rotation = 1.5708
 skew = 0.272271
 texture = SubResource("GradientTexture2D_bgjah")
@@ -210,13 +207,13 @@ texture = SubResource("GradientTexture2D_bgjah")
 [node name="LeftRoof" type="Sprite2D" parent="Roof/YSort/Facade"]
 z_index = 1
 use_parent_material = true
-position = Vector2(-207, -475)
+position = Vector2(-207, -241)
 rotation = 1.5708
 skew = -0.272271
 texture = SubResource("GradientTexture2D_bgjah")
 
 [node name="PlacedFootprint" type="Node2D" parent="."]
-position = Vector2(-419, -520)
+position = Vector2(-419, -431)
 script = ExtResource("7_1ubww")
 Size = Vector2(835.038, 513.002)
 

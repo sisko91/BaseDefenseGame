@@ -55,6 +55,7 @@ public partial class PlayerCamera : Camera2D
         // Apply a fraction of total zoom based on the frame time.
         float zoomIncrement = CameraZoomRate * (float)delta;
         var zoomIncrementVec = new Vector2(zoomIncrement, zoomIncrement);
+        PositionSmoothingEnabled = false;
         if (Input.IsActionJustPressed("camera_zoom_in") && !Input.IsKeyPressed(Key.Ctrl))
         {
             targetZoom += zoomIncrementVec;
@@ -62,6 +63,8 @@ public partial class PlayerCamera : Camera2D
         else if (Input.IsActionJustPressed("camera_zoom_out") && !Input.IsKeyPressed(Key.Ctrl))
         {
             targetZoom -= zoomIncrementVec;
+        } else {
+            PositionSmoothingEnabled = true;
         }
 
         // Enforce min/max zoom.

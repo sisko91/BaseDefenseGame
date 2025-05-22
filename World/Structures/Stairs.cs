@@ -7,7 +7,9 @@ public partial class Stairs : InteractionArea {
     [Export]
     public Stairs TargetStairs;
 
-    bool ignoreNextInteraction = false;
+    //TODO: This isn't needed anymore, but I don't know why. When changing floors currently,
+    //a new enter event is not triggered for the destination stairs for some reason
+    //bool ignoreNextInteraction = false;
 
     public BuildingRegion OwningRegion { get; set; }
 
@@ -22,14 +24,16 @@ public partial class Stairs : InteractionArea {
     }
 
     private void OnBodyEntered(Node2D body) {
-        if (body is Character c && c.GetParent() != OwningRegion) {
+        if (body is Character c && c.CurrentRegion != OwningRegion) {
             return;
         }
 
+        /*
         if (ignoreNextInteraction) {
             ignoreNextInteraction = false;
             return;
         }
+        */
 
         if (body is Character character) {
             TakeStairs(character);
@@ -41,8 +45,10 @@ public partial class Stairs : InteractionArea {
     }
 
     private void TakeStairs(Character character) {
-        TargetStairs.ignoreNextInteraction = true;
+        //TargetStairs.ignoreNextInteraction = true;
         character.GlobalPosition = TargetStairs.GlobalPosition;
+
+        var level = TargetStairs.OwningRegion == null ? 0 : TargetStairs.OwningRegion.ElevationLevel;
 
         //If the target stairs are not in a building, assume they are on the bottom floor
         character.ChangeFloor(TargetStairs.OwningRegion == null ? 0 : TargetStairs.OwningRegion.ElevationLevel);

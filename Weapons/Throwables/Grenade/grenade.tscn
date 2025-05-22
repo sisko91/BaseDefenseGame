@@ -8,6 +8,7 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_y2psw"]
 shader = ExtResource("1_gig5r")
 shader_parameter/is_inside = false
+shader_parameter/window_light_strength = 0.1
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_bly1o"]
 radius = 9.0
