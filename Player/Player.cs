@@ -209,7 +209,7 @@ public partial class Player : Character
     {
         Node2D collider = (Node2D) collision.GetCollider();
 
-        // For now we just default to sliding along surfaces the player collides with.
+        // For now we just default to sliding along surfaces the player collides with
         Velocity = Velocity.Slide(collision.GetNormal());
     }
 

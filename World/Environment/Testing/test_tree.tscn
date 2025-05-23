@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://6prx14s7d1am"]
+[gd_scene load_steps=9 format=3 uid="uid://6prx14s7d1am"]
 
 [ext_resource type="Script" uid="uid://d2yt05ht15iv2" path="res://World/ProcGen/Placeable.cs" id="1_mt5o5"]
 [ext_resource type="Shader" uid="uid://7akcch5ndkta" path="res://Shaders/silhouette.gdshader" id="2_fc1lc"]
@@ -13,9 +13,6 @@ shader = ExtResource("2_fc1lc")
 [sub_resource type="CanvasTexture" id="CanvasTexture_gct18"]
 diffuse_texture = ExtResource("3_gct18")
 normal_texture = ExtResource("4_fc1lc")
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_2i4js"]
-radius = 184.0
 
 [node name="TestTree" type="StaticBody2D"]
 material = SubResource("ShaderMaterial_gct18")
@@ -38,9 +35,8 @@ texture = ExtResource("5_6eqvx")
 centered = false
 offset = Vector2(-512, -846)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-scale = Vector2(0.25, 0.075)
-shape = SubResource("CircleShape2D_2i4js")
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(0, -14, 11, -14, 23, -12, 32, -10, 40, -7, 45, -3, 46, 0, 45, 3, 40, 7, 33, 10, 23, 12, 13, 14, 0, 14, -12, 14, -23, 12, -33, 10, -40, 7, -45, 4, -46, 0, -45, -4, -40, -7, -33, -10, -23, -12, -12, -14)
 
 [node name="PlacedFootprint" type="Node2D" parent="."]
 position = Vector2(-50, -25)

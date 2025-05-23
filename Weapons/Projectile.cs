@@ -129,13 +129,23 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
         if (Falling && AffectedByGravity) {
             velocity = HandleFalling(delta);
         }
-        var collision = MoveAndCollide(velocity * (float)delta);
+        var collision = MoveAndCollide(velocity * (float)delta, false, 1);
         if (collision != null)
         {
             OnCollide(collision);
         }
         if(OrientToVelocity && !Velocity.IsZeroApprox()) {
-            GlobalRotation = Velocity.Angle();
+            var angle = Velocity.Angle();
+            GlobalRotation = angle >= Math.PI / 4 ? Velocity.Angle() + (float)Math.PI : Velocity.Angle();
+        }
+
+        var shadow = GetNodeOrNull<Sprite2D>("Shadow");
+        var collisionPoly = GetNodeOrNull<CollisionPolygon2D>("CollisionPolygon2D");
+        if (shadow != null) {
+            shadow.Position = new Vector2(0f, 30f).Rotated(-GlobalRotation);
+        }
+        if (collisionPoly != null) {
+            collisionPoly.Position = new Vector2(0.5f, 27f).Rotated(-GlobalRotation);
         }
     }
 
