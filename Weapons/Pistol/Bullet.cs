@@ -13,8 +13,7 @@ public partial class Bullet : Projectile
         base.OnCollide(collision);
         // Make bullets bounce off walls (really anything that isn't a player, NPC, etc.)
         bool bounced = !(collision.GetCollider() is Character or Projectile);
-        if (bounced)
-        {
+        if (bounced) {
             Velocity = Velocity.Bounce(collision.GetNormal());
         }
         else

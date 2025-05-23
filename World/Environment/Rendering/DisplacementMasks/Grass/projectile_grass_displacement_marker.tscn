@@ -19,4 +19,4 @@ script = ExtResource("1_ciqg1")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = SubResource("GradientTexture2D_hj10s")
-offset = Vector2(0, 10)
+offset = Vector2(0, 40)
