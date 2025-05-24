@@ -26,7 +26,8 @@ public partial class Main : Node
     [Export]
     public PackedScene PauseMenuTemplate { get; private set; }
 
-    public DisplacementMaskViewport DisplacementMaskViewport { get; private set; } = null;
+    public DisplacementMaskViewport ScreenSpaceDisplacementViewport { get; private set; } = null;
+    public DisplacementMaskViewport GlobalDisplacementViewport { get; private set; } = null;
 
     // Cached reference to the PauseMenu scene node defined on main.tscn.
     private PauseMenu pauseMenu = null;
@@ -57,7 +58,8 @@ public partial class Main : Node
     {
         // Fetch and configure the displacement viewport very first thing. Other things (like the player character) may
         // want to access it so it's important that it's available right away on the Main scene.
-        DisplacementMaskViewport = GetNode<DisplacementMaskViewport>("DisplacementMaskViewport");
+        ScreenSpaceDisplacementViewport = GetNode<DisplacementMaskViewport>("ScreenSpaceDisplacementViewport");
+        GlobalDisplacementViewport = GetNode<DisplacementMaskViewport>("GlobalDisplacementViewport");
         
         world = WorldScene.Instantiate<World>();
         world.Name = "World";
@@ -88,7 +90,7 @@ public partial class Main : Node
         MoveChild(playerCamera, 0);
         
         // Now that we have the player camera we can finish configuring the displacement viewport.
-        DisplacementMaskViewport.MainCamera = playerCamera;
+        ScreenSpaceDisplacementViewport.MainCamera = playerCamera;
 
         ShaderTimer = new Timer();
         ShaderTimer.WaitTime = 3600;
@@ -129,8 +131,13 @@ public partial class Main : Node
         return Instance.playerCamera;
     }
 
-    public static DisplacementMaskViewport GetDisplacementMaskViewport()
+    public static DisplacementMaskViewport GetScreenSpaceDisplacementViewport()
     {
-        return Instance.DisplacementMaskViewport;
+        return Instance.ScreenSpaceDisplacementViewport;
+    }
+    
+    public static DisplacementMaskViewport GetGlobalDisplacementViewport()
+    {
+        return Instance.GlobalDisplacementViewport;
     }
 }

@@ -1,16 +1,22 @@
 shader_type canvas_item;
 
 /// Globals
-// The size of the screen in the world right now.
+// The location and size of the world.
+global uniform vec4 world_rect; // x, y = topleft; z, w = size
+// The location and size of the screen in the world right now. No local offsets.
 global uniform vec4 screen_world_rect; // x, y = topleft; z, w = size
-// The displacement mask texture, which is configured and set globally.
-global uniform sampler2D displacement_mask_tex;
+// The displacement mask textures, which are configured and set globally.
+global uniform sampler2D screen_displacement_mask_tex;
+global uniform sampler2D global_displacement_mask_tex;
 
 /// Shader-specific uniforms.
 uniform vec4 blade_color = vec4(0.51, 0.97, 0.0, 1.0);
 uniform float ambient_sway_amount = 3.0;
 uniform float ambient_sway_speed = 0.5;
 uniform float displacement_bend_intensity = 15.0;
+// Controls which displacement texture is sampled as well as how the UV sampling coordinates are calculated to do so.
+// 0 = screen-space, 1 = world-space (world-space expects the shader-local uniform world_rect to be populated).
+uniform int sample_mode = 0; 
 
 /// Shader-specific state.
 // The uv coordinates to sample on the displacement mask for the base of this
@@ -41,10 +47,12 @@ void vertex() {
 	// Vertex global position in world space.
 	vec2 blade_base_pos = vec2(centerX, 0.0); // force Y to 0 (base of blade)
 	vec2 blade_base_world_pos = (MODEL_MATRIX * vec4(blade_base_pos, 0.0, 1.0)).xy;
+	
+	vec4 uvRect = sample_mode == 0 ? screen_world_rect : world_rect;
 
 	// Compute relative UV coordinates of this vertex on the screen (as the 
 	// displacement texture is a full-screen buffer).
-	base_displacement_uv = (blade_base_world_pos - screen_world_rect.xy) / screen_world_rect.zw;
+	base_displacement_uv = (blade_base_world_pos - uvRect.xy) / uvRect.zw;
 	
 	// Compute a Displacement Gradient — how much displacement is changing across screen space
 	// We only take the R channel because the displacement mask is all black and white anyway (today).
@@ -53,12 +61,25 @@ void vertex() {
 	//		 markers but what we COULD do instead is use that texture's color channels to encode
 	//       not only displacement intensity in R, but also direction in GB. Then we would only need
 	//		 to sample the point directly beneath the grass blade here.
-	vec2 texel_size = vec2(1.0) / vec2(textureSize(displacement_mask_tex, 0));
-	float center = texture(displacement_mask_tex, base_displacement_uv).r;
-	float right = texture(displacement_mask_tex, base_displacement_uv + vec2(texel_size.x, 0.0)).r;
-	float left  = texture(displacement_mask_tex, base_displacement_uv - vec2(texel_size.x, 0.0)).r;
-	float up    = texture(displacement_mask_tex, base_displacement_uv + vec2(0.0, texel_size.y)).r;
-	float down  = texture(displacement_mask_tex, base_displacement_uv - vec2(0.0, texel_size.y)).r;
+	// I also hate that this if branch exists here, but you're not allowed to declare local 
+	// sampler2D variables so we have to...
+	float center, right, left, up, down;
+	if(sample_mode == 0) {
+		vec2 texel_size = vec2(1.0) / vec2(textureSize(screen_displacement_mask_tex, 0));
+		center = texture(screen_displacement_mask_tex, base_displacement_uv).r;
+		right = texture(screen_displacement_mask_tex, base_displacement_uv + vec2(texel_size.x, 0.0)).r;
+		left  = texture(screen_displacement_mask_tex, base_displacement_uv - vec2(texel_size.x, 0.0)).r;
+		up    = texture(screen_displacement_mask_tex, base_displacement_uv + vec2(0.0, texel_size.y)).r;
+		down  = texture(screen_displacement_mask_tex, base_displacement_uv - vec2(0.0, texel_size.y)).r;
+	}
+	else {
+		vec2 texel_size = vec2(1.0) / vec2(textureSize(global_displacement_mask_tex, 0));
+		center = texture(global_displacement_mask_tex, base_displacement_uv).r;
+		right = texture(global_displacement_mask_tex, base_displacement_uv + vec2(texel_size.x, 0.0)).r;
+		left  = texture(global_displacement_mask_tex, base_displacement_uv - vec2(texel_size.x, 0.0)).r;
+		up    = texture(global_displacement_mask_tex, base_displacement_uv + vec2(0.0, texel_size.y)).r;
+		down  = texture(global_displacement_mask_tex, base_displacement_uv - vec2(0.0, texel_size.y)).r;
+	}
 
 	vec2 gradient = -vec2(right - left, up - down);
 	//vec2 bend_direction = normalize(gradient); // <-- creates NaN errors if the gradient is 0
@@ -97,7 +118,7 @@ void fragment()
 	// 1. Base color.
 	COLOR = blade_color;
 	
-	float displacement_amount = texture(displacement_mask_tex, base_displacement_uv).r;
+	float displacement_amount = texture(screen_displacement_mask_tex, base_displacement_uv).r;
 	
 	// Falloff: reduce effect near the base and near low displacement
 	// The higher the exponent, the sharper the falloff. Lower for smoother fade.

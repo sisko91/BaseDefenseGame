@@ -32,6 +32,8 @@ public partial class GrassPatch : Sprite2D
     [Export] public float BladeWidth = 4.0f;
     // How tall each blade of grass should be.
     [Export] public float BladeHeight = 16.0f;
+    // If true, the global displacement mask is used for determining local displacements to this grass patch. Otherwise, the screen-space displacement mask is assumed.
+    [Export] public bool UseGlobalDisplacementMask = false;
 
     public float BladeRowHeight => Mathf.Min(Size.Y / BladeRows, BladeHeight * BladeRows);
 
@@ -90,10 +92,14 @@ public partial class GrassPatch : Sprite2D
             grassRow.BladeMaterial = BladeMaterial.Duplicate() as ShaderMaterial;
             // Make sure all grass has the same color.
             grassRow.BladeMaterial?.SetShaderParameter("blade_color", BladeColor);
+            // Tell the shader it should use the global displacement mask.
+            // 0 = ScreenSpace, 1 = Global.
+            grassRow.BladeMaterial?.SetShaderParameter("sample_mode", UseGlobalDisplacementMask ? 1 : 0);
             grassRow.BladeHeight = BladeHeight;
             grassRow.BladeWidth = BladeWidth;
             grassRow.BladeCount = BladesPerRow;
             grassRow.BladeOriginRegionHeight = BladeRowHeight;
+            
             AddChild(grassRow);
         }
     }

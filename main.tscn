@@ -23,4 +23,11 @@ process_mode = 1
 [node name="MerchantUI" parent="HUD" instance=ExtResource("6_7mycd")]
 visible = false
 
-[node name="DisplacementMaskViewport" parent="." instance=ExtResource("7_272bh")]
+[node name="ScreenSpaceDisplacementViewport" parent="." instance=ExtResource("7_272bh")]
+ScreenSpaceMask = true
+
+[node name="GlobalDisplacementViewport" parent="." instance=ExtResource("7_272bh")]
+size = Vector2i(512, 512)
+
+[editable path="ScreenSpaceDisplacementViewport"]
+[editable path="GlobalDisplacementViewport"]

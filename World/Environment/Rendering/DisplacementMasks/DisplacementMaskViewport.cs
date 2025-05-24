@@ -10,11 +10,16 @@ using ExtensionMethods;
 // - Trails through deep snow / mud.
 public partial class DisplacementMaskViewport : SubViewport
 {
-    // The main camera in the scene.
-    [Export] public Camera2D MainCamera { get; set; }
-
     // The clear color for the viewport texture each frame.
     [Export] public Color ClearColor = Colors.Black;
+    
+    [ExportCategory("Perspective")]
+    // Controls if the displacement mask is calculated based on screen or global coordinates. A Screen-Space mask covers
+    // the current screen and updates each frame. The contents of the mask that moves offscreen is immediately and
+    // permanently lost. The benefit is that this is much cheaper and can work well for local effects.
+    [Export] protected bool ScreenSpaceMask = false;
+    // The main camera in the scene. Mandatory for ScreenSpaceMasks.
+    [Export] public Camera2D MainCamera { get; set; }
     public Camera2D DisplacementCamera { get; private set; }
     
     private Node2D markerRoot { get; set; }
@@ -45,44 +50,71 @@ public partial class DisplacementMaskViewport : SubViewport
 
     public override void _Process(double delta)
     {
-        if (MainCamera == null || DisplacementCamera == null) return;
-        
-        // Sync the DisplacementCamera with the MainCamera so that both "see" the same thing.
-        // There's a few interesting quirks here:
-        // First, we can't just assign the same zoom scale to both cameras. For performance reasons, the viewport and
-        // texture resolution of the DisplacementCamera is lower than the main game (currently it's 512x288), so we need
-        // to make sure that we factor that ratio into the zoom level applied to the DisplacementCamera as well.
-        // (We don't adjust DisplacementMaskViewport.Size to do this because it would reallocate a new texture buffer
-        // every single frame that the zoom level changed, which is the *opposite* of performance).
-        Vector2 screenSize = Main.Instance.GetViewport().GetVisibleRect().Size;
-        Vector2 zoomScale = screenSize / GetVisibleRect().Size;
-        DisplacementCamera.Zoom = MainCamera.Zoom / zoomScale;
-        
-        // Second, we can't set the GlobalPositions to be the same either. This is because Camera2D.LimitTop/LimitRight/etc.
-        // are not enforced to clamp the node transforms, they are used just before rendering time to clamp the viewports.
-        // This is a fancy way of saying that unless the DisplacementCamera is in the same World2D as the MainCamera (it's not)
-        // and/or if the DisplacementCamera is currently the only active camera in the scene (it's not), then LimitTop et al
-        // will never be enforced.
-        //
-        // TL;DR: When the MainCamera is clamped based on defined pixel Limits, its GlobalPosition will be a lie and
-        // GetScreenCenterPosition() is the final computed location where we want our tracking camera to reposition itself.
-        DisplacementCamera.GlobalPosition = MainCamera.GetScreenCenterPosition();
-        DisplacementCamera.Offset = MainCamera.Offset; // this is rarely used but might as well sync it, too.
+        if (DisplacementCamera == null) return;
 
-        if (clearColorSprite != null)
+        if (ScreenSpaceMask)
         {
-            clearColorSprite.Scale = screenSize * (zoomScale);
+            // Screen-Space masks require the main camera reference. This exits quietly because setup may not be done.
+            if (MainCamera == null)
+            {
+                return;
+            }
+
+            // Sync the DisplacementCamera with the MainCamera so that both "see" the same thing.
+            // There's a few interesting quirks here:
+            // First, we can't just assign the same zoom scale to both cameras. For performance reasons, the viewport and
+            // texture resolution of the DisplacementCamera is lower than the main game (currently it's 512x288), so we need
+            // to make sure that we factor that ratio into the zoom level applied to the DisplacementCamera as well.
+            // (We don't adjust DisplacementMaskViewport.Size to do this because it would reallocate a new texture buffer
+            // every single frame that the zoom level changed, which is the *opposite* of performance).
+            Vector2 screenSize = Main.Instance.GetViewport().GetVisibleRect().Size;
+            Vector2 zoomScale = screenSize / GetVisibleRect().Size;
+            DisplacementCamera.Zoom = MainCamera.Zoom / zoomScale;
+
+            // Second, we can't set the GlobalPositions to be the same either. This is because Camera2D.LimitTop/LimitRight/etc.
+            // are not enforced to clamp the node transforms, they are used just before rendering time to clamp the viewports.
+            // This is a fancy way of saying that unless the DisplacementCamera is in the same World2D as the MainCamera (it's not)
+            // and/or if the DisplacementCamera is currently the only active camera in the scene (it's not), then LimitTop et al
+            // will never be enforced.
+            //
+            // TL;DR: When the MainCamera is clamped based on defined pixel Limits, its GlobalPosition will be a lie and
+            // GetScreenCenterPosition() is the final computed location where we want our tracking camera to reposition itself.
+            DisplacementCamera.GlobalPosition = MainCamera.GetScreenCenterPosition();
+            DisplacementCamera.Offset = MainCamera.Offset; // this is rarely used but might as well sync it, too.
+
+            if (clearColorSprite != null)
+            {
+                clearColorSprite.Scale = screenSize * (zoomScale);
+            }
+            
+            // Make sure the screen world rect is available for shaders.
+            // TODO: This could probably live somewhere else and not be tied to displacement.
+            Vector2 screenWorldTopLeft = MainCamera.GetScreenCenterPosition() - screenSize * 0.5f / MainCamera.Zoom;
+            Vector2 screenWorldSize = screenSize / MainCamera.Zoom;
+            RenderingServer.GlobalShaderParameterSet("screen_world_rect",
+                new Rect2(screenWorldTopLeft, screenWorldSize));
+            
+            // Update the displacement mask texture.
+            RenderingServer.GlobalShaderParameterSet("screen_displacement_mask_tex", GetTexture());
         }
-        
-        
-        // Update the displacement mask texture.
-        RenderingServer.GlobalShaderParameterSet("displacement_mask_tex", GetTexture());
-        
-        // Make sure the screen world rect is available for shaders.
-        // TODO: This could probably live somewhere else and not be tied to displacement.
-        Vector2 screenWorldTopLeft = MainCamera.GetScreenCenterPosition() - screenSize * 0.5f / MainCamera.Zoom;
-        Vector2 screenWorldSize = screenSize / MainCamera.Zoom;
-        RenderingServer.GlobalShaderParameterSet("screen_world_rect", new Rect2(screenWorldTopLeft, screenWorldSize));
+        else
+        {
+            DisplacementCamera.Zoom = Vector2.One;
+            DisplacementCamera.Offset = Vector2.Zero;
+
+            var world = this.GetGameWorld();
+            var worldSize = world.RegionBounds;
+            DisplacementCamera.GlobalPosition = world.GlobalPosition;
+            DisplacementCamera.Zoom = GetVisibleRect().Size / worldSize;
+
+            if (clearColorSprite != null)
+            {
+                clearColorSprite.Scale = worldSize;
+            }
+            RenderingServer.GlobalShaderParameterSet("world_rect", new Rect2(world.GlobalPosition - world.RegionBounds/2f, world.RegionBounds));
+            // Update the displacement mask texture.
+            RenderingServer.GlobalShaderParameterSet("global_displacement_mask_tex", GetTexture());
+        }
     }
 
     // Reparents the specified Marker under this Viewport and ensures it will render each frame.

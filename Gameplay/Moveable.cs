@@ -61,12 +61,20 @@ public partial class Moveable : CharacterBody2D, IEntity {
         if (DisplaceGrass)
         {
             // Create our grass displacement marker. This tracks the character itself so we don't need a stored reference.
+            // Note: We currently create two of these and register one with each displacement viewport (global and screenspace).
+            //       This will likely be simplified over time but right now comparing the two approaches is useful.
             var grassMarker = GrassDisplacementMarkerOverride?.Instantiate<DisplacementMaskMarker>() ?? 
                               DefaultGrassDisplacementMarkerScene?.Instantiate<DisplacementMaskMarker>();
-            grassMarker?.RegisterOwner(this);
+            
+            grassMarker?.RegisterWithViewport(Main.GetScreenSpaceDisplacementViewport(),this);
             if (grassMarker == null)
             {
                 GD.PushError($"{Name} had DisplaceGrass configured but provided no GrassDisplacementMarker (via Override or default).");
+            }
+            else
+            {
+                var secondMarker = grassMarker.Duplicate() as DisplacementMaskMarker;
+                secondMarker?.RegisterWithViewport(Main.GetGlobalDisplacementViewport(), this);
             }
         }
 

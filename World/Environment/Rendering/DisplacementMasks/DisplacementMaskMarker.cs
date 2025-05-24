@@ -47,7 +47,7 @@ public partial class DisplacementMaskMarker : Node2D
     }
     
     // Updates the tracking information for this Marker and registers it with the DisplacementMaskViewport for rendering.
-    public void RegisterOwner(Node2D owner)
+    public void RegisterWithViewport(DisplacementMaskViewport viewport, Node2D owner)
     {
         if (TrackedNode != null)
         {
@@ -55,6 +55,6 @@ public partial class DisplacementMaskMarker : Node2D
             return;
         }
         TrackedNode = owner;
-        Main.GetDisplacementMaskViewport().RegisterMarker(this);
+        viewport.RegisterMarker(this);
     }
 }

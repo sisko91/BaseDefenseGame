@@ -1,3 +1,4 @@
+using ExtensionMethods;
 using Godot;
 
 // GrassPatchRowMesh renders grass in a horizontal row across the screen.

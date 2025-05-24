@@ -179,11 +179,19 @@ player_texture={
 "type": "sampler2D",
 "value": ""
 }
-displacement_mask_tex={
+screen_world_rect={
+"type": "vec4",
+"value": Vector4(0, 0, 0, 0)
+}
+screen_displacement_mask_tex={
 "type": "sampler2D",
 "value": ""
 }
-screen_world_rect={
+global_displacement_mask_tex={
+"type": "sampler2D",
+"value": ""
+}
+world_rect={
 "type": "vec4",
 "value": Vector4(0, 0, 0, 0)
 }
