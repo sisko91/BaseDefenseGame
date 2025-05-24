@@ -118,7 +118,13 @@ void fragment()
 	// 1. Base color.
 	COLOR = blade_color;
 	
-	float displacement_amount = texture(screen_displacement_mask_tex, base_displacement_uv).r;
+	float displacement_amount;
+	if(sample_mode == 0) {
+		displacement_amount = texture(screen_displacement_mask_tex, base_displacement_uv).r;
+	}
+	else {
+		displacement_amount = texture(global_displacement_mask_tex, base_displacement_uv).r;
+	}
 	
 	// Falloff: reduce effect near the base and near low displacement
 	// The higher the exponent, the sharper the falloff. Lower for smoother fade.
