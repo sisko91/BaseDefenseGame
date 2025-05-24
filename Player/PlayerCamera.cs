@@ -48,6 +48,14 @@ public partial class PlayerCamera : Camera2D
         {
             this.GlobalPosition = Target.GlobalPosition;
         }
+        
+        // Make sure the screen world rect is available for shaders.
+        // Note: we have to calculate the screen points manually because GetViewportRect().Position will lie to us. It
+        //       does not consider LimitTop/LimitBottom/etc.
+        Vector2 screenSize = GetViewportRect().Size;
+        Vector2 screenWorldTopLeft = GetScreenCenterPosition() - screenSize * 0.5f / Zoom;
+        Vector2 screenWorldSize = screenSize / Zoom;
+        RenderingServer.GlobalShaderParameterSet("screen_world_rect", new Rect2(screenWorldTopLeft, screenWorldSize));
     }
 
     private void HandleZoom(double delta)

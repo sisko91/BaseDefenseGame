@@ -86,16 +86,6 @@ public partial class DisplacementMaskViewport : SubViewport
             {
                 clearColorSprite.Scale = screenSize * (zoomScale);
             }
-            
-            // Make sure the screen world rect is available for shaders.
-            // TODO: This could probably live somewhere else and not be tied to displacement.
-            Vector2 screenWorldTopLeft = MainCamera.GetScreenCenterPosition() - screenSize * 0.5f / MainCamera.Zoom;
-            Vector2 screenWorldSize = screenSize / MainCamera.Zoom;
-            RenderingServer.GlobalShaderParameterSet("screen_world_rect",
-                new Rect2(screenWorldTopLeft, screenWorldSize));
-            
-            // Update the displacement mask texture.
-            RenderingServer.GlobalShaderParameterSet("screen_displacement_mask_tex", GetTexture());
         }
         else
         {
@@ -111,9 +101,6 @@ public partial class DisplacementMaskViewport : SubViewport
             {
                 clearColorSprite.Scale = worldSize;
             }
-            RenderingServer.GlobalShaderParameterSet("world_rect", new Rect2(world.GlobalPosition - world.RegionBounds/2f, world.RegionBounds));
-            // Update the displacement mask texture.
-            RenderingServer.GlobalShaderParameterSet("global_displacement_mask_tex", GetTexture());
         }
     }
 

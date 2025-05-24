@@ -7,7 +7,17 @@ public partial class World : Node2D
 {
     // The extents / bounds of the world, in world-space units. X is the width, Y is the height. The world extends half of this distance in each direction from the World's location.
     [Export]
-    public Vector2 RegionBounds { get; set; }
+    public Vector2 RegionBounds {
+        get => _regionBounds;
+        set
+        {
+            _regionBounds = value;
+            // Update the world rect global uniform if it changes.
+            UpdateGlobalUniforms();
+        }
+    }
+
+    private Vector2 _regionBounds;
 
     // All Player nodes currently in the scene.
     public List<Player> Players
@@ -65,6 +75,8 @@ public partial class World : Node2D
         SetupBackground();
         SetupNavMesh();
         SetupWorldBarriers();
+        
+        UpdateGlobalUniforms();
     }
 
     //TODO: Only rebake floors we need to
@@ -150,5 +162,10 @@ public partial class World : Node2D
     private int GetMaxFloorsInScene() {
         //TODO: Implement. Increment below number in the meantime if you want to test > 3 floors
         return 3;
+    }
+
+    private void UpdateGlobalUniforms()
+    {
+        RenderingServer.GlobalShaderParameterSet("world_rect", new Rect2(GlobalPosition - _regionBounds/2f, _regionBounds));
     }
 }

@@ -59,7 +59,9 @@ public partial class Main : Node
         // Fetch and configure the displacement viewport very first thing. Other things (like the player character) may
         // want to access it so it's important that it's available right away on the Main scene.
         ScreenSpaceDisplacementViewport = GetNode<DisplacementMaskViewport>("ScreenSpaceDisplacementViewport");
+        RenderingServer.GlobalShaderParameterSet("screen_displacement_mask_tex", ScreenSpaceDisplacementViewport.GetTexture());
         GlobalDisplacementViewport = GetNode<DisplacementMaskViewport>("GlobalDisplacementViewport");
+        RenderingServer.GlobalShaderParameterSet("global_displacement_mask_tex", GlobalDisplacementViewport.GetTexture());
         
         world = WorldScene.Instantiate<World>();
         world.Name = "World";

@@ -182,7 +182,6 @@ Size = Vector2(1536, 350)
 BladeRows = 30
 BladesPerRow = 1024
 BladeHeight = 24.0
-UseGlobalDisplacementMask = true
 
 [node name="ShamblerSpawnZone" type="Node2D" parent="." node_paths=PackedStringArray("SpawnContainerReference")]
 position = Vector2(7, 0)
