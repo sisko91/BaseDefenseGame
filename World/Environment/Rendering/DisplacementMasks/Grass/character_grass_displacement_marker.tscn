@@ -6,7 +6,7 @@
 blend_mode = 1
 
 [sub_resource type="Gradient" id="Gradient_gugok"]
-offsets = PackedFloat32Array(0, 0.757862)
+offsets = PackedFloat32Array(0, 0.688213)
 colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_hj10s"]

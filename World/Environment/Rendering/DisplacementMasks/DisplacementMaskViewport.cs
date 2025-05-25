@@ -12,6 +12,11 @@ public partial class DisplacementMaskViewport : SubViewport
 {
     // The clear color for the viewport texture each frame.
     [Export] public Color ClearColor = Colors.Black;
+
+    // The optional FrameBuffer to use. If not null, the contents of this buffer will be rendered before any
+    // displacements this frame. The primary use-case for this is to have a FrameBufferViewport capturing this
+    // displacement mask each frame and serving it back into the rendering loop for things like trail FX.
+    [Export] public FrameBufferViewport FrameBuffer = null;
     
     [ExportCategory("Perspective")]
     // Controls if the displacement mask is calculated based on screen or global coordinates. A Screen-Space mask covers
@@ -24,10 +29,12 @@ public partial class DisplacementMaskViewport : SubViewport
     
     private Node2D markerRoot { get; set; }
     private Sprite2D clearColorSprite = null;
+    private Sprite2D frameBufferSprite = null;
     
     public override void _Ready()
     {
         markerRoot = GetNode<Node2D>("MarkerRoot");
+        
         // Set up the clear color sprite as a 1x1 pixel image that gets resized to fit the viewport each frame.
         var clearColorTexture = new GradientTexture2D();
         clearColorTexture.Gradient = new Gradient();
@@ -40,6 +47,22 @@ public partial class DisplacementMaskViewport : SubViewport
         clearColorSprite.SelfModulate = ClearColor;
         clearColorSprite.Texture = clearColorTexture;
         markerRoot.AddChild(clearColorSprite);
+
+        if (FrameBuffer != null)
+        {
+            if (ScreenSpaceMask)
+            {
+                GD.PushError($"Cannot use DisplacementMaskViewport (ScreenSpace) {Name} with FrameBuffer {FrameBuffer.Name}; Only Global DisplacementMaskViewports can use a FrameBuffer.");
+            }
+            else
+            {
+                frameBufferSprite = new Sprite2D();
+                frameBufferSprite.Name = "FrameBufferSprite";
+                frameBufferSprite.Texture = FrameBuffer.GetTexture();
+                // Add the frame buffer right on top of the clear color.
+                clearColorSprite.AddSibling(frameBufferSprite);
+            }
+        }
 
         DisplacementCamera = GetNode<Camera2D>("DisplacementCamera");
         
@@ -100,6 +123,11 @@ public partial class DisplacementMaskViewport : SubViewport
             if (clearColorSprite != null)
             {
                 clearColorSprite.Scale = worldSize;
+            }
+            
+            if (frameBufferSprite != null)
+            {
+                frameBufferSprite.Scale = worldSize / FrameBuffer.GetSize();
             }
         }
     }

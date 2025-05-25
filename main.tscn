@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://fsemlkislawf"]
+[gd_scene load_steps=9 format=3 uid="uid://fsemlkislawf"]
 
 [ext_resource type="Script" uid="uid://djo07ped2qw88" path="res://Main.cs" id="1_yq6fc"]
 [ext_resource type="PackedScene" uid="uid://bapcmf72ww8v3" path="res://World/Levels/test_world.tscn" id="2_7mycd"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://bwskh2c74a37q" path="res://UI/HUD/pause_menu.tscn" id="3_lquwl"]
 [ext_resource type="PackedScene" uid="uid://b04mgna5y8q6l" path="res://UI/MerchantUI/MerchantUI.tscn" id="6_7mycd"]
 [ext_resource type="PackedScene" uid="uid://buisol47tinii" path="res://World/Environment/Rendering/DisplacementMasks/displacement_mask_viewport.tscn" id="7_272bh"]
+[ext_resource type="Script" uid="uid://cny1npc56kkbk" path="res://World/Environment/Rendering/FrameBufferViewport.cs" id="8_5vw27"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_yq6fc")
@@ -26,8 +27,14 @@ visible = false
 [node name="ScreenSpaceDisplacementViewport" parent="." instance=ExtResource("7_272bh")]
 ScreenSpaceMask = true
 
-[node name="GlobalDisplacementViewport" parent="." instance=ExtResource("7_272bh")]
+[node name="GlobalDisplacementViewport" parent="." node_paths=PackedStringArray("FrameBuffer") instance=ExtResource("7_272bh")]
 size = Vector2i(512, 512)
+FrameBuffer = NodePath("../GlobalDisplacementFrameBuffer")
+
+[node name="GlobalDisplacementFrameBuffer" type="SubViewport" parent="." node_paths=PackedStringArray("Source")]
+render_target_update_mode = 4
+script = ExtResource("8_5vw27")
+Source = NodePath("../GlobalDisplacementViewport")
 
 [editable path="ScreenSpaceDisplacementViewport"]
 [editable path="GlobalDisplacementViewport"]
