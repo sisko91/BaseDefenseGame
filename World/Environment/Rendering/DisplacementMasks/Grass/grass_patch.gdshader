@@ -16,7 +16,7 @@ uniform float ambient_sway_speed = 0.5;
 uniform float displacement_bend_intensity = 15.0;
 // Controls which displacement texture is sampled as well as how the UV sampling coordinates are calculated to do so.
 // 0 = screen-space, 1 = world-space (world-space expects the shader-local uniform world_rect to be populated).
-uniform int sample_mode = 0; 
+uniform int sample_mode : hint_enum("Screen-Space", "World-Space") = 0; 
 
 /// Shader-specific state.
 // The uv coordinates to sample on the displacement mask for the base of this

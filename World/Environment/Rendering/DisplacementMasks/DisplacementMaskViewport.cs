@@ -13,10 +13,14 @@ public partial class DisplacementMaskViewport : SubViewport
     // The clear color for the viewport texture each frame.
     [Export] public Color ClearColor = Colors.Black;
 
+    // The shader that runs for the entire viewport before any displacements are rendered each frame. If null, the
+    // mask will start filled by ClearColor.
+    [Export] public ShaderMaterial RefreshShader { get; private set; } = null;
+
     // The optional FrameBuffer to use. If not null, the contents of this buffer will be rendered before any
     // displacements this frame. The primary use-case for this is to have a FrameBufferViewport capturing this
     // displacement mask each frame and serving it back into the rendering loop for things like trail FX.
-    [Export] public FrameBufferViewport FrameBuffer = null;
+    [Export] public FrameBufferViewport FrameBuffer { get; private set; } = null;
     
     [ExportCategory("Perspective")]
     // Controls if the displacement mask is calculated based on screen or global coordinates. A Screen-Space mask covers
@@ -59,6 +63,8 @@ public partial class DisplacementMaskViewport : SubViewport
                 frameBufferSprite = new Sprite2D();
                 frameBufferSprite.Name = "FrameBufferSprite";
                 frameBufferSprite.Texture = FrameBuffer.GetTexture();
+                RefreshShader?.SetShaderParameter("clear_color", ClearColor);
+                frameBufferSprite.Material = RefreshShader;
                 // Add the frame buffer right on top of the clear color.
                 clearColorSprite.AddSibling(frameBufferSprite);
             }

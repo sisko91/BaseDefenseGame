@@ -115,6 +115,8 @@ public partial class Main : Node
         //https://docs.godotengine.org/en/stable/tutorials/shaders/shader_reference/canvas_item_shader.html
         //The TIME variable in shaders it not affected by pausing. The framework recommendation is to use your own global parameter for time if you want to pause shader effects that use TIME
         RenderingServer.GlobalShaderParameterSet("time", ShaderTimer.WaitTime - ShaderTimer.TimeLeft);
+        // It's helpful to have the frame delta timings in shaders for framerate-independent effects.
+        RenderingServer.GlobalShaderParameterSet("time_delta", (float)delta);
     }
 
     // Reviews current game state and determines if the main scene should be paused or unpaused.

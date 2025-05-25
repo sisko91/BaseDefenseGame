@@ -195,3 +195,7 @@ world_rect={
 "type": "vec4",
 "value": Vector4(0, 0, 0, 0)
 }
+time_delta={
+"type": "float",
+"value": 0.0
+}

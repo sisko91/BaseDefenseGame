@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://fsemlkislawf"]
+[gd_scene load_steps=11 format=3 uid="uid://fsemlkislawf"]
 
 [ext_resource type="Script" uid="uid://djo07ped2qw88" path="res://Main.cs" id="1_yq6fc"]
 [ext_resource type="PackedScene" uid="uid://bapcmf72ww8v3" path="res://World/Levels/test_world.tscn" id="2_7mycd"]
@@ -8,6 +8,13 @@
 [ext_resource type="PackedScene" uid="uid://b04mgna5y8q6l" path="res://UI/MerchantUI/MerchantUI.tscn" id="6_7mycd"]
 [ext_resource type="PackedScene" uid="uid://buisol47tinii" path="res://World/Environment/Rendering/DisplacementMasks/displacement_mask_viewport.tscn" id="7_272bh"]
 [ext_resource type="Script" uid="uid://cny1npc56kkbk" path="res://World/Environment/Rendering/FrameBufferViewport.cs" id="8_5vw27"]
+[ext_resource type="Shader" uid="uid://ckm4ahq3ok8js" path="res://World/Environment/Rendering/DisplacementMasks/update_displacement_mask.gdshader" id="8_kek77"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_kek77"]
+shader = ExtResource("8_kek77")
+shader_parameter/update_mode = 1
+shader_parameter/clear_color = Color(0, 0, 0, 1)
+shader_parameter/fade_time = 1.0
 
 [node name="Main" type="Node"]
 script = ExtResource("1_yq6fc")
@@ -29,6 +36,7 @@ ScreenSpaceMask = true
 
 [node name="GlobalDisplacementViewport" parent="." node_paths=PackedStringArray("FrameBuffer") instance=ExtResource("7_272bh")]
 size = Vector2i(512, 512)
+RefreshShader = SubResource("ShaderMaterial_kek77")
 FrameBuffer = NodePath("../GlobalDisplacementFrameBuffer")
 
 [node name="GlobalDisplacementFrameBuffer" type="SubViewport" parent="." node_paths=PackedStringArray("Source")]
