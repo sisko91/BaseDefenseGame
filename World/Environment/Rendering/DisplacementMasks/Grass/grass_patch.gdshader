@@ -54,8 +54,10 @@ void vertex() {
 	// displacement texture is a full-screen buffer).
 	base_displacement_uv = (blade_base_world_pos - uvRect.xy) / uvRect.zw;
 	
-	// Compute a Displacement Gradient — how much displacement is changing across screen space
-	// We only take the R channel because the displacement mask is all black and white anyway (today).
+	// Compute a Displacement Gradient — how much displacement is changing across screen space.
+	// The RG channels hold the displacement intensity (no difference today) so we use R.
+	// The B channel holds a relative age, which is defined on the displacement viewport that
+	// produces the displacement_mask_tex being sampled below.
 	// TODO: This is inefficient - we're sampling the displacement texture FIVE TIMES per pixel 
 	//       on the screen. Right now we draw a white circle with gradient fill for the displacement
 	//		 markers but what we COULD do instead is use that texture's color channels to encode
@@ -63,10 +65,11 @@ void vertex() {
 	//		 to sample the point directly beneath the grass blade here.
 	// I also hate that this if branch exists here, but you're not allowed to declare local 
 	// sampler2D variables so we have to...
-	float center, right, left, up, down;
+	vec3 center;
+	float right, left, up, down;
 	if(sample_mode == 0) {
 		vec2 texel_size = vec2(1.0) / vec2(textureSize(screen_displacement_mask_tex, 0));
-		center = texture(screen_displacement_mask_tex, base_displacement_uv).r;
+		center = texture(screen_displacement_mask_tex, base_displacement_uv).rgb;
 		right = texture(screen_displacement_mask_tex, base_displacement_uv + vec2(texel_size.x, 0.0)).r;
 		left  = texture(screen_displacement_mask_tex, base_displacement_uv - vec2(texel_size.x, 0.0)).r;
 		up    = texture(screen_displacement_mask_tex, base_displacement_uv + vec2(0.0, texel_size.y)).r;
@@ -74,26 +77,30 @@ void vertex() {
 	}
 	else {
 		vec2 texel_size = vec2(1.0) / vec2(textureSize(global_displacement_mask_tex, 0));
-		center = texture(global_displacement_mask_tex, base_displacement_uv).r;
+		center = texture(global_displacement_mask_tex, base_displacement_uv).rgb;
 		right = texture(global_displacement_mask_tex, base_displacement_uv + vec2(texel_size.x, 0.0)).r;
 		left  = texture(global_displacement_mask_tex, base_displacement_uv - vec2(texel_size.x, 0.0)).r;
 		up    = texture(global_displacement_mask_tex, base_displacement_uv + vec2(0.0, texel_size.y)).r;
 		down  = texture(global_displacement_mask_tex, base_displacement_uv - vec2(0.0, texel_size.y)).r;
 	}
 
+	// The blue channel on the displacement mask contains the relative (0 -> 1.0) age of the displacement
+	// as determined by the displacement viewport's configuration. We use this as a strength multiplier
+	// that controls how long the grass stays displaced.
+	float age_strength = center.b;
 	vec2 gradient = -vec2(right - left, up - down);
 	//vec2 bend_direction = normalize(gradient); // <-- creates NaN errors if the gradient is 0
-	displacement_gradient_strength = length(gradient);
+	displacement_gradient_strength = length(gradient) * age_strength;
 	bend_direction = displacement_gradient_strength > 0.001 ? normalize(gradient) : vec2(0.0, 0.0); // default no bend
 	
 	// Displace based on ambient sway, but not when the displacement value is high.
-	VERTEX.x += ambient_sway * vertical_weight * (1.0 - center);
+	VERTEX.x += ambient_sway * vertical_weight * (1.0 - center.r);
 	
 	// Bend away from the center.
 	vec2 right_vector = vec2(1.0, 0);
-	float bend_amount = dot(bend_direction, right_vector) * center * vertical_weight * displacement_bend_intensity;
+	float bend_amount = dot(bend_direction, right_vector) * center.r * vertical_weight * displacement_bend_intensity;
 	VERTEX.x += bend_amount;
-	VERTEX.y += center * vertical_weight * displacement_bend_intensity / 2.0;
+	VERTEX.y += center.r * vertical_weight * displacement_bend_intensity / 2.0;
 	
 	// Alternative bending logic:
 	//vec2 bend_offset = bend_direction * center * vertical_weight * sway_amount * 3.0;
@@ -118,17 +125,17 @@ void fragment()
 	// 1. Base color.
 	COLOR = blade_color;
 	
-	float displacement_amount;
+	vec3 displacement_amount;
 	if(sample_mode == 0) {
-		displacement_amount = texture(screen_displacement_mask_tex, base_displacement_uv).r;
+		displacement_amount = texture(screen_displacement_mask_tex, base_displacement_uv).rgb;
 	}
 	else {
-		displacement_amount = texture(global_displacement_mask_tex, base_displacement_uv).r;
+		displacement_amount = texture(global_displacement_mask_tex, base_displacement_uv).rgb;
 	}
 	
 	// Falloff: reduce effect near the base and near low displacement
 	// The higher the exponent, the sharper the falloff. Lower for smoother fade.
-	float fade_strength = 1.0 - pow(displacement_amount * UV.y, 0.25);
+	float fade_strength = 1.0 - pow(displacement_amount.r * displacement_amount.b * UV.y, 0.25);
 	
 	// Color blades based on phase.
 	COLOR.rgb *= max(1.0 - phase * (1.0 - UV.y), 0.3);
@@ -140,7 +147,7 @@ void fragment()
 
 	// 3. Flicker if desired
 	float flicker = sin(TIME * 10.0 + phase * 6.2831) * 0.5 + 0.5;
-	float flicker_strength = displacement_amount * UV.y * flicker;
+	float flicker_strength = displacement_amount.r * displacement_amount.b * UV.y * flicker;
 	vec3 glow_color = vec3(0.8, 1.0, 0.7);
 	COLOR.rgb = mix(COLOR.rgb, glow_color, flicker_strength * 0.1);
 	

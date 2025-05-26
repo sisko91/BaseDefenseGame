@@ -1,11 +1,22 @@
-[gd_scene load_steps=2 format=3 uid="uid://buisol47tinii"]
+[gd_scene load_steps=4 format=3 uid="uid://buisol47tinii"]
 
 [ext_resource type="Script" uid="uid://cbhvrrg7h0sqh" path="res://World/Environment/Rendering/DisplacementMasks/DisplacementMaskViewport.cs" id="1_0hq6r"]
+[ext_resource type="Shader" uid="uid://ckm4ahq3ok8js" path="res://World/Environment/Rendering/DisplacementMasks/update_displacement_mask.gdshader" id="2_ff2ej"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jg0np"]
+resource_local_to_scene = true
+shader = ExtResource("2_ff2ej")
+shader_parameter/update_mode = 0
+shader_parameter/clear_color = Color(0, 0, 0, 1)
+shader_parameter/fade_function = 0
+shader_parameter/fade_time = 1.0
+shader_parameter/fade_rate_mask = Vector3(1, 1, 1)
 
 [node name="DisplacementMaskViewport" type="SubViewport"]
 size = Vector2i(512, 288)
 render_target_update_mode = 4
 script = ExtResource("1_0hq6r")
+RefreshShader = SubResource("ShaderMaterial_jg0np")
 
 [node name="DisplacementCamera" type="Camera2D" parent="."]
 

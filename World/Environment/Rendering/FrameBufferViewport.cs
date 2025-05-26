@@ -15,8 +15,9 @@ public partial class FrameBufferViewport : SubViewport
             return;
         }
         
-        // Make sure this viewport size matches the source.
+        // Make sure this viewport size and format matches the source.
         Size = Source.Size;
+        UseHdr2D = Source.UseHdr2D;
         
         // Construct a sprite that renders the source's viewport, and covers this viewport completely.
         // Note: We don't have a camera so there's no scaling to worry about. Just raw pixel size.
