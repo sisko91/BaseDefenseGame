@@ -13,6 +13,7 @@ shader_parameter/fade_time = 1.0
 shader_parameter/fade_rate_mask = Vector3(1, 1, 1)
 
 [node name="DisplacementMaskViewport" type="SubViewport"]
+use_hdr_2d = true
 size = Vector2i(512, 288)
 render_target_update_mode = 4
 script = ExtResource("1_0hq6r")

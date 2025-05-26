@@ -47,7 +47,6 @@ RefreshShader = SubResource("ShaderMaterial_4c57u")
 ScreenSpaceMask = true
 
 [node name="GlobalDisplacementViewport" parent="." node_paths=PackedStringArray("FrameBuffer") instance=ExtResource("7_272bh")]
-use_hdr_2d = true
 size = Vector2i(512, 512)
 RefreshShader = SubResource("ShaderMaterial_kek77")
 FrameBuffer = NodePath("../GlobalDisplacementFrameBuffer")
