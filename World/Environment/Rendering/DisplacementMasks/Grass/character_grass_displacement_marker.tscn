@@ -4,6 +4,7 @@
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_nlfvu"]
 blend_mode = 1
+light_mode = 1
 
 [sub_resource type="Gradient" id="Gradient_gugok"]
 offsets = PackedFloat32Array(0, 0.688213)

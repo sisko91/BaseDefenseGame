@@ -76,10 +76,12 @@ public partial class GrassPatchRowMesh : Node2D
             float y = jitterY;
             Vector2 basePos = new Vector2(x, y);
 
-            Vector2 bl = basePos + new Vector2(-BladeWidth / 2f, 0);
-            Vector2 br = basePos + new Vector2(BladeWidth / 2f, 0);
-            Vector2 tl = basePos + new Vector2(-BladeWidth / 2f, -BladeHeight);
-            Vector2 tr = basePos + new Vector2(BladeWidth / 2f, -BladeHeight);
+            // The X/Y locations of each point are the same to start with, these are grown in the vertex shader into a
+            // full blade of grass.
+            Vector2 bl = basePos;
+            Vector2 br = basePos;
+            Vector2 tl = basePos;
+            Vector2 tr = basePos;
 
             Vertices[vi + 0] = bl;
             Vertices[vi + 1] = br;
@@ -93,12 +95,10 @@ public partial class GrassPatchRowMesh : Node2D
 
             // We pack multiple values into the vertex Color channel, for interpretation within the shader:
             // Red - "Phase" which is a random seed value computed per-blade.
-            // Green - "CenterX" - this is the centerpoint X value of the blade at its base (local coordinates) so that
-            //         Vertex (or Fragment) shaders can use that as a constant.
+            // Green - Unused / future TBD.
             // Blue - Unused / future TBD.
             float vertexPhase = GD.Randf();
-            float vertexCenterX = (bl.X + br.X) / 2f;
-            Color vertexColor = new Color(vertexPhase, vertexCenterX, 0);
+            Color vertexColor = new Color(vertexPhase, 0, 0);
 
             Colors[vi + 0] = vertexColor;
             Colors[vi + 1] = vertexColor;

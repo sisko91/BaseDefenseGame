@@ -90,7 +90,9 @@ public partial class GrassPatch : Sprite2D
             // CRITICAL: CanvasItem shaders (2d) do not support per-instance uniforms so we have to duplicate the
             // material to configure things per-row of grass.
             grassRow.BladeMaterial = BladeMaterial.Duplicate() as ShaderMaterial;
-            // Make sure all grass has the same color.
+            // Make sure all grass has the same (base) blade width and color.
+            grassRow.BladeMaterial?.SetShaderParameter("blade_width", BladeWidth);
+            grassRow.BladeMaterial?.SetShaderParameter("blade_height", BladeHeight);
             grassRow.BladeMaterial?.SetShaderParameter("blade_color", BladeColor);
             // Tell the shader it should use the global displacement mask.
             // 0 = ScreenSpace, 1 = Global.
