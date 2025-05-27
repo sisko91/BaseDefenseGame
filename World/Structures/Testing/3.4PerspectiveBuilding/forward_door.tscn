@@ -66,13 +66,12 @@ region_enabled = true
 region_rect = Rect2(0, 0, 128, 8)
 
 [node name="Door" type="Node2D" parent="."]
-position = Vector2(0, -54)
+position = Vector2(0, -39.5)
 script = ExtResource("3_gvmyq")
 IsExit = true
 
 [node name="DoorOpen" type="Sprite2D" parent="Door"]
 use_parent_material = true
-position = Vector2(0, 14.5)
 texture = SubResource("GradientTexture2D_ynqwj")
 
 [node name="Blockage" type="StaticBody2D" parent="Door"]
@@ -80,21 +79,20 @@ collision_layer = 4
 collision_mask = 7
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Door/Blockage"]
-position = Vector2(0, 55)
+position = Vector2(0, 40.5)
 shape = SubResource("RectangleShape2D_gvmyq")
 
 [node name="DoorClosed" type="Sprite2D" parent="Door/Blockage"]
 use_parent_material = true
-position = Vector2(0, 14.5)
 texture = SubResource("GradientTexture2D_10wc5")
 
 [node name="InteractionArea" type="Area2D" parent="Door" node_paths=PackedStringArray("InteractionPrompt")]
+position = Vector2(0, 43)
 collision_layer = 8
 script = ExtResource("4_10wc5")
 InteractionPrompt = NodePath("TextPrompt")
 
 [node name="InteractionShape" type="CollisionShape2D" parent="Door/InteractionArea"]
-position = Vector2(0, 57.5)
 shape = SubResource("RectangleShape2D_10wc5")
 
 [node name="TextPrompt" type="Control" parent="Door/InteractionArea"]

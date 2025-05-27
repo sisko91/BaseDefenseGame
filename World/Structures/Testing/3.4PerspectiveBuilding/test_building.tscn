@@ -67,6 +67,7 @@ position = Vector2(0, -54)
 shape = SubResource("RectangleShape2D_ax5sx")
 
 [node name="Ground" type="Sprite2D" parent="Floor1" groups=["IndoorNodes"]]
+light_mask = 2
 texture_repeat = 2
 material = SubResource("ShaderMaterial_w16jq")
 position = Vector2(0, -54)
@@ -75,83 +76,92 @@ texture = ExtResource("1_k4fc4")
 region_enabled = true
 region_rect = Rect2(0, 0, 3072, 1920)
 
-[node name="YSort" type="Node2D" parent="Floor1"]
+[node name="Background" type="Node2D" parent="Floor1"]
 y_sort_enabled = true
 
-[node name="WallTorch" parent="Floor1/YSort" instance=ExtResource("8_w16jq")]
+[node name="Middleground" type="Node2D" parent="Floor1"]
+y_sort_enabled = true
+
+[node name="WallTorch" parent="Floor1/Middleground" instance=ExtResource("8_w16jq")]
 position = Vector2(-200, -285)
 
-[node name="WallTorch2" parent="Floor1/YSort" instance=ExtResource("8_w16jq")]
+[node name="WallTorch2" parent="Floor1/Middleground" instance=ExtResource("8_w16jq")]
 position = Vector2(200, -285)
 
-[node name="BackWall" parent="Floor1/YSort" groups=["IndoorNodes"] instance=ExtResource("1_vcw3q")]
+[node name="BackWall" parent="Floor1/Middleground" groups=["IndoorNodes"] instance=ExtResource("1_vcw3q")]
+light_mask = 2
 material = SubResource("ShaderMaterial_trw5n")
 position = Vector2(256, -300)
 
-[node name="Top" parent="Floor1/YSort/BackWall" index="2"]
+[node name="Top" parent="Floor1/Middleground/BackWall" index="2"]
 light_mask = 0
 material = SubResource("ShaderMaterial_m31sn")
 use_parent_material = false
 
-[node name="BackWall2" parent="Floor1/YSort" groups=["IndoorNodes"] instance=ExtResource("1_vcw3q")]
+[node name="BackWall2" parent="Floor1/Middleground" groups=["IndoorNodes"] instance=ExtResource("1_vcw3q")]
+light_mask = 2
 material = SubResource("ShaderMaterial_dv3a8")
 position = Vector2(-256, -300)
 
-[node name="Top" parent="Floor1/YSort/BackWall2" index="2"]
+[node name="Top" parent="Floor1/Middleground/BackWall2" index="2"]
 light_mask = 0
 material = SubResource("ShaderMaterial_2kuhm")
 use_parent_material = false
 
-[node name="BackWall3" parent="Floor1/YSort" groups=["IndoorNodes"] instance=ExtResource("1_vcw3q")]
+[node name="BackWall3" parent="Floor1/Middleground" groups=["IndoorNodes"] instance=ExtResource("1_vcw3q")]
+light_mask = 2
 material = SubResource("ShaderMaterial_dv3a8")
 position = Vector2(0, -300)
 
-[node name="Top" parent="Floor1/YSort/BackWall3" index="2"]
+[node name="Top" parent="Floor1/Middleground/BackWall3" index="2"]
 light_mask = 0
 material = SubResource("ShaderMaterial_2kuhm")
 use_parent_material = false
 
-[node name="LeftSideWall4" parent="Floor1/YSort" instance=ExtResource("3_jwdmb")]
+[node name="LeftSideWall4" parent="Floor1/Middleground" instance=ExtResource("3_jwdmb")]
 position = Vector2(-392, -188)
 
-[node name="LeftSideWall3" parent="Floor1/YSort" instance=ExtResource("3_jwdmb")]
+[node name="LeftSideWall3" parent="Floor1/Middleground" instance=ExtResource("3_jwdmb")]
 position = Vector2(-392, -60)
 
-[node name="LeftSideWall2" parent="Floor1/YSort" instance=ExtResource("3_jwdmb")]
+[node name="LeftSideWall2" parent="Floor1/Middleground" instance=ExtResource("3_jwdmb")]
 position = Vector2(-392, 68)
 
-[node name="LeftSideWall" parent="Floor1/YSort" instance=ExtResource("3_jwdmb")]
+[node name="LeftSideWall" parent="Floor1/Middleground" instance=ExtResource("3_jwdmb")]
 position = Vector2(-392, 196)
 
-[node name="RightSideWall4" parent="Floor1/YSort" instance=ExtResource("3_jwdmb")]
+[node name="RightSideWall4" parent="Floor1/Middleground" instance=ExtResource("3_jwdmb")]
 position = Vector2(392, -188)
 
-[node name="RightSideWall3" parent="Floor1/YSort" instance=ExtResource("3_jwdmb")]
+[node name="RightSideWall3" parent="Floor1/Middleground" instance=ExtResource("3_jwdmb")]
 position = Vector2(392, -60)
 
-[node name="RightSideWall2" parent="Floor1/YSort" instance=ExtResource("3_jwdmb")]
+[node name="RightSideWall2" parent="Floor1/Middleground" instance=ExtResource("3_jwdmb")]
 position = Vector2(392, 68)
 
-[node name="RightSideWall" parent="Floor1/YSort" instance=ExtResource("3_jwdmb")]
+[node name="RightSideWall" parent="Floor1/Middleground" instance=ExtResource("3_jwdmb")]
 position = Vector2(392, 196)
 
-[node name="Facade" type="Node2D" parent="Floor1/YSort"]
+[node name="Foreground" type="Node2D" parent="Floor1"]
+y_sort_enabled = true
+
+[node name="Facade" type="Node2D" parent="Floor1/Foreground"]
 y_sort_enabled = true
 position = Vector2(0, 193)
 
-[node name="Window" parent="Floor1/YSort/Facade" instance=ExtResource("12_trw5n")]
-position = Vector2(-200, 43)
+[node name="Window" parent="Floor1/Foreground/Facade" instance=ExtResource("12_trw5n")]
+position = Vector2(-200, 10)
 
-[node name="Window2" parent="Floor1/YSort/Facade" instance=ExtResource("12_trw5n")]
-position = Vector2(200, 43)
+[node name="Window2" parent="Floor1/Foreground/Facade" instance=ExtResource("12_trw5n")]
+position = Vector2(200, 10)
 
-[node name="FrontWall" parent="Floor1/YSort/Facade" instance=ExtResource("1_vcw3q")]
+[node name="FrontWall" parent="Floor1/Foreground/Facade" instance=ExtResource("1_vcw3q")]
 position = Vector2(256, 3)
 
-[node name="FrontWall2" parent="Floor1/YSort/Facade" instance=ExtResource("1_vcw3q")]
+[node name="FrontWall2" parent="Floor1/Foreground/Facade" instance=ExtResource("1_vcw3q")]
 position = Vector2(-256, 3)
 
-[node name="FrontWallWithDoor" parent="Floor1/YSort/Facade" instance=ExtResource("2_yk7ac")]
+[node name="FrontWallWithDoor" parent="Floor1/Foreground/Facade" instance=ExtResource("2_yk7ac")]
 position = Vector2(0, 3)
 
 [node name="Roof" type="Area2D" parent="."]
@@ -180,14 +190,20 @@ shape = SubResource("RectangleShape2D_i37up")
 position = Vector2(0, 74)
 shape = SubResource("RectangleShape2D_i37up")
 
-[node name="YSort" type="Node2D" parent="Roof"]
+[node name="Background" type="Node2D" parent="Roof"]
 y_sort_enabled = true
 
-[node name="Facade" type="Node2D" parent="Roof/YSort"]
+[node name="Middleground" type="Node2D" parent="Roof"]
+y_sort_enabled = true
+
+[node name="Foreground" type="Node2D" parent="Roof"]
+y_sort_enabled = true
+
+[node name="Facade" type="Node2D" parent="Roof/Foreground"]
 material = SubResource("ShaderMaterial_breqi")
 position = Vector2(0, -16)
 
-[node name="FrontRoof" type="Sprite2D" parent="Roof/YSort/Facade"]
+[node name="FrontRoof" type="Sprite2D" parent="Roof/Foreground/Facade"]
 texture_repeat = 2
 use_parent_material = true
 position = Vector2(0, 38)
@@ -196,7 +212,7 @@ texture = ExtResource("8_breqi")
 region_enabled = true
 region_rect = Rect2(0, 0, 400, 60)
 
-[node name="RightRoof" type="Sprite2D" parent="Roof/YSort/Facade"]
+[node name="RightRoof" type="Sprite2D" parent="Roof/Foreground/Facade"]
 z_index = 1
 use_parent_material = true
 position = Vector2(207, -241)
@@ -204,7 +220,7 @@ rotation = 1.5708
 skew = 0.272271
 texture = SubResource("GradientTexture2D_bgjah")
 
-[node name="LeftRoof" type="Sprite2D" parent="Roof/YSort/Facade"]
+[node name="LeftRoof" type="Sprite2D" parent="Roof/Foreground/Facade"]
 z_index = 1
 use_parent_material = true
 position = Vector2(-207, -241)
@@ -217,8 +233,8 @@ position = Vector2(-419, -431)
 script = ExtResource("7_1ubww")
 Size = Vector2(835.038, 513.002)
 
-[editable path="Floor1/YSort/WallTorch"]
-[editable path="Floor1/YSort/WallTorch2"]
-[editable path="Floor1/YSort/BackWall"]
-[editable path="Floor1/YSort/BackWall2"]
-[editable path="Floor1/YSort/BackWall3"]
+[editable path="Floor1/Middleground/WallTorch"]
+[editable path="Floor1/Middleground/WallTorch2"]
+[editable path="Floor1/Middleground/BackWall"]
+[editable path="Floor1/Middleground/BackWall2"]
+[editable path="Floor1/Middleground/BackWall3"]

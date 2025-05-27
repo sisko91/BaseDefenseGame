@@ -4,8 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public partial class Barb : Projectile
-{
+public partial class Barb : Projectile {
     // What percentage of the barb's total length should be embedded within targets it strikes. 0.5 = 50%
     [Export]
     protected float EmbeddedRatio = 0.10f;
@@ -39,17 +38,14 @@ public partial class Barb : Projectile
         SeekRange = GetNode<Area2D>("SeekRange");
     }
 
-    public override void _Process(double delta)
-    {
+    public override void _Process(double delta) {
         base._Process(delta);
 
-        if (Stuck)
-        {
+        if (Stuck) {
             return;
         }
 
-        if (target != null && IsInstanceValid(target))
-        {
+        if (target != null && IsInstanceValid(target)) {
             //Seek to target
             Vector2 direction = GlobalPosition.DirectionTo(target.GlobalPosition);
             var desiredVelocity = direction * InitialSpeed;
@@ -59,16 +55,14 @@ public partial class Barb : Projectile
 
         List<Node2D> bodies = SeekRange.GetOverlappingBodies().OrderBy(node => GlobalPosition.DistanceTo(node.GlobalPosition)).ToList();
         foreach (Node2D body in bodies) {
-            if (body is Player)
-            {
+            if (body is Player) {
                 continue;
             }
 
             Vector2 direction = GlobalPosition.DirectionTo(body.GlobalPosition);
             var turnAngle = Velocity.AngleTo(direction);
             //Only lock on to targets within a cone of the direction of travel
-            if (Math.Abs(turnAngle) < SeekAngleDegrees / 2 * Math.PI / 180.0f)
-            {
+            if (Math.Abs(turnAngle) < SeekAngleDegrees / 2 * Math.PI / 180.0f) {
                 //TODO: Try raycast, only seek to unobstructed targets
                 target = body;
                 break;
@@ -87,7 +81,7 @@ public partial class Barb : Projectile
         CollisionLayer = 0;
         CollisionMask = 0;
 
-        if(collision.GetCollider() is Node2D colliderNode) {
+        if (collision.GetCollider() is Node2D colliderNode) {
             this.Reparent(colliderNode);
             // Embed the barb within the surface it strikes (slightly).
             var embeddingOffset = Vector2.FromAngle(GlobalRotation) * BarbLength * EmbeddedRatio;
@@ -100,15 +94,14 @@ public partial class Barb : Projectile
 
     protected override void OnLifetimeExpired() {
         // Detonate ALL barbs attached to this object.
-        if(Stuck) {
+        if (Stuck) {
             foreach (var child in GetParent()?.GetChildren()) {
                 if (child is Barb barb) {
                     barb.Detonate();
                     barb.QueueFree();
                 }
             }
-        }
-        else {
+        } else {
             Detonate();
             QueueFree();
         }
@@ -126,8 +119,7 @@ public partial class Barb : Projectile
             explosion.CollisionMask = explosion.CollisionMask << CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
 
             var parent = GetParent();
-            if (Stuck)
-            {
+            if (Stuck) {
                 //Don't parent barb explosions to the thing barbs are stuck in - if it dies, the explosions die
                 parent = parent.GetParent();
             }

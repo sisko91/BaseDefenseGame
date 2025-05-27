@@ -6,9 +6,12 @@ public partial class Window : Node2D
     public bool Open = true;
     private GradientTexture2D LightGradient;
 
+    public Area2D VisibleArea;
+
     public override void _Ready() {
         base._Ready();
         LightGradient = GD.Load<GradientTexture2D>("res://art/World/daynight_window.tres");
+        VisibleArea = GetNode<Area2D>("VisibleArea");
     }
     public override void _Process(double delta) {
         base._Process(delta);

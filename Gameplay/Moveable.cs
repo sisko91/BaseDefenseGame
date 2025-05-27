@@ -1,5 +1,7 @@
+using ExtensionMethods;
 using Godot;
 using System;
+using System.Collections.Generic;
 
 //Common functionality for any moveable object that implements CharacterBody2D (like projectiles and characters)
 public partial class Moveable : CharacterBody2D, IEntity {
@@ -12,24 +14,12 @@ public partial class Moveable : CharacterBody2D, IEntity {
     private int FallSpeed = 600;
     public double FallTime = 0f;
     public bool AffectedByGravity = true;
-    private bool _falling;
-    public bool Falling {
-        get {
-            return _falling;
-        }
-        set {
-            _falling = value;
-            if (!_falling) {
-                StartedFallingAction = null;
-            }
-        }
-    }
-    public event Action<Moveable> StartedFallingAction;
+    public bool Falling;
 
     private Vector2 CollisionShapePosition;
-    private CollisionShape2D CollisionShape;
-    private Vector2 ShadowPosition;
-    private Sprite2D Shadow;
+    private Node2D CollisionShape;
+
+    private Node2D Sprite;
 
     [ExportCategory("Grass Interaction")]
     // Controls whether this moveable entity displaces grass patches that it travels through.
@@ -48,18 +38,9 @@ public partial class Moveable : CharacterBody2D, IEntity {
         MotionMode = MotionModeEnum.Floating;
     }
 
-    public Delegate[] GetStartFallingCallbacks() {
-        if (StartedFallingAction != null) {
-            return StartedFallingAction.GetInvocationList();
-        }
-        return new Delegate[] { };
-    }
-
-    public override void _Ready()
-    {
+    public override void _Ready() {
         base._Ready();
-        if (DisplaceGrass)
-        {
+        if (DisplaceGrass) {
             // Create our grass displacement marker. This tracks the character itself so we don't need a stored reference.
             // Note: We currently create two of these and register one with each displacement viewport (global and screenspace).
             //       This will likely be simplified over time but right now comparing the two approaches is useful.
@@ -78,13 +59,15 @@ public partial class Moveable : CharacterBody2D, IEntity {
             }
         }
 
-        Shadow = GetNodeOrNull<Sprite2D>("Shadow");
-        if (Shadow != null) {
-            ShadowPosition = Shadow.Position;
-        }
         CollisionShape = GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
-        if (CollisionShape != null) {
-            CollisionShapePosition = CollisionShape.Position;
+        if (CollisionShape == null) {
+            CollisionShape = GetNodeOrNull<CollisionPolygon2D>("CollisionPolygon2D");
+        }
+        CollisionShapePosition = CollisionShape.Position;
+
+        Sprite = GetNodeOrNull<Sprite2D>("Sprite2D");
+        if (Sprite == null) {
+            Sprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
         }
     }
 
@@ -92,31 +75,22 @@ public partial class Moveable : CharacterBody2D, IEntity {
         float fallDist = Building.FloorHeight * 1;
         var maxFallTime = fallDist / FallSpeed;
         var distLeft = fallDist * (maxFallTime - FallTime) / maxFallTime;
+        var offset = new Vector2(0, (float)distLeft + 5).Rotated(-Rotation);
 
-        
-        if (Shadow != null) {
-            Shadow.Position = new Vector2(ShadowPosition.X, ShadowPosition.Y + (float) distLeft);
-        }
         if (CollisionShape != null) {
-            var offset = new Vector2(0, (float)distLeft + 5).Rotated(-Rotation);
-            CollisionShape.Position = new Vector2(CollisionShapePosition.X, CollisionShapePosition.Y) + offset;
+            CollisionShape.Position = CollisionShapePosition + offset;
         }
 
-        if (FallTime == 0) {
-            StartedFallingAction(this);
-            StartedFallingAction = null;
+        if (FallTime ==  0) {
+            //TODO: Handle falling multiple floors
+            ChangeFloor(0);
         }
 
         FallTime += delta;
-
-        //TODO: Handle falling multiple floors
-
-        if (FallTime > maxFallTime) {
+        if (FallTime >= maxFallTime) {
             Falling = false;
             FallTime = 0;
-            if (Shadow != null) {
-                Shadow.Position = ShadowPosition;
-            }
+
             if (CollisionShape != null) {
                 CollisionShape.Position = CollisionShapePosition;
             }
@@ -132,12 +106,35 @@ public partial class Moveable : CharacterBody2D, IEntity {
 
         int shift = targetFloor - CurrentElevationLevel;
         CurrentElevationLevel = targetFloor;
-        if (shift > 0) {
-            CollisionLayer = CollisionLayer << shift * CollisionConfig.LAYERS_PER_FLOOR;
-            CollisionMask = CollisionMask << shift * CollisionConfig.LAYERS_PER_FLOOR;
-        } else if (shift < 0) {
-            CollisionLayer = CollisionLayer >> -shift * CollisionConfig.LAYERS_PER_FLOOR;
-            CollisionMask = CollisionMask >> -shift * CollisionConfig.LAYERS_PER_FLOOR;
+        List<CollisionObject2D> collisionObjects = new List<CollisionObject2D>() { this };
+        /*
+        If a moveable has other moveables as children, make sure they change floors with it
+        For example, barbs stuck in a character
+
+        If a moveable has collision objects as children, shift their masks as well
+        For example, a character's NearbyBodySensor Area2D
+        */
+        foreach (var node in this.GetChildren()) {
+            if (node is Moveable m) {
+                m.ChangeFloor(targetFloor);
+            } else if (node is CollisionObject2D collisionObject) {
+                collisionObjects.Add(collisionObject);
+            }
+        }
+        
+        //Avoid shifting the world bound mask
+        var worldBoundMask = (uint)Math.Pow(2, CollisionConfig.WORLD_BOUNDS_LAYER - 1);
+
+        foreach (var collisionObject in collisionObjects) {
+            collisionObject.CollisionMask -= worldBoundMask;
+            if (shift > 0) {
+                collisionObject.CollisionLayer = collisionObject.CollisionLayer << shift * CollisionConfig.LAYERS_PER_FLOOR;
+                collisionObject.CollisionMask = collisionObject.CollisionMask << shift * CollisionConfig.LAYERS_PER_FLOOR;
+            } else if (shift < 0) {
+                collisionObject.CollisionLayer = collisionObject.CollisionLayer >> -shift * CollisionConfig.LAYERS_PER_FLOOR;
+                collisionObject.CollisionMask = collisionObject.CollisionMask >> -shift * CollisionConfig.LAYERS_PER_FLOOR;
+            }
+            collisionObject.CollisionMask += worldBoundMask;
         }
     }
 
@@ -146,5 +143,7 @@ public partial class Moveable : CharacterBody2D, IEntity {
         {
             Material.Set("shader_parameter/is_inside", inside);
         }
+
+        Sprite.LightMask = inside ? 2 : 1;
     }
 }

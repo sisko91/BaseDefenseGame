@@ -93,7 +93,7 @@ offset_bottom = 3072.0
 mouse_filter = 2
 metadata/_edit_use_anchors_ = true
 
-[node name="Background" type="Sprite2D" parent="."]
+[node name="Ground" type="Sprite2D" parent="."]
 texture_repeat = 2
 material = SubResource("ShaderMaterial_523qg")
 texture = ExtResource("2_rsvub")
@@ -111,7 +111,7 @@ ExtResource("8_fbbf8"): 400,
 ExtResource("28_fbbf8"): -1
 })
 PointCloudSpacing = 50.0
-PlacementContainer = NodePath("../YSort")
+PlacementContainer = NodePath("../Middleground")
 DebugPointRadius = 5.0
 ViablePointsColor = Color(0, 1, 0, 1)
 NearPathMeshColor = Color(1, 0.583333, 0, 1)
@@ -148,34 +148,37 @@ position = Vector2(-40, 188)
 scale = Vector2(1.0022, 0.999438)
 curve = SubResource("Curve2D_cdkb4")
 
-[node name="YSort" type="Node2D" parent="."]
+[node name="Background" type="Node2D" parent="."]
 y_sort_enabled = true
 
-[node name="CrystalTarget" parent="YSort" instance=ExtResource("7_8h8jj")]
+[node name="Middleground" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="CrystalTarget" parent="Middleground" instance=ExtResource("7_8h8jj")]
 position = Vector2(-312, 233.01)
 script = ExtResource("11_dghf1")
 MaxHealth = 100.0
 
-[node name="TestBuilding" parent="YSort" instance=ExtResource("21_wh5fb")]
+[node name="TestBuilding" parent="Middleground" instance=ExtResource("21_wh5fb")]
 position = Vector2(0, -1000)
 
-[node name="Merchant" parent="YSort/TestBuilding/Floor1" index="3" instance=ExtResource("22_hkmll")]
+[node name="Merchant" parent="Middleground/TestBuilding/Floor1" index="3" instance=ExtResource("22_hkmll")]
 position = Vector2(0.0317078, -239.143)
 ShopItems = Array[Resource]([ExtResource("23_80b3c"), ExtResource("24_782py")])
 
-[node name="TestBuildingFlatRoof2" parent="YSort" instance=ExtResource("26_fbbf8")]
-position = Vector2(525, -162)
-
-[node name="TestBuildingFlatRoof" parent="YSort" instance=ExtResource("26_fbbf8")]
+[node name="TestBuildingFlatRoof" parent="Middleground" instance=ExtResource("26_fbbf8")]
 position = Vector2(-525, -162)
 
-[node name="TestCampfire" parent="YSort" instance=ExtResource("7_8h8jw")]
-position = Vector2(-704.891, -978.62)
+[node name="TestBuildingFlatRoof2" parent="Middleground" instance=ExtResource("26_fbbf8")]
+position = Vector2(525, -162)
 
-[node name="TestTree2" parent="YSort" instance=ExtResource("28_fbbf8")]
+[node name="TestCampfire" parent="Middleground" instance=ExtResource("7_8h8jw")]
+position = Vector2(-724, 60)
+
+[node name="TestTree2" parent="Middleground" instance=ExtResource("28_fbbf8")]
 position = Vector2(515, 449)
 
-[node name="TestGrassPatch" parent="YSort" instance=ExtResource("29_qinvk")]
+[node name="TestGrassPatch" parent="Middleground" instance=ExtResource("29_qinvk")]
 position = Vector2(-818, 150)
 BladeColor = Color(0.306667, 0.4, 0, 1)
 Size = Vector2(1536, 350)
@@ -184,11 +187,14 @@ BladesPerRow = 1024
 BladeHeight = 24.0
 UseGlobalDisplacementMask = true
 
+[node name="Foreground" type="Node2D" parent="."]
+y_sort_enabled = true
+
 [node name="ShamblerSpawnZone" type="Node2D" parent="." node_paths=PackedStringArray("SpawnContainerReference")]
 position = Vector2(7, 0)
 script = ExtResource("6_xi2eq")
 SpawnTemplate = ExtResource("6_a6glu")
-SpawnContainerReference = NodePath("../YSort")
+SpawnContainerReference = NodePath("../Middleground")
 InnerRadius = 400.0
 OuterRadius = 500.0
 StartAngleDegrees = 270.0
@@ -200,16 +206,15 @@ z_index = 1
 position = Vector2(-523, -620)
 script = ExtResource("6_xi2eq")
 SpawnTemplate = ExtResource("6_a6glu")
-SpawnContainerReference = NodePath("../YSort")
+SpawnContainerReference = NodePath("../Middleground")
 InnerRadius = 300.0
 OuterRadius = 400.0
 StartAngleDegrees = 270.0
 StopAngleDegrees = 90.0
-InitialCount = 4
 
-[editable path="YSort/TestBuilding"]
-[editable path="YSort/TestBuilding/Floor1/YSort/WallTorch"]
-[editable path="YSort/TestBuilding/Floor1/YSort/WallTorch2"]
-[editable path="YSort/TestBuilding/Floor1/YSort/BackWall"]
-[editable path="YSort/TestBuilding/Floor1/YSort/BackWall2"]
-[editable path="YSort/TestBuilding/Floor1/YSort/BackWall3"]
+[editable path="Middleground/TestBuilding"]
+[editable path="Middleground/TestBuilding/Floor1/Middleground/WallTorch"]
+[editable path="Middleground/TestBuilding/Floor1/Middleground/WallTorch2"]
+[editable path="Middleground/TestBuilding/Floor1/Middleground/BackWall"]
+[editable path="Middleground/TestBuilding/Floor1/Middleground/BackWall2"]
+[editable path="Middleground/TestBuilding/Floor1/Middleground/BackWall3"]

@@ -114,7 +114,6 @@ energy = 3.0
 blend_mode = 2
 range_z_min = -1
 range_z_max = 1
-range_item_cull_mask = 3
 shadow_enabled = true
 shadow_filter = 1
 shadow_filter_smooth = 3.0

@@ -48,7 +48,6 @@ public partial class NonPlayerCharacter : Character
 
         NavAgent.PathDesiredDistance = NavigationConfig.PATH_DESIRED_DISTANCE;
         NavAgent.TargetDesiredDistance = NavigationConfig.DEFAULT_TARGET_DESIRED_DISTANCE; // Updated by the AI depending on what the target is.
-        NavAgent.Radius = GetCollisionBodyRadius();
 
         //Default to the first floor nav map. NPCs spawned in upstairs regions should automatically switch to the right map on game load
         NavAgent.SetNavigationMap(this.GetGameWorld().NavMaps[0]);
@@ -124,12 +123,8 @@ public partial class NonPlayerCharacter : Character
     }
 
     public override void ChangeFloor(int targetFloor) {
-        //Handle edge case where mob spawns on stairs at game load, but maps are not initialized yet
-        if (CurrentElevationLevel >= this.GetGameWorld().NavMaps.Count) {
-            return;
-        }
-
         base.ChangeFloor(targetFloor);
+
         NavAgent.SetNavigationMap(this.GetGameWorld().NavMaps[CurrentElevationLevel]);
     }
 

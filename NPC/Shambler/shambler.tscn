@@ -103,19 +103,19 @@ position = Vector2(-20, -36)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_4eeic")
 
-[node name="BodySprite" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="."]
 light_mask = 2
 use_parent_material = true
 texture = SubResource("GradientTexture2D_8ey2m")
 
-[node name="RightEyeSprite" type="Sprite2D" parent="BodySprite"]
+[node name="RightEyeSprite" type="Sprite2D" parent="Sprite2D"]
 light_mask = 2
 position = Vector2(15, 7)
 rotation = -1.5708
 scale = Vector2(0.694375, 0.296094)
 texture = SubResource("GradientTexture2D_mdfs5")
 
-[node name="LeftEyeSprite" type="Sprite2D" parent="BodySprite"]
+[node name="LeftEyeSprite" type="Sprite2D" parent="Sprite2D"]
 light_mask = 2
 position = Vector2(15, -7)
 rotation = -1.5708
@@ -128,5 +128,3 @@ script = ExtResource("6_t0u02")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NearbyBodySensor"]
 shape = SubResource("CircleShape2D_vtmmg")
-
-[connection signal="HealthChanged" from="." to="FloatingHealthBar" method="OnCharacterHealthChanged"]

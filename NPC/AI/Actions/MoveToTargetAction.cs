@@ -83,40 +83,47 @@ namespace AI
 
                 if (Brain.EnemyTarget is Player player)
                 {
-                    bool isPlayerOutside = player.CurrentRegion == null;
-                    bool isOwnerOutside = Owner.CurrentRegion == null;
+                    bool isPlayerOutside = player.CurrentRegion == null || !player.CurrentRegion.OverlapsBody(player);
+                    bool isOwnerOutside = Owner.CurrentRegion == null || !Owner.CurrentRegion.OverlapsBody(Owner);
                     bool isOwnerOnGroundFloor = !isOwnerOutside && Owner.CurrentRegion.HasExit;
                     bool isPlayerInDifferentBuilding = !isPlayerOutside && !isOwnerOutside && player.CurrentRegion.OwningBuilding != Owner.CurrentRegion.OwningBuilding;
 
                     //If in the same region, path directly to the player
-                    if (Owner.CurrentRegion == player.CurrentRegion)
+                    if (Owner.CurrentRegion == player.CurrentRegion || isPlayerOutside && isOwnerOutside)
                     {
+                        //GD.Print("Pathing directly to player");
                         Owner.NavAgent.TargetPosition = Brain.EnemyTarget.GlobalPosition;
+                        Owner.NavAgent.TargetDesiredDistance = GetAcceptableTargetDistance();
                         return;
                     }
                     
                     //If the player is not in this building and there's a door, path outside the door
                     if (isOwnerOnGroundFloor && (isPlayerOutside || isPlayerInDifferentBuilding)) {
+                        //GD.Print("I'm inside pathing to outside the door");
                         var door = Owner.CurrentRegion.OwningBuilding.Exits[0];
                         var doorOffset = new Vector2(0, 30).Rotated(door.Rotation);
-                        if (InInteractRange(Owner.GlobalPosition, door.GlobalPosition - doorOffset) && !door.Open && Brain.CanOpenDoors) {
+
+
+                        if (InInteractRange(Owner.GlobalPosition, door.GlobalPosition) && !door.Open && Brain.CanOpenDoors) {
                             Owner.InteractWithNearestObject();
                         }
-                        else {
-                            Owner.NavAgent.TargetPosition = door.GlobalPosition + doorOffset;
-                        }
+
+                        Owner.NavAgent.TargetPosition = door.GlobalPosition - door.Position + doorOffset;
+                        Owner.NavAgent.TargetDesiredDistance = 0;
                         return;
                     }
+
                     //If I'm outside, path inside the door to the player's building
                     if (isOwnerOutside) {
+                        //GD.Print("I'm outside pathing to inside the door");
                         var door = player.CurrentRegion.OwningBuilding.Exits[0];
                         var doorOffset = new Vector2(0, 30).Rotated(door.Rotation);
-                        if (InInteractRange(Owner.GlobalPosition, door.GlobalPosition + doorOffset) && !door.Open && Brain.CanOpenDoors) {
+                        if (InInteractRange(Owner.GlobalPosition, door.GlobalPosition) && !door.Open && Brain.CanOpenDoors) {
                             Owner.InteractWithNearestObject();
                         }
-                        else {
-                            Owner.NavAgent.TargetPosition = door.GlobalPosition - doorOffset;
-                        }
+
+                        Owner.NavAgent.TargetPosition = door.GlobalPosition - door.Position - doorOffset;
+                        Owner.NavAgent.TargetDesiredDistance = 0;
                         return;
                     }
 
@@ -149,17 +156,20 @@ namespace AI
                         if (InInteractRange(Owner.GlobalPosition, stairsToPathTo.GlobalPosition)) { //TODO: get character radius
                             Owner.InteractWithNearestObject();
                         }
-                        else {
-                            Owner.NavAgent.TargetPosition = stairsToPathTo.GlobalPosition;
-                        }
+
+                        //GD.Print("Pathing to stairs");
+                        Owner.NavAgent.TargetPosition = stairsToPathTo.GlobalPosition;
+                        Owner.NavAgent.TargetDesiredDistance = 0;
                     }
                     else {
                         //No path
-                        //GD.Print($"{Owner?.Name}->{GetType().Name} no path to stairs");
+                        //GD.Print($"{Owner?.Name}->{GetType().Name} no path");
                         Deactivate();
                     }
                 } else {
+                    //GD.Print("Pathing straight to target position");
                     Owner.NavAgent.TargetPosition = Brain.EnemyTarget.GlobalPosition;
+                    Owner.NavAgent.TargetDesiredDistance = GetAcceptableTargetDistance();
                 }
             }
 

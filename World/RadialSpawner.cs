@@ -77,9 +77,13 @@ public partial class RadialSpawner : Node2D
     public override void _Ready()
     {
         // If we're in the editor we don't want this doing any actual work, we just want the rendering calls to happen.
-        if (Engine.IsEditorHint())
+        if (Engine.IsEditorHint())  
         {
-            EditorInterface.Singleton.GetSelection().SelectionChanged += QueueRedraw;
+            EditorInterface.Singleton.GetSelection().SelectionChanged += () => {
+                if (IsInstanceValid(this)) {
+                    QueueRedraw();
+                }
+            };
             return;
         }
 

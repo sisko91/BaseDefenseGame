@@ -62,14 +62,12 @@ public partial class Building : Placeable
             region.AreaEntered += (Area2D area) => OnAreaEnteredRegion(area, region);
 
             Exits.AddRange(region.GetExits());
-        }
 
-        //Light RangeZMin/Max is not relative, so we need to set it to the absolute value our building will be at when the player is inside
-        foreach (Node child in this.GetAllChildren()) {
-            if (child is Light2D light) {
-                light.RangeZMin = WEATHER_Z_LAYER;
-                light.RangeZMax = WEATHER_Z_LAYER + 1;
+            foreach (var window in region.Windows) {
+                window.VisibleArea.BodyEntered += (Node2D body) => OnBodyEnteredRegion(body, region);
+                window.VisibleArea.BodyExited += (Node2D body) => OnBodyExitedRegion(body, region);
             }
+
         }
     }
 
@@ -100,14 +98,16 @@ public partial class Building : Placeable
                 return;
             }
 
-            //TODO: Just use YSort node after updating old test building    
-            var ySort = region.GetNodeOrNull("YSort");
-            region.AddMonitoringException(body);
-            m.Reparent(ySort != null ? ySort : region);
-            region.RemoveMonitoringException(body);
-            
             m.CurrentRegion = region;
-            m.SetInside(region != null && region.InteriorRegion);
+            var inside = region != null && region.InteriorRegion && region.OverlapsBody(m);
+            m.SetInside(inside);
+
+            if (region.OverlapsBody(m)) {
+                var layer = m is Projectile ? region.GetNodeOrNull("Foreground") : region.GetNodeOrNull("Middleground");
+                region.AddMonitoringException(body);
+                m.Reparent(layer != null ? layer : region);
+                region.RemoveMonitoringException(body);
+            }
 
             if (body is Player player)
             {
@@ -119,12 +119,20 @@ public partial class Building : Placeable
                     if (other.Visible && other.ElevationLevel == region.ElevationLevel)
                     {
                         //Render above weather layer so we dont show clouds and stuff inside
-                        other.ZIndex = region.ElevationLevel + (region.InteriorRegion ? WEATHER_Z_LAYER + 1 : 0);
+                        other.ZIndex = region.ElevationLevel + (inside ? WEATHER_Z_LAYER + 1 : 0);
 
                         //Hide parts of this region that should be hidden when the player is inside
-                        var facade = other.GetNodeOrNull<Node2D>("YSort/Facade");
+                        var facade = other.GetNodeOrNull<Node2D>("Foreground/Facade");
                         if (facade != null) {
                             facade.Modulate = new Color(1, 1, 1, 0.5f);
+                        }
+
+                        //Light RangeZMin/Max is not relative, so we need to set it to the absolute value our building will be at when the player is inside
+                        foreach (Node child in region.GetAllChildren()) {
+                            if (child is Light2D light) {
+                                light.RangeZMin = other.ZIndex;
+                                light.RangeZMax = other.ZIndex;
+                            }
                         }
                     }
                 }
@@ -163,34 +171,27 @@ public partial class Building : Placeable
             }
 
             region.AddMonitoringException(body);
-            m.Reparent(this.GetGameWorld().YSortNode);
+            m.Reparent(this.GetGameWorld().Middleground);
             region.RemoveMonitoringException(body);
 
             if (!region.OverlapsBody(m))
             {
                 if (m.CurrentElevationLevel > 0) {
                     m.Falling = true;
-                    m.StartedFallingAction += (Moveable moveable) => { Exit(moveable); };
+                }
+
+                m.CurrentRegion = null;
+
+                m.SetInside(m.CurrentRegion != null && m.CurrentRegion.InteriorRegion);
+
+                if (m is Player player) {
+                    ResetVisibility();
+                    UpdateAllNonPlayerBodies();
                 } else {
-                    Exit(m);
+                    UpdateNonPlayerBody(m);
                 }
             }
         }).CallDeferred();
-    }
-
-    public void Exit(Moveable m) {
-        m.CurrentRegion = null;
-        //TODO: Handle falling multiple floors
-        m.ChangeFloor(0);
-
-        m.SetInside(m.CurrentRegion != null && m.CurrentRegion.InteriorRegion);
-
-        if (m is Player player) {
-            ResetVisibility();
-            UpdateAllNonPlayerBodies();
-        } else {
-            UpdateNonPlayerBody(m);
-        }
     }
 
     private void OnAreaEnteredRegion(Area2D area, BuildingRegion region)
@@ -221,10 +222,11 @@ public partial class Building : Placeable
         {
             return;
         }
-        BuildingRegion playerRegion = this.GetGameWorld().Players[0].CurrentRegion;
+        var player = this.GetGameWorld().Players[0];
+        BuildingRegion playerRegion = player.CurrentRegion;
 
-        bool playerOutside = playerRegion == null || !playerRegion.InteriorRegion;
-        bool bodyOutside = body.CurrentRegion == null || !body.CurrentRegion.InteriorRegion;
+        bool playerOutside = playerRegion == null || !playerRegion.InteriorRegion || !playerRegion.OverlapsBody(player);
+        bool bodyOutside = body.CurrentRegion == null || !body.CurrentRegion.InteriorRegion || !body.CurrentRegion.OverlapsBody((Node2D) body);
 
         if (body.CurrentRegion == playerRegion || playerOutside && bodyOutside) {
             ((Node2D)body).Show();
@@ -252,7 +254,7 @@ public partial class Building : Placeable
             region.Visible = true;
             region.ZIndex = region.ElevationLevel;
 
-            var facade = region.GetNodeOrNull<Node2D>("YSort/Facade");
+            var facade = region.GetNodeOrNull<Node2D>("Foreground/Facade");
             if (facade != null)
             {
                 facade.Modulate = new Color(1, 1, 1, 1);

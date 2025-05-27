@@ -58,8 +58,6 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
     {
         base._Ready();
         AddToGroup(AllProjectilesGroup, true);
-        // Projectiles always at Z-index 1 so they render on top of the ground.
-        ZIndex = 1;
         AffectedByGravity = false;
     }
 
@@ -71,9 +69,7 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
         Velocity = new Vector2(InitialSpeed, 0).Rotated(GlobalRotation);
         Instigator = instigator;
 
-        CurrentElevationLevel = instigator.CurrentElevationLevel;
-        CollisionLayer = CollisionLayer << instigator.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
-        CollisionMask = CollisionMask << instigator.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
+        ChangeFloor(instigator.CurrentElevationLevel);
 
         ProjectileTimer = new Timer();
         ProjectileTimer.OneShot = true;
@@ -81,24 +77,17 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
         ProjectileTimer.Timeout += OnLifetimeExpired;
         AddChild(ProjectileTimer);
 
-        this.GetGameWorld().YSortNode.AddChild(this);
+        // Projectiles are always in the foreground, so they render over everything at that level (like grass)
+        this.GetGameWorld().Foreground.AddChild(this);
 
         Falling = instigator.Falling;
         //Handle edge case where player is standing on edge of roof and spawns projectile off-roof
         if (instigator.CurrentRegion != null && !instigator.CurrentRegion.OverlapsBodyAccurate(this)) {
             Falling = true;
-            StartedFallingAction += instigator.CurrentRegion.OwningBuilding.Exit;
         }
 
         if (Falling) {
             FallTime = instigator.FallTime;
-            //The player is assigned a callback to handle falling off the roof when they exit a building region
-            //That callback is copied to the projectile being spawned here so it handles falling from the same region
-            //It's necessary to do that here to handle the edge-case where the player spawns this projectile while technically
-            //outside of the region (e.g. dashing between roofs)
-            foreach (Delegate d in instigator.GetStartFallingCallbacks()) {
-                StartedFallingAction += (Action<Moveable>)d;
-            }
         }
 
         ProjectileTimer.Start();
@@ -135,8 +124,7 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
             OnCollide(collision);
         }
         if(OrientToVelocity && !Velocity.IsZeroApprox()) {
-            var angle = Velocity.Angle();
-            GlobalRotation = angle >= Math.PI / 4 ? Velocity.Angle() + (float)Math.PI : Velocity.Angle();
+            GlobalRotation = Velocity.Angle();
         }
 
         var shadow = GetNodeOrNull<Sprite2D>("Shadow");

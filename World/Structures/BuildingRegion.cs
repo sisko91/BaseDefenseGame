@@ -19,10 +19,15 @@ public partial class BuildingRegion : Area2D
 
     public bool HasExit = false;
 
-    public Godot.Collections.Array<Stairs> Stairs;
-    public Godot.Collections.Array<Door> Doors;
+    public List<Stairs> Stairs;
+    public List<Door> Doors;
+    public List<Window> Windows;
 
     public Building OwningBuilding { get; set; }
+
+    public Node2D Background;
+    public Node2D Middleground;
+    public Node2D Foreground;
 
     private HashSet<Node2D> IgnoreMonitoringForNodes = new HashSet<Node2D>();
 
@@ -32,8 +37,9 @@ public partial class BuildingRegion : Area2D
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        Stairs = new Godot.Collections.Array<Stairs>();
-        Doors = new Godot.Collections.Array<Door>();
+        Stairs = new List<Stairs>();
+        Doors = new List<Door>();
+        Windows = new List<Window>();
         this.GetGameWorld();
         foreach (var child in this.GetAllChildren()) {
             if (child is Stairs stairs) {
@@ -48,14 +54,19 @@ public partial class BuildingRegion : Area2D
                 Doors.Add(door);
             }
 
-            if (child is Window window && window.Open) {
-                WindowsOpen += 1;
+            if (child is Window window) {
+                WindowsOpen += window.Open ? 1 : 0;
+                Windows.Add(window);
             }
 
             if (child.IsInGroup(INDOOR_GROUP_NAME)) {
                 IndoorNodes.Add((Node2D) child);
             }
         }
+
+        Background = GetNodeOrNull<Node2D>("Background");
+        Middleground = GetNodeOrNull<Node2D>("Middleground");
+        Foreground = GetNodeOrNull<Node2D>("Foreground");
     }
 
     public override void _Process(double delta) {

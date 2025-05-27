@@ -62,8 +62,13 @@ public partial class Grenade : Projectile, IInstigated
         CollisionLayer = (uint)Math.Pow(2, CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR + CollisionConfig.INTERACTIONS_LAYER - 1);
         CollisionMask = 0;
 
-        // Set z-order to be ground level so that characters can walk over the bomb and will render above it
-        ZIndex = ZIndex - 1;
+        if (CurrentRegion != null) {
+            CurrentRegion.AddMonitoringException(this);
+            Reparent(CurrentRegion.Background);
+            CurrentRegion.RemoveMonitoringException(this);
+        } else {
+            Reparent(this.GetGameWorld().Background);
+        }
     }
 
     protected void Bounce(KinematicCollision2D collision) {

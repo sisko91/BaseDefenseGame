@@ -7,9 +7,7 @@ public partial class Stairs : InteractionArea {
     [Export]
     public Stairs TargetStairs;
 
-    //TODO: This isn't needed anymore, but I don't know why. When changing floors currently,
-    //a new enter event is not triggered for the destination stairs for some reason
-    //bool ignoreNextInteraction = false;
+    bool ignoreNextInteraction = false;
 
     public BuildingRegion OwningRegion { get; set; }
 
@@ -28,14 +26,12 @@ public partial class Stairs : InteractionArea {
             return;
         }
 
-        /*
         if (ignoreNextInteraction) {
             ignoreNextInteraction = false;
             return;
         }
-        */
 
-        if (body is Character character) {
+        if (body is Player character) {
             TakeStairs(character);
         }
     }
@@ -45,7 +41,7 @@ public partial class Stairs : InteractionArea {
     }
 
     private void TakeStairs(Character character) {
-        //TargetStairs.ignoreNextInteraction = true;
+        TargetStairs.ignoreNextInteraction = true;
         character.GlobalPosition = TargetStairs.GlobalPosition;
 
         var level = TargetStairs.OwningRegion == null ? 0 : TargetStairs.OwningRegion.ElevationLevel;

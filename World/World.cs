@@ -53,12 +53,28 @@ public partial class World : Node2D
         }
     }
 
-    //Holds the player 
-    public Node2D YSortNode
+    //Y-sorted background layer
+    public Node2D Background {
+        get {
+            return GetNode<Node2D>("Background");
+        }
+    }
+
+    //Y-sorted middle layer. Most things (player, enemies) go here
+    public Node2D Middleground
     {
         get
         {
-            return GetNode<Node2D>("YSort");
+            return GetNode<Node2D>("Middleground");
+        }
+    }
+
+    //Y-sorted foreground layer. Most projectiles go here. This affords some
+    //additional flexibility over just using ZIndex, like relative ordering
+    //For example, bullets inside a house should draw above things in the house, but behind things outside the house
+    public Node2D Foreground {
+        get {
+            return GetNode<Node2D>("Foreground");
         }
     }
 

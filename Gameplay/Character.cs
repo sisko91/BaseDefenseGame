@@ -183,30 +183,6 @@ public partial class Character : Moveable, IImpactMaterial
         }
     }
 
-    public override void ChangeFloor(int targetFloor) {
-        if (targetFloor == CurrentElevationLevel) {
-            return;
-        }
-
-        NearbyInteractions.Clear();
-        int shift = targetFloor - CurrentElevationLevel;
-
-        //Don't shift the world layer when changing floors
-        var worldBoundMask = (uint)Math.Pow(2, CollisionConfig.WORLD_BOUNDS_LAYER - 1);
-
-        CollisionMask -= worldBoundMask;
-        base.ChangeFloor(targetFloor);
-        CollisionMask += worldBoundMask;
-
-        if (shift > 0) {
-            NearbyBodySensor.CollisionLayer = NearbyBodySensor.CollisionLayer << shift * CollisionConfig.LAYERS_PER_FLOOR;
-            NearbyBodySensor.CollisionMask = NearbyBodySensor.CollisionMask << shift * CollisionConfig.LAYERS_PER_FLOOR;
-        } else if (shift < 0) {
-            NearbyBodySensor.CollisionLayer = NearbyBodySensor.CollisionLayer >> -shift * CollisionConfig.LAYERS_PER_FLOOR;
-            NearbyBodySensor.CollisionMask = NearbyBodySensor.CollisionMask >> -shift * CollisionConfig.LAYERS_PER_FLOOR;
-        }
-    }
-
     private void EnableHitShader()
     {
         if (Material != null) {

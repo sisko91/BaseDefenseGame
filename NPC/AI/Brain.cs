@@ -360,7 +360,7 @@ public partial class Brain : Resource
                         {
                             var rectShape = shape as RectangleShape2D;
 
-                            var wallDangerRange = 15;
+                            var wallDangerRange = 10;
                             //Add the extents
                             CheckAndAddDanger(collisionShape.GlobalPosition + new Vector2(rectShape.Size.X / 2 * wallDanger.Scale.X, 0).Rotated(wallDanger.Rotation), wallDangerRange);
                             CheckAndAddDanger(collisionShape.GlobalPosition + new Vector2(-rectShape.Size.X / 2 * wallDanger.Scale.X, 0).Rotated(wallDanger.Rotation), wallDangerRange);
@@ -382,7 +382,7 @@ public partial class Brain : Resource
     {
         if (DebugConfig.Instance.DRAW_STEERING)
         {
-            Owner.DrawDebugLine(dangerGlobalPosition, dangerGlobalPosition, new Color(1, 1, 1), 0.1, Owner.GetPath());
+            Owner.DrawDebugCircle(dangerGlobalPosition, dangerMinRange, new Color(1, 1, 1), false, 1, Owner.GetPath());
         }
 
         var myRadius = 25; //TODO: Get programatically or in config
