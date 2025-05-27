@@ -7,6 +7,7 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dgsgp"]
 shader = ExtResource("1_d47jw")
 shader_parameter/is_inside = false
+shader_parameter/window_light_strength = 0.1
 
 [sub_resource type="Gradient" id="Gradient_4msl2"]
 

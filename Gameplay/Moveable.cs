@@ -16,10 +16,10 @@ public partial class Moveable : CharacterBody2D, IEntity {
     public bool AffectedByGravity = true;
     public bool Falling;
 
-    private Vector2 CollisionShapePosition;
-    private Node2D CollisionShape;
+    protected Vector2 CollisionShapePosition;
+    protected Node2D CollisionShape;
 
-    private Node2D Sprite;
+    protected Node2D Sprite;
 
     [ExportCategory("Grass Interaction")]
     // Controls whether this moveable entity displaces grass patches that it travels through.
@@ -40,12 +40,25 @@ public partial class Moveable : CharacterBody2D, IEntity {
 
     public override void _Ready() {
         base._Ready();
+	CollisionShape = GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
+        if (CollisionShape == null) {
+            CollisionShape = GetNodeOrNull<CollisionPolygon2D>("CollisionPolygon2D");
+        }
+        CollisionShapePosition = CollisionShape.Position;
+
+        Sprite = GetNodeOrNull<Sprite2D>("Sprite2D");
+        if (Sprite == null) {
+            Sprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+        }
+
+
         if (DisplaceGrass) {
             // Create our grass displacement marker. This tracks the character itself so we don't need a stored reference.
             // Note: We currently create two of these and register one with each displacement viewport (global and screenspace).
             //       This will likely be simplified over time but right now comparing the two approaches is useful.
             var grassMarker = GrassDisplacementMarkerOverride?.Instantiate<DisplacementMaskMarker>() ?? 
                               DefaultGrassDisplacementMarkerScene?.Instantiate<DisplacementMaskMarker>();
+            grassMarker.GetNode<Sprite2D>("Sprite2D").Position = CollisionShapePosition;
             
             grassMarker?.RegisterWithViewport(Main.GetScreenSpaceDisplacementViewport(),this);
             if (grassMarker == null)
@@ -57,17 +70,6 @@ public partial class Moveable : CharacterBody2D, IEntity {
                 var secondMarker = grassMarker.Duplicate() as DisplacementMaskMarker;
                 secondMarker?.RegisterWithViewport(Main.GetGlobalDisplacementViewport(), this);
             }
-        }
-
-        CollisionShape = GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
-        if (CollisionShape == null) {
-            CollisionShape = GetNodeOrNull<CollisionPolygon2D>("CollisionPolygon2D");
-        }
-        CollisionShapePosition = CollisionShape.Position;
-
-        Sprite = GetNodeOrNull<Sprite2D>("Sprite2D");
-        if (Sprite == null) {
-            Sprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
         }
     }
 

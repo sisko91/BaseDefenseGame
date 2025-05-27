@@ -127,14 +127,7 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
             GlobalRotation = Velocity.Angle();
         }
 
-        var shadow = GetNodeOrNull<Sprite2D>("Shadow");
-        var collisionPoly = GetNodeOrNull<CollisionPolygon2D>("CollisionPolygon2D");
-        if (shadow != null) {
-            shadow.Position = new Vector2(0f, 30f).Rotated(-GlobalRotation);
-        }
-        if (collisionPoly != null) {
-            collisionPoly.Position = new Vector2(0.5f, 27f).Rotated(-GlobalRotation);
-        }
+        CollisionShape.Position = CollisionShapePosition.Rotated(-GlobalRotation);
     }
 
     protected virtual void OnStart() {
