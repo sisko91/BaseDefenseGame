@@ -301,7 +301,7 @@ public partial class Player : Character
         copy.Scale = playerSprite.Scale;
         copy.LightMask = playerSprite.LightMask;
         copy.UseParentMaterial = false;
-        copy.Material = Material;
+        copy.Material = (Material) Material.Duplicate();
         copy.Position = playerSprite.Position;
         copy.Offset = playerSprite.Offset;
 
