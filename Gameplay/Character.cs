@@ -56,9 +56,6 @@ public partial class Character : Moveable, IImpactMaterial
     // Cached reference to the NearbyBodySensor defined on the .tscn
     public BodySensor NearbyBodySensor { get; protected set; }
 
-    // Cached reference to the collision shape defined on the .tscn
-    public CollisionShape2D CollisionShape { get; private set; }
-
     #region Interface: IImpactMaterial
 
     // ImpactSourceType satisfies IImpactMaterial interface.
@@ -92,7 +89,6 @@ public partial class Character : Moveable, IImpactMaterial
         CurrentHealth = MaxHealth;
         Stunned = false;
 
-        CollisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
         NearbyBodySensor = GetNode<BodySensor>("NearbyBodySensor");
         NearbyInteractions = new Godot.Collections.Array<InteractionArea>();
 
@@ -199,14 +195,14 @@ public partial class Character : Moveable, IImpactMaterial
 
     public float GetCollisionBodyRadius()
     {
-        var boundingRect = CollisionShape.Shape.GetRect();
+        var boundingRect = ((CollisionShape2D) CollisionShape).Shape.GetRect();
         var collisionDiameter = Mathf.Max(boundingRect.Size.X, boundingRect.Size.Y);
         return collisionDiameter / 2;
     }
 
     //The hitbox collisions and projectiles currently interact with
     public void DrawCollisionBoundingBox() {
-        var boundingRect = CollisionShape.Shape.GetRect();
+        var boundingRect = ((CollisionShape2D)CollisionShape).Shape.GetRect();
         this.ClearDebugDrawCallGroup(GetPath() + "bb");
         this.DrawDebugRect(CollisionShape.GlobalPosition, boundingRect.Size, new Color(0, 0, 1), false, 1, GetPath() + "bb");
     }

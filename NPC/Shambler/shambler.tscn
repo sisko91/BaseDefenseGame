@@ -128,3 +128,5 @@ script = ExtResource("6_t0u02")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NearbyBodySensor"]
 shape = SubResource("CircleShape2D_vtmmg")
+
+[connection signal="HealthChanged" from="." to="FloatingHealthBar" method="OnCharacterHealthChanged"]
