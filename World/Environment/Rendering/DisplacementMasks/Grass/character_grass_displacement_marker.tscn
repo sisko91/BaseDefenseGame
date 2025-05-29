@@ -7,11 +7,13 @@ blend_mode = 1
 light_mode = 1
 
 [sub_resource type="Gradient" id="Gradient_gugok"]
-offsets = PackedFloat32Array(0, 0.224138, 0.428161, 0.688213)
-colors = PackedColorArray(1, 1, 1, 1, 0.733005, 0.733005, 0.733005, 1, 0.28485, 0.28485, 0.28485, 1, 0, 0, 0, 1)
+offsets = PackedFloat32Array(0, 0.431034, 0.688213)
+colors = PackedColorArray(1, 1, 1, 1, 0.39, 0.39, 0.39, 1, 0, 0, 0, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_hj10s"]
 gradient = SubResource("Gradient_gugok")
+width = 128
+height = 128
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 1)
@@ -22,4 +24,5 @@ script = ExtResource("1_ghvd4")
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
 material = SubResource("CanvasItemMaterial_nlfvu")
+scale = Vector2(0.5, 0.5)
 texture = SubResource("GradientTexture2D_hj10s")
