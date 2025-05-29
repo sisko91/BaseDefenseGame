@@ -15,7 +15,7 @@ uniform float blade_height = 24.0;
 uniform vec4 blade_color = vec4(0.51, 0.97, 0.0, 1.0);
 uniform float ambient_sway_amount = 3.0;
 uniform float ambient_sway_speed = 0.5;
-uniform float displacement_bend_intensity = 5.0;
+uniform float displacement_bend_intensity = 10.0;
 // Controls which displacement texture is sampled as well as how the UV sampling coordinates are calculated to do so.
 // 0 = screen-space, 1 = world-space (world-space expects the shader-local uniform world_rect to be populated).
 uniform int sample_mode : hint_enum("Screen-Space", "World-Space") = 0;
@@ -88,19 +88,19 @@ void vertex() {
 
 	// The strength of displacement should be modulated by the age.
 	displacement_strength *= age_weight;
-
+	
 	// Displace based on ambient sway, but not when the displacement value is high.
 	VERTEX.x += ambient_sway * vertical_weight * max(1.0 - displacement_strength, 0.0);
 
 	// Bend away from the center.
-	// TODO: There's a lot of funny math here. The geometry is correct, but the scalar magnitudes...
 	float bend_amount = displacement_strength * vertical_weight * displacement_bend_intensity;
 	VERTEX.x += bend_amount * dot(bend_direction, right_vector);
-	VERTEX.y += min(-bend_amount * dot(bend_direction, up_vector) / 4.0, 0.0);
-
-	// Alternative bending logic:
-	//vec2 bend_offset = bend_direction * displacement_strength * vertical_weight * displacement_bend_intensity;
-    //VERTEX.xy += bend_offset;
+	VERTEX.x = clamp(VERTEX.x, blade_base_pos.x - blade_height*1.1, blade_base_pos.x + blade_height*1.1);
+	
+	// For Y bending, we want to make sure that the grass stays approximately the same length so we
+	// clamp how far up or down the grass tip can be based on the defined grass height.
+	VERTEX.y += -bend_amount * dot(bend_direction, up_vector);
+	VERTEX.y = clamp(VERTEX.y, blade_base_pos.y - blade_height*1.1, blade_base_pos.y + blade_height*1.1);
 
 	// Uncomment to debug displacement amount.
 	//COLOR.r = displacementAmount;

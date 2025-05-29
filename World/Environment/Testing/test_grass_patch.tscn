@@ -5,10 +5,13 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qsub5"]
 shader = ExtResource("2_3aell")
+shader_parameter/blade_width = 4.0
+shader_parameter/blade_height = 20.0
 shader_parameter/blade_color = Vector4(0.51, 0.97, 0, 1)
 shader_parameter/ambient_sway_amount = 3.0
 shader_parameter/ambient_sway_speed = 0.5
-shader_parameter/displacement_bend_intensity = 15.0
+shader_parameter/displacement_bend_intensity = 10.0
+shader_parameter/sample_mode = 0
 
 [node name="TestGrassPatch" type="Sprite2D"]
 y_sort_enabled = true
