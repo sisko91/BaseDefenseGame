@@ -25,8 +25,7 @@ public partial class Main : Node
     // The template scene to instantiate for the Pause Menu.
     [Export]
     public PackedScene PauseMenuTemplate { get; private set; }
-
-    public DisplacementMaskViewport ScreenSpaceDisplacementViewport { get; private set; } = null;
+    
     public DisplacementMaskViewport GlobalDisplacementViewport { get; private set; } = null;
 
     // Cached reference to the PauseMenu scene node defined on main.tscn.
@@ -58,8 +57,6 @@ public partial class Main : Node
     {
         // Fetch and configure the displacement viewport very first thing. Other things (like the player character) may
         // want to access it so it's important that it's available right away on the Main scene.
-        ScreenSpaceDisplacementViewport = GetNode<DisplacementMaskViewport>("ScreenSpaceDisplacementViewport");
-        RenderingServer.GlobalShaderParameterSet("screen_displacement_mask_tex", ScreenSpaceDisplacementViewport.GetTexture());
         GlobalDisplacementViewport = GetNode<DisplacementMaskViewport>("GlobalDisplacementViewport");
         RenderingServer.GlobalShaderParameterSet("global_displacement_mask_tex", GlobalDisplacementViewport.GetTexture());
         
@@ -90,9 +87,6 @@ public partial class Main : Node
         playerCamera.Target = player;
         AddChild(playerCamera);
         MoveChild(playerCamera, 0);
-        
-        // Now that we have the player camera we can finish configuring the displacement viewport.
-        ScreenSpaceDisplacementViewport.MainCamera = playerCamera;
 
         ShaderTimer = new Timer();
         ShaderTimer.WaitTime = 3600;
@@ -133,11 +127,6 @@ public partial class Main : Node
 
     public static Camera2D GetActiveCamera() {
         return Instance.playerCamera;
-    }
-
-    public static DisplacementMaskViewport GetScreenSpaceDisplacementViewport()
-    {
-        return Instance.ScreenSpaceDisplacementViewport;
     }
     
     public static DisplacementMaskViewport GetGlobalDisplacementViewport()

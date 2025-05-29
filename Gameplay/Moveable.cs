@@ -59,16 +59,10 @@ public partial class Moveable : CharacterBody2D, IEntity {
             var grassMarker = GrassDisplacementMarkerOverride?.Instantiate<DisplacementMaskMarker>() ?? 
                               DefaultGrassDisplacementMarkerScene?.Instantiate<DisplacementMaskMarker>();
             grassMarker.GetNode<Sprite2D>("Sprite2D").Position = CollisionShapePosition;
-            
-            grassMarker?.RegisterWithViewport(Main.GetScreenSpaceDisplacementViewport(),this);
+            grassMarker?.RegisterWithViewport(Main.GetGlobalDisplacementViewport(),this);
             if (grassMarker == null)
             {
                 GD.PushError($"{Name} had DisplaceGrass configured but provided no GrassDisplacementMarker (via Override or default).");
-            }
-            else
-            {
-                var secondMarker = grassMarker.Duplicate() as DisplacementMaskMarker;
-                secondMarker?.RegisterWithViewport(Main.GetGlobalDisplacementViewport(), this);
             }
         }
     }
