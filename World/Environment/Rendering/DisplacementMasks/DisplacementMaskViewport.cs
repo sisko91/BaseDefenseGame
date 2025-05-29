@@ -1,11 +1,10 @@
 using Godot;
-using System;
 using ExtensionMethods;
 
 // A custom viewport that renders opaque displacement markers to a virtual screen texture. The texture produced by this
-// viewport can then be sampled from other shaders to render screen-space displacement effects.
+// viewport can then be sampled from other shaders to render displacement effects.
 // For now, the only use-case for this is rendering displacements to grass when characters walk through. Other potential
-// uses (with necessary enhancements):
+// uses:
 // - Wakes when moving through water.
 // - Trails through deep snow / mud.
 public partial class DisplacementMaskViewport : SubViewport
