@@ -25,6 +25,7 @@ public partial class FrameBufferViewport : SubViewport
         BufferSprite.Name = "BufferSprite";
         BufferSprite.Texture = Source.GetTexture();
         BufferSprite.Offset = BufferSprite.Texture.GetSize() / 2f;
+        BufferSprite.TextureFilter = CanvasItem.TextureFilterEnum.Nearest;
         AddChild(BufferSprite);
     }
 }

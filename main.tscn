@@ -15,6 +15,7 @@ resource_local_to_scene = true
 shader = ExtResource("8_kek77")
 shader_parameter/update_mode = 0
 shader_parameter/clear_color = Color(0, 0, 0, 1)
+shader_parameter/intensity_ceiling = 1.41421
 shader_parameter/fade_function = 0
 shader_parameter/fade_time = 1.0
 shader_parameter/fade_rate_mask = Vector3(1, 1, 1)
@@ -23,6 +24,7 @@ shader_parameter/fade_rate_mask = Vector3(1, 1, 1)
 shader = ExtResource("8_kek77")
 shader_parameter/update_mode = 1
 shader_parameter/clear_color = Color(0, 0, 0, 1)
+shader_parameter/intensity_ceiling = 1.0
 shader_parameter/fade_function = 1
 shader_parameter/fade_time = 7.0
 shader_parameter/fade_rate_mask = Vector3(1, 1, 1)
@@ -47,12 +49,14 @@ RefreshShader = SubResource("ShaderMaterial_4c57u")
 ScreenSpaceMask = true
 
 [node name="GlobalDisplacementViewport" parent="." node_paths=PackedStringArray("FrameBuffer") instance=ExtResource("7_272bh")]
+canvas_item_default_texture_filter = 0
 size = Vector2i(512, 512)
 RefreshShader = SubResource("ShaderMaterial_kek77")
 FrameBuffer = NodePath("../GlobalDisplacementFrameBuffer")
 
 [node name="GlobalDisplacementFrameBuffer" type="SubViewport" parent="." node_paths=PackedStringArray("Source")]
 use_hdr_2d = true
+canvas_item_default_texture_filter = 0
 render_target_update_mode = 4
 script = ExtResource("8_5vw27")
 Source = NodePath("../GlobalDisplacementViewport")

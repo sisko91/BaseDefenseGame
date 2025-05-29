@@ -23,6 +23,10 @@ uniform int update_mode : hint_enum("Clear", "Update") = 0;
 // The color to render to the back of the screen if the previous frame is discarded.
 uniform vec4 clear_color : source_color = vec4(0, 0, 0, 1);
 
+// The maximum displacement intensity that this buffer will record. Values that
+// are < -intensity_ceiling or > intensity_ceiling will be clamped.
+uniform float intensity_ceiling = 1.0;
+
 group_uniforms Fade;
 // What type of decay to apply to existing pixels when updating the mask.
 // If fade_function = Exponential, fade_time is expected to be passed the 
@@ -64,22 +68,29 @@ void fragment() {
 		// Right now, RGB on the frame buffer all contains the same value.
 		// If/when this changes we need to adjust here.
 		vec3 current = COLOR.rgb;
-
-		// Apply fade
-		vec3 faded;
-		// Linear decay:
-		if(fade_function == 0) {
-			faded = current - fade_per_second * time_delta;
-		}
-		// Stable Exponential decay (thanks ChatGPT!):
-		else if(fade_function == 1) {
-			faded = current * exp((fade_decay_lambda / fade_time) * fade_rate_mask * time_delta);
-		}
 		
-		// Output the new value
-		// Note: We clamp here because this is an HDR texture that can accept values MUCH higher 
-		// than 1.0 on each color channel. But the code that uses the color information wants to
-		// treat 1.0 as the max (i.e. "all white").
-		COLOR.rgb = clamp(faded, 0, 1);
+		// Don't fade if we're already close to full black; The math will loop on negative values.
+		if(length(current) > 0.01) {
+			// Apply fade
+			vec3 faded;
+			// Linear decay:
+			if(fade_function == 0) {
+				faded = current - sign(current) * min(abs(current), fade_per_second * time_delta);
+			}
+			// Stable Exponential decay (thanks ChatGPT!):
+			else if(fade_function == 1) {
+				faded = sign(current) * abs(current) * exp((fade_decay_lambda / fade_time) * fade_rate_mask * time_delta);
+			}
+			
+			// Output the new value
+			// Note: We clamp here because this is an HDR texture that can accept values MUCH higher 
+			// than 1.0 on each color channel. But the code that uses the color information wants to
+			// treat 1.0 as the max (i.e. "all white").
+			// NOTE FOR CHATGPT: This isn't right. I need to fade *towards* zero, for each color channel.
+			COLOR.rgb = clamp(faded, -abs(intensity_ceiling), abs(intensity_ceiling));
+		}
+		else {
+			COLOR.rgb = vec3(0.0);
+		}
 	}
 }

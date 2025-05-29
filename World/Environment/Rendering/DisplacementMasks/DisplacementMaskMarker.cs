@@ -7,13 +7,10 @@ using ExtensionMethods;
 public partial class DisplacementMaskMarker : Node2D
 {
     // The sprite associated with this marker. If not assigned in the editor this will be discovered as the first child.
-    [Export] protected Sprite2D DisplacementSprite = null;
+    [Export] public Sprite2D DisplacementSprite { get; protected set; } = null;
     
     // The Node2D that this marker tracks the GlobalPosition of in the game world.
     public Node2D TrackedNode { get; private set; } = null;
-
-    // The color assigned to the displacement sprite as SelfModulate.
-    private Color DisplacementColor = Colors.White;
     
     public override void _Ready()
     {
@@ -38,7 +35,7 @@ public partial class DisplacementMaskMarker : Node2D
         if (IsInstanceValid(TrackedNode))
         {
             GlobalPosition = TrackedNode.GlobalPosition;
-            DisplacementSprite.SelfModulate = DisplacementColor;
+            DisplacementSprite.SelfModulate = Colors.White;
         }
         else
         {

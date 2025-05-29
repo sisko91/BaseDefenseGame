@@ -76,13 +76,13 @@ script = ExtResource("11_11lc6")
 FreezeTime = true
 
 [node name="ParallaxBackground" type="Parallax2D" parent="."]
-light_mask = 2
+light_mask = 0
 scroll_scale = Vector2(0.9, 0.9)
 repeat_size = Vector2(6144, 6144)
 repeat_times = 2
 
 [node name="ColorRect" type="ColorRect" parent="ParallaxBackground"]
-light_mask = 2
+light_mask = 0
 z_index = 10
 texture_repeat = 3
 material = SubResource("ShaderMaterial_kx652")

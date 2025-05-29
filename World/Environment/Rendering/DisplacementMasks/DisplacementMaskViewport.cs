@@ -17,6 +17,10 @@ public partial class DisplacementMaskViewport : SubViewport
     // mask will start filled by ClearColor.
     [Export] public ShaderMaterial RefreshShader { get; private set; } = null;
 
+    // The shader that runs for each marker assigned to the viewport. This is optional and will replace whatever base
+    // material the marker may have by default.
+    [Export] public ShaderMaterial MarkerMaterialOverride { get; private set; } = null;
+
     // The optional FrameBuffer to use. If not null, the contents of this buffer will be rendered before any
     // displacements this frame. The primary use-case for this is to have a FrameBufferViewport capturing this
     // displacement mask each frame and serving it back into the rendering loop for things like trail FX.
@@ -146,5 +150,13 @@ public partial class DisplacementMaskViewport : SubViewport
             GD.PushWarning($"Re-parenting registered displacement marker `{marker.Name}` from its original parent ({marker.GetParent().Name}).");
         }
         markerRoot.AddChild(marker);
+        if (MarkerMaterialOverride != null)
+        {
+            if (marker.DisplacementSprite != null)
+            {
+                marker.DisplacementSprite.UseParentMaterial = true;
+            }
+            marker.Material = MarkerMaterialOverride;
+        }
     }
 }
