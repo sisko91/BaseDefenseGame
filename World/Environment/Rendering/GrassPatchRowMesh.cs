@@ -10,6 +10,8 @@ using Godot;
 // This node may be used on its own, but is typically created dynamically as part of a GrassPatch.
 public partial class GrassPatchRowMesh : Node2D
 {
+    // The base color of all blades.
+    [Export] public Color BladeColor = Godot.Colors.Green;
     // The Shader that actually renders the blades of grass.
     [Export] public ShaderMaterial BladeMaterial;
     // The width of the row, in global coordinates. This extends to the right in +X direction from the row's origin.
@@ -33,6 +35,11 @@ public partial class GrassPatchRowMesh : Node2D
     public override void _Ready()
     {
         GenerateGrassMesh();
+        
+        BladeMaterial?.SetShaderParameter("blade_width", BladeWidth);
+        BladeMaterial?.SetShaderParameter("blade_height", BladeHeight);
+        BladeMaterial?.SetShaderParameter("blade_color", BladeColor);
+        
         QueueRedraw();
     }
 
