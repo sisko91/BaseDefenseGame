@@ -9,13 +9,13 @@ shader = ExtResource("1_d47jw")
 shader_parameter/is_inside = false
 shader_parameter/window_light_strength = 0.1
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_c6dxx"]
+size = Vector2(4, 10)
+
 [sub_resource type="Gradient" id="Gradient_4msl2"]
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_ln6rk"]
 gradient = SubResource("Gradient_4msl2")
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_c6dxx"]
-size = Vector2(4, 10)
 
 [node name="ScatterProj" type="CharacterBody2D"]
 material = SubResource("ShaderMaterial_dgsgp")
@@ -27,14 +27,14 @@ Damage = 8.0
 KnockbackForce = 10.0
 DefaultResponseHint = ExtResource("3_dgsgp")
 
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -33)
+rotation = 1.5708
+shape = SubResource("RectangleShape2D_c6dxx")
+
 [node name="Sprite2D" type="Sprite2D" parent="."]
 use_parent_material = true
-position = Vector2(0, 5)
+position = Vector2(0, -33)
 rotation = 1.5708
 scale = Vector2(0.015625, 10)
 texture = SubResource("GradientTexture1D_ln6rk")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, 5)
-rotation = 1.5708
-shape = SubResource("RectangleShape2D_c6dxx")

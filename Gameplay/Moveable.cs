@@ -51,7 +51,6 @@ public partial class Moveable : CharacterBody2D, IEntity {
             Sprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
         }
 
-
         if (DisplaceGrass) {
             // Create our grass displacement marker. This tracks the character itself so we don't need a stored reference.
             // Note: We currently create two of these and register one with each displacement viewport (global and screenspace).

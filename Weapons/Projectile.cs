@@ -64,21 +64,20 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
     // Adds the projectile to the gameworld and initializes its position, velocity, etc.
     public void Start(Vector2 worldPosition, float worldDirection, Character instigator)
     {
-        GlobalRotation = worldDirection;
-        GlobalPosition = worldPosition;
-        Velocity = new Vector2(InitialSpeed, 0).Rotated(GlobalRotation);
-        Instigator = instigator;
-
         ChangeFloor(instigator.CurrentElevationLevel);
+        this.GetGameWorld().Middleground.AddChild(this);
+
+        Sprite.Rotation = worldDirection;
+        CollisionShape.Rotation = worldDirection;
+        GlobalPosition = worldPosition - Sprite.Position;
+        Velocity = new Vector2(InitialSpeed, 0).Rotated(worldDirection);
+        Instigator = instigator;
 
         ProjectileTimer = new Timer();
         ProjectileTimer.OneShot = true;
         ProjectileTimer.WaitTime = LifetimeSeconds;
         ProjectileTimer.Timeout += OnLifetimeExpired;
         AddChild(ProjectileTimer);
-
-        // Projectiles are always in the foreground, so they render over everything at that level (like grass)
-        this.GetGameWorld().Foreground.AddChild(this);
 
         Falling = instigator.Falling;
         //Handle edge case where player is standing on edge of roof and spawns projectile off-roof
@@ -124,10 +123,9 @@ public partial class Projectile : Moveable, IInstigated, IImpactMaterial
             OnCollide(collision);
         }
         if(OrientToVelocity && !Velocity.IsZeroApprox()) {
-            GlobalRotation = Velocity.Angle();
+            CollisionShape.Rotation = Velocity.Angle();
+            Sprite.Rotation = Velocity.Angle();
         }
-
-        CollisionShape.Position = CollisionShapePosition.Rotated(-GlobalRotation);
     }
 
     protected virtual void OnStart() {

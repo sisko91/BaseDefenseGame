@@ -39,13 +39,16 @@ ImpactSourceType = 2
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 use_parent_material = true
+position = Vector2(0, -33)
 scale = Vector2(1, 2)
 texture = SubResource("GradientTexture1D_lh0t1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -33)
 shape = SubResource("RectangleShape2D_0f4c6")
 
 [node name="SeekRange" type="Area2D" parent="."]
+position = Vector2(0, -33)
 collision_layer = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SeekRange"]

@@ -47,7 +47,7 @@ public partial class Barb : Projectile {
 
         if (target != null && IsInstanceValid(target)) {
             //Seek to target
-            Vector2 direction = GlobalPosition.DirectionTo(target.GlobalPosition);
+            Vector2 direction = CollisionShape.GlobalPosition.DirectionTo(target.GlobalPosition);
             var desiredVelocity = direction * InitialSpeed;
             Velocity = Velocity.Lerp(desiredVelocity, 0.1f);
             return;
@@ -84,7 +84,7 @@ public partial class Barb : Projectile {
         if (collision.GetCollider() is Node2D colliderNode) {
             this.Reparent(colliderNode);
             // Embed the barb within the surface it strikes (slightly).
-            var embeddingOffset = Vector2.FromAngle(GlobalRotation) * BarbLength * EmbeddedRatio;
+            var embeddingOffset = Vector2.FromAngle(CollisionShape.GlobalRotation) * BarbLength * EmbeddedRatio;
             GlobalPosition = GlobalPosition + embeddingOffset;
 
             //Move to the first child so the barb renders underneath the target
