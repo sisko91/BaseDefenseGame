@@ -77,13 +77,9 @@ public partial class RadialSpawner : Node2D
     public override void _Ready()
     {
         // If we're in the editor we don't want this doing any actual work, we just want the rendering calls to happen.
-        if (Engine.IsEditorHint())  
+        if (Engine.IsEditorHint())
         {
-            EditorInterface.Singleton.GetSelection().SelectionChanged += () => {
-                if (IsInstanceValid(this)) {
-                    QueueRedraw();
-                }
-            };
+            EditorInterface.Singleton.GetSelection().SelectionChanged += OnEditorSelectionChanged;
             return;
         }
 
@@ -120,6 +116,28 @@ public partial class RadialSpawner : Node2D
         }
 
         return instance;
+    }
+    
+    public override void _ExitTree()
+    {
+        // We have to deliberately unsubscribe from the SelectionChanged event whenever this node exits the tree
+        // (such as when it is being disposed of).
+        if (Engine.IsEditorHint())
+        {
+            var selection = EditorInterface.Singleton.GetSelection();
+            if (selection != null)
+            {
+                selection.SelectionChanged -= OnEditorSelectionChanged;
+            }
+        }
+    }
+    
+    private void OnEditorSelectionChanged()
+    {
+        if (IsInstanceValid(this))
+        {
+            QueueRedraw();
+        }
     }
 
     public override void _Draw()
