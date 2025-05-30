@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=39 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
@@ -26,7 +26,9 @@
 [ext_resource type="Resource" uid="uid://wi0ppwstcfuk" path="res://World/ShopItems/scattergun.tres" id="23_80b3c"]
 [ext_resource type="Resource" uid="uid://b77gn5emtpi6g" path="res://World/ShopItems/barber.tres" id="24_782py"]
 [ext_resource type="PackedScene" uid="uid://c70igcsd325bm" path="res://World/Structures/Testing/3.4PerspectiveBuilding/test_building_flat_roof.tscn" id="26_fbbf8"]
+[ext_resource type="Script" uid="uid://cmn5skjw5opfn" path="res://World/Environment/Rendering/GrassPainter.cs" id="27_qinvk"]
 [ext_resource type="PackedScene" uid="uid://6prx14s7d1am" path="res://World/Environment/Testing/test_tree.tscn" id="28_fbbf8"]
+[ext_resource type="Shader" uid="uid://dpfrjcnn7bkp5" path="res://World/Environment/Rendering/DisplacementMasks/Grass/grass_patch.gdshader" id="28_k0axg"]
 [ext_resource type="PackedScene" uid="uid://thlbbsrf6pcr" path="res://World/Environment/Testing/test_grass_patch.tscn" id="29_qinvk"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_fn2eg"]
@@ -66,6 +68,16 @@ _data = {
 "points": PackedVector2Array(0, 1582.05, 0, -1582.05, -2400, 3089, 0, 0, 0, 0, -2400, 750, 0, 0, 0, 0, 2000, 750, 0, 0, 0, 0, 2000, -2000, -992.486, -1.39261, 992.486, 1.39261, 3000, -2000)
 }
 point_count = 5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ymjjk"]
+shader = ExtResource("28_k0axg")
+shader_parameter/blade_width = 4.0
+shader_parameter/blade_height = 20.0
+shader_parameter/blade_color = Vector4(0.51, 0.97, 0, 1)
+shader_parameter/ambient_sway_amount = 3.0
+shader_parameter/ambient_sway_speed = 0.5
+shader_parameter/displacement_bend_intensity = 10.0
+shader_parameter/sample_mode = 1
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_tr0n8")
@@ -185,7 +197,15 @@ Size = Vector2(1536, 350)
 BladeRows = 30
 BladesPerRow = 1024
 BladeHeight = 24.0
-UseGlobalDisplacementMask = true
+
+[node name="GrassPainter" type="Node2D" parent="Middleground"]
+visible = false
+y_sort_enabled = true
+script = ExtResource("27_qinvk")
+RowSize = Vector2i(256, 8)
+BladeCountMultiplier = 1.2
+BladeMaterial = SubResource("ShaderMaterial_ymjjk")
+BladeColor = Color(0.306667, 0.4, 0, 1)
 
 [node name="Foreground" type="Node2D" parent="."]
 y_sort_enabled = true
