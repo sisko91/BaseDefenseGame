@@ -8,6 +8,7 @@ shader = ExtResource("2_3aell")
 shader_parameter/blade_width = 4.0
 shader_parameter/blade_height = 20.0
 shader_parameter/blade_color = Vector4(0.51, 0.97, 0, 1)
+shader_parameter/blade_pointiness = 0.3
 shader_parameter/ambient_sway_amount = 3.0
 shader_parameter/ambient_sway_speed = 0.5
 shader_parameter/displacement_bend_intensity = 10.0

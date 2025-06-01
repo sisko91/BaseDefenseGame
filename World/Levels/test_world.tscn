@@ -74,6 +74,7 @@ shader = ExtResource("28_k0axg")
 shader_parameter/blade_width = 4.0
 shader_parameter/blade_height = 20.0
 shader_parameter/blade_color = Vector4(0.51, 0.97, 0, 1)
+shader_parameter/blade_pointiness = 1.0
 shader_parameter/ambient_sway_amount = 3.0
 shader_parameter/ambient_sway_speed = 0.5
 shader_parameter/displacement_bend_intensity = 10.0
@@ -195,14 +196,16 @@ position = Vector2(-818, 150)
 BladeColor = Color(0.306667, 0.4, 0, 1)
 Size = Vector2(1536, 350)
 BladeRows = 30
-BladesPerRow = 1024
+BladesPerRow = 341
+BladeWidth = 6.0
 BladeHeight = 24.0
 
 [node name="GrassPainter" type="Node2D" parent="Middleground"]
 visible = false
 y_sort_enabled = true
 script = ExtResource("27_qinvk")
-RowSize = Vector2i(256, 8)
+RowSize = Vector2i(512, 8)
+BladeWidth = 6.0
 BladeCountMultiplier = 1.2
 BladeMaterial = SubResource("ShaderMaterial_ymjjk")
 BladeColor = Color(0.306667, 0.4, 0, 1)

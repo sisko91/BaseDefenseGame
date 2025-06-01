@@ -13,6 +13,8 @@ global uniform sampler2D global_displacement_mask_tex;
 uniform float blade_width = 4.0;
 uniform float blade_height = 24.0;
 uniform vec4 blade_color = vec4(0.51, 0.97, 0.0, 1.0);
+// 0 - 1 degree of how strongly the blade comes to a point near the top.
+uniform float blade_pointiness = 1.0;
 uniform float ambient_sway_amount = 3.0;
 uniform float ambient_sway_speed = 0.5;
 uniform float displacement_bend_intensity = 10.0;
@@ -50,8 +52,8 @@ void vertex() {
 	// displacement texture is a full-screen buffer).
 	base_displacement_uv = (blade_base_world_pos - uvRect.xy) / uvRect.zw;
 
-	// Extend the grass vertex according to its UV coordinate.
-	VERTEX.x += (UV.x - 0.5) * blade_width;
+	// Extend the grass vertex according to its UV coordinate, but coming to a point near the top.
+	VERTEX.x += (UV.x - 0.5) * blade_width * (1.0 - UV.y * blade_pointiness);
 	VERTEX.y -= UV.y * blade_height;
 
 	// Compute ambient sway (not caused by any direct influence).
