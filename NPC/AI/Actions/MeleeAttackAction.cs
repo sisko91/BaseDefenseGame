@@ -29,7 +29,7 @@ namespace AI
                     return baseScore;
                 }
                 float meleeAttackRange = GetMeleeAttackRange();
-                if (Brain.EnemyTarget.CurrentElevationLevel != Owner.CurrentElevationLevel || Brain.EnemyTarget.GlobalPosition.DistanceSquaredTo(Owner.GlobalPosition) > (meleeAttackRange * meleeAttackRange)) {
+                if (Brain.EnemyTarget.CurrentElevationLevel != OwnerNpc.CurrentElevationLevel || Brain.EnemyTarget.GlobalPosition.DistanceSquaredTo(OwnerNpc.GlobalPosition) > (meleeAttackRange * meleeAttackRange)) {
                     // Out of range.
                     // TODO: Move this into AttackAction?
                     return 0;
@@ -41,22 +41,22 @@ namespace AI
 
             protected override void PrepareAttack()
             {
-                GD.Print($"{Owner?.Name}-> [Prepare(Melee)] Attacking enemy ({Brain.EnemyTarget.Name})");
+                GD.Print($"{OwnerNpc?.Name}-> [Prepare(Melee)] Attacking enemy ({Brain.EnemyTarget.Name})");
             }
 
             protected override void ExecuteAttack() {
                 // TODO: We should be implementing a melee weapon that they use that does this correctly (for some definition of correct).
                 var hr = new HitResult();
                 // Impact location is the midpoint between the two characters meleeing. The normal points from attacker -> target.
-                hr.ImpactLocation = (Owner.GlobalPosition + Brain.EnemyTarget.GlobalPosition) / 2;
-                hr.ImpactNormal = (Brain.EnemyTarget.GlobalPosition - Owner.GlobalPosition);
-                Owner.TryRegisterImpact(Brain.EnemyTarget, hr, MeleeAttackDamage);
+                hr.ImpactLocation = (OwnerNpc.GlobalPosition + Brain.EnemyTarget.GlobalPosition) / 2;
+                hr.ImpactNormal = (Brain.EnemyTarget.GlobalPosition - OwnerNpc.GlobalPosition);
+                OwnerNpc.TryRegisterImpact(Brain.EnemyTarget, hr, MeleeAttackDamage);
                 GD.Print("Hiyah!");
             }
 
             private float GetMeleeAttackRange()
             {
-                return Brain.EnemyTarget.GetCollisionBodyRadius() + Owner.GetCollisionBodyRadius() + 10;
+                return Brain.EnemyTarget.GetCollisionBodyRadius() + OwnerNpc.GetCollisionBodyRadius() + 10;
             }
         }
     }

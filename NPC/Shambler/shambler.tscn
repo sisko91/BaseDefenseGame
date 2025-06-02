@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://2ctjrem32j1v"]
+[gd_scene load_steps=21 format=3 uid="uid://2ctjrem32j1v"]
 
 [ext_resource type="Shader" uid="uid://cfv027nbsnbss" path="res://Shaders/character.gdshader" id="1_mvkqo"]
 [ext_resource type="Script" uid="uid://c2u67ufhm0qxl" path="res://NPC/NonPlayerCharacter.cs" id="2_y8uwp"]
@@ -20,8 +20,7 @@ shader_parameter/window_light_strength = 0.0
 shader_parameter/time_scale = 20.0
 shader_parameter/gb_ceil = 0.75
 
-[sub_resource type="Resource" id="Resource_j7bkh"]
-resource_local_to_scene = true
+[sub_resource type="Resource" id="Resource_xlmv7"]
 script = ExtResource("3_y33um")
 MaxAttackRange = 200.0
 AttackPrepareDuration = 0.1
@@ -30,14 +29,12 @@ AttackCooldownDuration = 1.0
 PausesMotionWhileActive = true
 metadata/_custom_type_script = "uid://brld2kj8jx7gm"
 
-[sub_resource type="Resource" id="Resource_12p5w"]
-resource_local_to_scene = true
+[sub_resource type="Resource" id="Resource_j7bkh"]
 script = ExtResource("5_12p5w")
 PausesMotionWhileActive = false
 metadata/_custom_type_script = "uid://yfwjfdbs81n8"
 
-[sub_resource type="Resource" id="Resource_v3cfa"]
-resource_local_to_scene = true
+[sub_resource type="Resource" id="Resource_12p5w"]
 script = ExtResource("4_j7bkh")
 AttackInstanceTemplate = ExtResource("5_j7bkh")
 AttackInstanceSpawnOffset = Vector2(25, 0)
@@ -50,12 +47,6 @@ AttackExecuteDuration = 1.8
 AttackCooldownDuration = 4.0
 PausesMotionWhileActive = true
 metadata/_custom_type_script = "uid://gqukfksere7u"
-
-[sub_resource type="Resource" id="Resource_qedxc"]
-script = ExtResource("3_kbqjp")
-CanOpenDoors = false
-AggroResetRange = 500.0
-actions = Array[Resource]([SubResource("Resource_j7bkh"), SubResource("Resource_12p5w"), SubResource("Resource_v3cfa")])
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4eeic"]
 radius = 25.0
@@ -89,13 +80,17 @@ material = SubResource("ShaderMaterial_byv15")
 collision_mask = 2147483655
 motion_mode = 1
 script = ExtResource("2_y8uwp")
-Brain = SubResource("Resource_qedxc")
 MovementSpeed = 30.0
 ImpactResponseTable = Dictionary[int, PackedScene]({
 0: ExtResource("4_biodx"),
 2: ExtResource("4_biodx"),
 3: ExtResource("4_biodx")
 })
+
+[node name="Brain" type="Node2D" parent="."]
+script = ExtResource("3_kbqjp")
+actions = Array[Object]([SubResource("Resource_xlmv7"), SubResource("Resource_j7bkh"), SubResource("Resource_12p5w")])
+metadata/_custom_type_script = "uid://ehohhro0kwsq"
 
 [node name="FloatingHealthBar" parent="." instance=ExtResource("5_sndew")]
 position = Vector2(-20, -36)

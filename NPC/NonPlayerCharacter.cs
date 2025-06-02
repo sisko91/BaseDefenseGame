@@ -1,3 +1,4 @@
+using System.Linq;
 using ExtensionMethods;
 using Godot;
 using static Godot.HttpClient;
@@ -24,17 +25,18 @@ public partial class NonPlayerCharacter : Character
     {
         base._Ready();
 
-        AddToGroup(Group, true);        
+        AddToGroup(Group, true);
+
+        if (Brain == null)
+        {
+            Brain = this.GetChildrenOfType<Brain>().FirstOrDefault();
+            GD.Print(Brain);
+        }
 
         NearbyBodySensor.PlayerSensed += OnPlayerSensed;
         NearbyBodySensor.NpcSensed += OnNpcSensed;
 
         SetupNavAgent();
-
-        if(Brain != null)
-        {
-            Brain.Initialize(this);
-        }
 
         RotationGoal = GlobalRotation;
     }

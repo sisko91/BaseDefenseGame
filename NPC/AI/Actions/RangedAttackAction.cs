@@ -47,7 +47,7 @@ namespace AI
                     Raycaster = new RayCast2D();
                     Raycaster.CollisionMask = TraceCollisionMask;
                     Raycaster.Enabled = false; // We only want to use this on-demand so disable otherwise.
-                    Owner.AddChild(Raycaster);
+                    OwnerNpc.AddChild(Raycaster);
                 }
             }
 
@@ -69,8 +69,8 @@ namespace AI
             }
 
             protected bool IsAimedAtTarget(Node2D targetNode) {
-                var lookVec = Vector2.FromAngle(Owner.GlobalRotation);
-                var dirVec = (targetNode.GlobalPosition - Owner.GlobalPosition).Normalized();
+                var lookVec = Vector2.FromAngle(OwnerNpc.GlobalRotation);
+                var dirVec = (targetNode.GlobalPosition - OwnerNpc.GlobalPosition).Normalized();
                 var dot = lookVec.Dot(dirVec);
                 if (dot > AimTolerance) {
                     return true;
@@ -84,7 +84,7 @@ namespace AI
 
             protected override void PrepareAttack() {
                 // Do nothing during prepare by default. Children can override this.
-                GD.Print($"{Owner?.Name}-> [Prepare(Ranged)] Attacking enemy ({Brain.EnemyTarget.Name})");
+                GD.Print($"{OwnerNpc?.Name}-> [Prepare(Ranged)] Attacking enemy ({Brain.EnemyTarget.Name})");
             }
 
             // HACK:
@@ -92,21 +92,21 @@ namespace AI
             protected override void ExecuteAttack() {
                 rangedAttackInstance = AttackInstanceTemplate?.Instantiate<Node2D>();
                 if (rangedAttackInstance is IInstigated instigated) {
-                    instigated.Instigator = Owner;
+                    instigated.Instigator = OwnerNpc;
                 }
     
                 if (rangedAttackInstance is CollisionObject2D c) {
-                    c.CollisionLayer = c.CollisionLayer << Owner.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
-                    c.CollisionMask = c.CollisionMask << Owner.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
+                    c.CollisionLayer = c.CollisionLayer << OwnerNpc.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
+                    c.CollisionMask = c.CollisionMask << OwnerNpc.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
                 }
 
-                Owner.AddChild(rangedAttackInstance);
+                OwnerNpc.AddChild(rangedAttackInstance);
                 rangedAttackInstance.Position = AttackInstanceSpawnOffset;
             }
 
             protected override void OnDeactivate() {
                 // HACK:
-                Owner?.RemoveChild(rangedAttackInstance);
+                OwnerNpc?.RemoveChild(rangedAttackInstance);
             }
         }
 

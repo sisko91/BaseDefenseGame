@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 // The brain belongs to an NPC and is responsible for deciding what the NPC does on both _Process() and _PhysicsProcess().
 [GlobalClass]
-public partial class Brain : Resource
+public partial class Brain : Node2D
 {
     [Export]
     public bool CanOpenDoors = false;
@@ -14,7 +14,7 @@ public partial class Brain : Resource
     [Export]
     public float AggroResetRange = 500.0f;
 
-    public NonPlayerCharacter Owner { get; private set; }
+    public NonPlayerCharacter OwnerNpc => GetParent() as NonPlayerCharacter;
 
     // What target - if any - the brain is currently focused on.
     public Character EnemyTarget { get; set; }
@@ -35,16 +35,8 @@ public partial class Brain : Resource
 
     private bool justStunned = false;
 
-    public Brain() : base()
+    public override void _Ready()
     {
-        // The Brain should always be local to the scene because otherwise every instance of an NPC will have the same brain (it doesn't work well).
-        ResourceLocalToScene = true;
-    }
-
-    public void Initialize(NonPlayerCharacter owner)
-    {
-        Owner = owner;
-
         Interest = new List<float>();
         Danger = new List<float>();
 
@@ -58,21 +50,29 @@ public partial class Brain : Resource
         if(actions == null) {
             actions = new Godot.Collections.Array<AI.Action>();
         }
-        foreach (var action in actions) {
-            action.Initialize(this);
-        }
+
+        Callable.From(() =>
+        {
+            // We initialize actions on the next frame so that any setup to the parent hierarchy here is complete.
+            foreach (var action in actions) {
+                action.Initialize(this);
+            }
+        }).CallDeferred();
+    }
+
+    // This is sealed so that children cannot override it and must override Think() instead.
+    // _Process() is called by children AFTER their parent. That means the NonPlayerCharacter who owns this brain moves
+    // before the brain has a chance to think about what it should do. Instead the NonPlayerCharacter calls Think()
+    // before it moves.
+    public sealed override void _Process(double delta)
+    {
+        base._Process(delta);
     }
 
     // Think() mirrors the intent of _Process() for Godot nodes. NPCs will delegate much of their processing to this function.
     public virtual void Think(double deltaTime)
     {
-        if(Owner == null)
-        {
-            return;
-        }
-
         EnemyTarget = FindTarget();
-
         // Pick a new action if necessary
         if(currentAction != null && !currentAction.IsActive)
         {
@@ -126,13 +126,13 @@ public partial class Brain : Resource
         // TODO: Consider adding a "DefaultTarget" that the AI falls back to and setting the crystal there instead of all this other logic.
         // Maintain any existing (non-crystal) target if they are still within aggro distance.
         if(EnemyTarget != null && EnemyTarget is not CrystalTarget && EnemyTarget.CurrentHealth > 0) {
-            if(EnemyTarget.GlobalPosition.DistanceSquaredTo(Owner.GlobalPosition) < AggroResetRange*AggroResetRange) {
+            if(EnemyTarget.GlobalPosition.DistanceSquaredTo(OwnerNpc.GlobalPosition) < AggroResetRange*AggroResetRange) {
                 return EnemyTarget;
             }
         }
 
         // Pick any nearby player to aggro.
-        foreach (var player in Owner.NearbyBodySensor.Players) {
+        foreach (var player in OwnerNpc.NearbyBodySensor.Players) {
             if (player != null) {
                 return player;
             }
@@ -141,7 +141,7 @@ public partial class Brain : Resource
         // Find the nearest crystal to attack.
         CrystalTarget nearestCrystal = null;
         float nearest = 0;
-        foreach(var crystal in Owner.GetGameWorld().Crystals)
+        foreach(var crystal in OwnerNpc.GetGameWorld().Crystals)
         {
             var candidate = (CrystalTarget)crystal;
             if(candidate.CurrentHealth <= 0)
@@ -153,11 +153,11 @@ public partial class Brain : Resource
             if (nearestCrystal == null)
             {
                 nearestCrystal = candidate;
-                nearest = candidate.GlobalPosition.DistanceTo(Owner.GlobalPosition);
+                nearest = candidate.GlobalPosition.DistanceTo(OwnerNpc.GlobalPosition);
             }
             else
             {
-                var distance = candidate.GlobalPosition.DistanceTo(Owner.GlobalPosition);
+                var distance = candidate.GlobalPosition.DistanceTo(OwnerNpc.GlobalPosition);
                 if (distance < nearest)
                 {
                     nearestCrystal = candidate;
@@ -169,7 +169,7 @@ public partial class Brain : Resource
         // Pick any player at all when there's no living crystal (though this is probably game over).
         if(nearestCrystal == null || nearestCrystal.CurrentHealth <= 0)
         {
-            foreach (var p in Owner.GetGameWorld().Players)
+            foreach (var p in OwnerNpc.GetGameWorld().Players)
             {
                 var player = p as Player;
                 if (player != null)
@@ -181,52 +181,61 @@ public partial class Brain : Resource
         
         return nearestCrystal;
     }
+    
+    // This is sealed so that children cannot override it and must override ThinkPhysics() instead.
+    // _PhysicsProcess() is called by children AFTER their parent. That means the NonPlayerCharacter who owns this brain 
+    // moves before the brain has a chance to think about what it should do. Instead, the NonPlayerCharacter calls 
+    // Think() before it moves.
+    public sealed override void _PhysicsProcess(double delta)
+    {
+        base._PhysicsProcess(delta);
+    }
 
     // ThinkPhysics() mirrors the intent of _PhysicsProcess() for Godot nodes. NPCs will delegate some of their physics-related processing to this function.
     public virtual void ThinkPhysics(double deltaTime)
     {
-        if(Owner == null || Owner.NavAgent == null)
+        if(OwnerNpc == null || OwnerNpc.NavAgent == null)
         {
             return;
         }
 
-        Owner.ClearDebugDrawCallGroup(Owner.GetPath());
-        lastNavPathDirection = Owner.GlobalPosition.DirectionTo(Owner.NavAgent.GetNextPathPosition());
+        OwnerNpc.ClearDebugDrawCallGroup(OwnerNpc.GetPath());
+        lastNavPathDirection = OwnerNpc.GlobalPosition.DirectionTo(OwnerNpc.NavAgent.GetNextPathPosition());
 
         // Always update interests and dangers.
         SetInterest(lastNavPathDirection);
         SetDanger();
 
-        if (!Owner.Stunned) {
+        if (!OwnerNpc.Stunned) {
             justStunned = false;
         }
-        if (!justStunned && Owner.Stunned) {
+        if (!justStunned && OwnerNpc.Stunned) {
             justStunned = true;
-            Owner.Velocity = new Vector2(0f, 0f);
-            Owner.Velocity += Owner.Knockback;
+            OwnerNpc.Velocity = new Vector2(0f, 0f);
+            OwnerNpc.Velocity += OwnerNpc.Knockback;
         }
-        else if (Owner.Velocity.Length() > Owner.MovementSpeed + 0.1 || Owner.Stunned)
+        else if (OwnerNpc.Velocity.Length() > OwnerNpc.MovementSpeed + 0.1 || OwnerNpc.Stunned)
         {
-            Owner.Velocity += Owner.Knockback;
-            Owner.Velocity = (Owner.Velocity + -Owner.Velocity.Normalized() * 5f);
+            OwnerNpc.Velocity += OwnerNpc.Knockback;
+            OwnerNpc.Velocity = (OwnerNpc.Velocity + -OwnerNpc.Velocity.Normalized() * 5f);
         }
         else if(currentAction != null && currentAction.IsActive && currentAction.PausesMotionWhileActive)
         {
-            Owner.Velocity = Vector2.Zero;
+            OwnerNpc.Velocity = Vector2.Zero;
         }
         else
         {
             // Otherwise continue navigating 
             var direction = ChooseDirection();
-            Owner.Velocity = (Owner.Velocity + direction * Owner.MoveAccel).LimitLength(Owner.MovementSpeed);
+            OwnerNpc.Velocity = (OwnerNpc.Velocity + direction * OwnerNpc.MoveAccel).LimitLength(OwnerNpc.MovementSpeed);
         }
 
-        Owner.Knockback = Owner.Knockback.Lerp(Vector2.Zero, 0.4f);
-        Owner.RotationGoal = GetRotationGoal();
+        OwnerNpc.Knockback = OwnerNpc.Knockback.Lerp(Vector2.Zero, 0.4f);
+        OwnerNpc.RotationGoal = GetRotationGoal();
     }
 
     private float GetRotationGoal() {
-        var current = Owner.RotationGoal;
+        var current = OwnerNpc.RotationGoal;
 
         if(currentAction != null && currentAction.IsActive && currentAction.PausesMotionWhileActive) {
             // Maintain current angle while the action is active.
@@ -236,8 +245,8 @@ public partial class Brain : Resource
         }
 
         // Look at the enemy if they exist and are nearby.
-        if (EnemyTarget != null && EnemyTarget is Player player && Owner.NearbyBodySensor.Players.Contains(player)) {
-            return Owner.GlobalPosition.DirectionTo(player.GlobalPosition).Angle();
+        if (EnemyTarget != null && EnemyTarget is Player player && OwnerNpc.NearbyBodySensor.Players.Contains(player)) {
+            return OwnerNpc.GlobalPosition.DirectionTo(player.GlobalPosition).Angle();
         }
 
         // look along the nav path if stuck
@@ -250,13 +259,13 @@ public partial class Brain : Resource
         */
 
         // Orient to face the direction the NPC is moving by default.
-        return Owner.Velocity.Angle();
+        return OwnerNpc.Velocity.Angle();
     }
 
     public void ClearNavigationTarget()
     {
-        Owner.NavAgent.TargetPosition = Owner.GlobalPosition;
-        Owner.NavAgent.TargetDesiredDistance = NavigationConfig.DEFAULT_TARGET_DESIRED_DISTANCE;
+        OwnerNpc.NavAgent.TargetPosition = OwnerNpc.GlobalPosition;
+        OwnerNpc.NavAgent.TargetDesiredDistance = NavigationConfig.DEFAULT_TARGET_DESIRED_DISTANCE;
     }
 
     private Vector2 ChooseDirection()
@@ -275,7 +284,7 @@ public partial class Brain : Resource
             }
 
             float angle = i * 2 * (float)Math.PI / Directions;
-            Vector2 interestDirection = Vector2.Right.Rotated(angle).Rotated(Owner.Rotation);
+            Vector2 interestDirection = Vector2.Right.Rotated(angle).Rotated(OwnerNpc.Rotation);
             direction += interestDirection * Interest[i];
 
             if (DebugConfig.Instance.DRAW_STEERING)
@@ -287,7 +296,7 @@ public partial class Brain : Resource
                     color = new Color(1, 0, 0);
                     line = interestDirection.Normalized();
                 }
-                Owner.DrawDebugLine(Owner.GlobalPosition, Owner.GlobalPosition + line * 100, color, 0.1, Owner.GetPath());
+                OwnerNpc.DrawDebugLine(OwnerNpc.GlobalPosition, OwnerNpc.GlobalPosition + line * 100, color, 0.1, OwnerNpc.GetPath());
             }
 
             if (Interest[i] > maxInterest)
@@ -305,7 +314,7 @@ public partial class Brain : Resource
 
         if (DebugConfig.Instance.DRAW_STEERING)
         {
-            Owner.DrawDebugLine(Owner.GlobalPosition, Owner.GlobalPosition + direction.Normalized() * 150, new Color(1, 1, 0), 0.1, Owner.GetPath());
+            OwnerNpc.DrawDebugLine(OwnerNpc.GlobalPosition, OwnerNpc.GlobalPosition + direction.Normalized() * 150, new Color(1, 1, 0), 0.1, OwnerNpc.GetPath());
         }
 
         return direction.Normalized();
@@ -316,7 +325,7 @@ public partial class Brain : Resource
         for (int i = 0; i < Directions; i++)
         {
             var angle = i * 2 * Math.PI / Directions;
-            Vector2 interestDirection = Vector2.Right.Rotated((float)angle).Rotated(Owner.Rotation);
+            Vector2 interestDirection = Vector2.Right.Rotated((float)angle).Rotated(OwnerNpc.Rotation);
             Interest[i] = Math.Max(0.1f, interestDirection.Dot(pathDirection));
             //this.DrawDebugLine(GlobalPosition, Position + interestDirection * Interest[i] * 100, new Color(0, 1, 0), 0.1, GetPath());
         }
@@ -330,13 +339,13 @@ public partial class Brain : Resource
         }
 
         List<Node2D> potentialDangers = new List<Node2D>();
-        potentialDangers.AddRange(Owner.NearbyBodySensor.NPCs);
-        potentialDangers.AddRange(Owner.NearbyBodySensor.Walls);
+        potentialDangers.AddRange(OwnerNpc.NearbyBodySensor.NPCs);
+        potentialDangers.AddRange(OwnerNpc.NearbyBodySensor.Walls);
 
         foreach (Node2D potentialDanger in potentialDangers)
         {
             //TODO: Have body sensor exclude npc it's attached to
-            if (Owner == potentialDanger)
+            if (OwnerNpc == potentialDanger)
             {
                 continue;
             }
@@ -382,17 +391,17 @@ public partial class Brain : Resource
     {
         if (DebugConfig.Instance.DRAW_STEERING)
         {
-            Owner.DrawDebugCircle(dangerGlobalPosition, dangerMinRange, new Color(1, 1, 1), false, 1, Owner.GetPath());
+            OwnerNpc.DrawDebugCircle(dangerGlobalPosition, dangerMinRange, new Color(1, 1, 1), false, 1, OwnerNpc.GetPath());
         }
 
         var myRadius = 25; //TODO: Get programatically or in config
-        var distTo = Owner.GlobalPosition.DistanceTo(dangerGlobalPosition);
+        var distTo = OwnerNpc.GlobalPosition.DistanceTo(dangerGlobalPosition);
         if (distTo > myRadius + dangerMinRange) {
             return;
         }
 
-        var dirTo = Owner.GlobalPosition.DirectionTo(dangerGlobalPosition);
-        var bucketAngle = dirTo.Angle() - Owner.GlobalRotation;
+        var dirTo = OwnerNpc.GlobalPosition.DirectionTo(dangerGlobalPosition);
+        var bucketAngle = dirTo.Angle() - OwnerNpc.GlobalRotation;
         //Shift angle up for easier bucketing. For instance, with 8 directions, the first bucket should be everything from -337.5 degress to 22.5 degrees. This would shift those values to 0 - 45 degrees
         bucketAngle += (float)(Math.PI / Directions);
         bucketAngle = GetBoundedAngle(bucketAngle);

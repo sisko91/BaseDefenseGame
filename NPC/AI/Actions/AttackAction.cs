@@ -44,7 +44,7 @@ namespace AI
             }
 
             public bool IsInRangeOf(Character targetNode) {
-                return Owner.CurrentElevationLevel == targetNode.CurrentElevationLevel && targetNode.GlobalPosition.DistanceSquaredTo(Owner.GlobalPosition) <= (MaxAttackRange * MaxAttackRange);
+                return OwnerNpc.CurrentElevationLevel == targetNode.CurrentElevationLevel && targetNode.GlobalPosition.DistanceSquaredTo(OwnerNpc.GlobalPosition) <= (MaxAttackRange * MaxAttackRange);
             }
 
             public bool IsOffCooldown() {
@@ -56,15 +56,15 @@ namespace AI
             protected override void OnActivate() {
                 //GD.Print($"{Owner?.Name}-> [AttackAction] Activated (Target: {Brain.EnemyTarget.Name})");
                 PrepareAttack();
-                var prepareTimer = Owner.GetTree().CreateTimer(AttackPrepareDuration, processAlways: false);
+                var prepareTimer = OwnerNpc.GetTree().CreateTimer(AttackPrepareDuration, processAlways: false);
                 prepareTimer.Timeout += () => {
                     // The owner may have died while the timer for this was scheduled.
-                    if (IsInstanceValid(Owner)) {
+                    if (IsInstanceValid(OwnerNpc)) {
                         ExecuteAttack();
                         // Schedule the ExecuteAttack() timer.
-                        var executeTimer = Owner.GetTree().CreateTimer(AttackExecuteDuration, processAlways: false);
+                        var executeTimer = OwnerNpc.GetTree().CreateTimer(AttackExecuteDuration, processAlways: false);
                         executeTimer.Timeout += () => {
-                            if(IsInstanceValid(Owner)) {
+                            if(IsInstanceValid(OwnerNpc)) {
                                 lastAttackTime = GetTimeSeconds();
                                 Deactivate();
                             }

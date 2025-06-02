@@ -10,13 +10,7 @@ namespace AI
         public Brain Brain { get; private set; }
 
         // The NPC owning this AI action.
-        public NonPlayerCharacter Owner
-        {
-            get
-            {
-                return Brain?.Owner;
-            }
-        }
+        public NonPlayerCharacter OwnerNpc => Brain?.GetParent() as NonPlayerCharacter;
 
         public bool IsActive { get; private set; }
 
