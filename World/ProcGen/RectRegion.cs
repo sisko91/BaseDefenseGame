@@ -34,57 +34,47 @@ public sealed partial class RectRegion : Node2D
             AddToGroup(tag);
         }
 
-        if(Engine.IsEditorHint()) {
-            // This doesn't enable _Process() in the editor for this node, but it DOES cause _Notification() to fire for that event.
-            SetProcessInternal(true);
-        }
-
         InputMap.LoadFromProjectSettings();
     }
 
-    public override void _Notification(int what) {
-        base._Notification(what);
-
+    public override void _Process(double delta) {
         if(!Engine.IsEditorHint()) {
             return;
         }
+        QueueRedraw();
 
-        if (what == NotificationInternalProcess) {
-            QueueRedraw();
+        Vector2 mousePos = EditorInterface.Singleton.GetEditorViewport2D().GetMousePosition();
+        var overControlPoint = IsMouseOverControlPoint(mousePos);
 
-            Vector2 mousePos = EditorInterface.Singleton.GetEditorViewport2D().GetMousePosition();
-            var overControlPoint = IsMouseOverControlPoint(mousePos);
+        if (Input.IsActionJustPressed("click") && overControlPoint) {
+            GD.Print("Drag-resize started.");
+            isDragging = true;
+            var globalSize = GlobalTransform.BasisXform(Size);
+            dragAnchorOffset = globalSize - mousePos;
+            // We don't want to select ANYTHING when we're dragging around, so wipe the editor's selection list clean.
+            EditorInterface.Singleton.GetSelection().Clear();
 
-            if (Input.IsActionJustPressed("click") && overControlPoint) {
-                GD.Print("Drag-resize started.");
-                isDragging = true;
-                var globalSize = GlobalTransform.BasisXform(Size);
-                dragAnchorOffset = globalSize - mousePos;
-                // We don't want to select ANYTHING when we're dragging around, so wipe the editor's selection list clean.
-                EditorInterface.Singleton.GetSelection().Clear();
+            // Register the original size with the editor's undo/redo system.
+            var undoRedo = EditorInterface.Singleton.GetEditorUndoRedo();
+            undoRedo.CreateAction("Resize RegionRect");
+            undoRedo.AddUndoProperty(this, "Size", Size);
+        }
+        else if (isDragging && !Input.IsActionPressed("click")) {
+            GD.Print("Drag-resize completed.");
+            isDragging = false;
+            // We want the region to be re-selected (and nothing else) after we're done dragging around.
+            EditorInterface.Singleton.GetSelection().Clear();
+            EditorInterface.Singleton.GetSelection().AddNode(this);
 
-                // Register the original size with the editor's undo/redo system.
-                var undoRedo = EditorInterface.Singleton.GetEditorUndoRedo();
-                undoRedo.CreateAction("Resize RegionRect");
-                undoRedo.AddUndoProperty(this, "Size", Size);
-            }
-            else if (isDragging && !Input.IsActionPressed("click")) {
-                GD.Print("Drag-resize completed.");
-                isDragging = false;
-                // We want the region to be re-selected (and nothing else) after we're done dragging around.
-                EditorInterface.Singleton.GetSelection().Clear();
-                EditorInterface.Singleton.GetSelection().AddNode(this);
+            // Register the change with the Editor's undo/redo system.
+            var undoRedo = EditorInterface.Singleton.GetEditorUndoRedo();
+            undoRedo.AddDoProperty(this, "Size", Size);
+            undoRedo.CommitAction();
+        }
 
-                // Register the change with the Editor's undo/redo system.
-                var undoRedo = EditorInterface.Singleton.GetEditorUndoRedo();
-                undoRedo.AddDoProperty(this, "Size", Size);
-                undoRedo.CommitAction();
-            }
-
-            if(isDragging) {
-                Vector2 localMousePos = GlobalTransform.AffineInverse().BasisXform(mousePos + dragAnchorOffset);
-                Size = localMousePos;
-            }
+        if(isDragging) {
+            Vector2 localMousePos = GlobalTransform.AffineInverse().BasisXform(mousePos + dragAnchorOffset);
+            Size = localMousePos;
         }
     }
 
