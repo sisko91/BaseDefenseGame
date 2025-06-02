@@ -70,7 +70,7 @@ void vertex() {
 	// size/length of this vector.
 	// The B channel holds a relative age, which is defined on the displacement viewport that
 	// produces the displacement_mask_tex being sampled below.
-	// I hate that this if branch exists here, but you're not allowed to declare local sampler2D 
+	// I hate that this if branch exists here, but you're not allowed to declare local sampler2D
 	// variables so we have to...
 	vec3 raw_displacement;
 	if(sample_mode == 0) {
@@ -79,7 +79,7 @@ void vertex() {
 	else {
 		raw_displacement = texture(global_displacement_mask_tex, base_displacement_uv).rgb;
 	}
-	
+
 	// The blue channel on the displacement mask contains the relative (0 -> 1.0) age of the displacement
 	// as determined by the displacement viewport's configuration. We use this as a strength multiplier
 	// that controls how long the grass stays displaced.
@@ -90,7 +90,7 @@ void vertex() {
 
 	// The strength of displacement should be modulated by the age.
 	displacement_strength *= age_weight;
-	
+
 	// Displace based on ambient sway, but not when the displacement value is high.
 	VERTEX.x += ambient_sway * vertical_weight * max(1.0 - displacement_strength, 0.0);
 
@@ -98,7 +98,7 @@ void vertex() {
 	float bend_amount = displacement_strength * vertical_weight * displacement_bend_intensity;
 	VERTEX.x += bend_amount * dot(bend_direction, right_vector);
 	VERTEX.x = clamp(VERTEX.x, blade_base_pos.x - blade_height*1.1, blade_base_pos.x + blade_height*1.1);
-	
+
 	// For Y bending, we want to make sure that the grass stays approximately the same length so we
 	// clamp how far up or down the grass tip can be based on the defined grass height.
 	VERTEX.y += -bend_amount * dot(bend_direction, up_vector);
@@ -129,7 +129,7 @@ void fragment()
 	else {
 		displacement_amount = texture(global_displacement_mask_tex, base_displacement_uv).rgb;
 	}
-	
+
 	float age = displacement_amount.b;
 
 	// Color blades based on phase.
@@ -148,7 +148,7 @@ void fragment()
 
 	// Uncomment to debug displacement.
 	//COLOR.b = displacement_amount;
-	
+
 	//COLOR.rgb = vec3(0.0, bend_direction);
 	//COLOR.r = -bend_direction.x;
 }
