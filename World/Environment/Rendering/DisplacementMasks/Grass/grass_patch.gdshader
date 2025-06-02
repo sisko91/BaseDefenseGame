@@ -139,7 +139,7 @@ void fragment()
 	float flicker = sin(TIME * 10.0 + phase * 6.2831) * 0.5 + 0.5;
 	float flicker_strength = age * UV.y * flicker;
 	vec3 glow_color = vec3(0.8, 1.0, 0.7);
-	COLOR.rgb = mix(COLOR.rgb, glow_color, flicker_strength * 0.1);
+	//COLOR.rgb = mix(COLOR.rgb, glow_color, flicker_strength * 0.1);
 
 	// Near the top, we want the tips to be slightly transparent.
 	float tip_transparency = 0.2;
