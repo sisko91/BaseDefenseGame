@@ -51,9 +51,9 @@ public sealed partial class RectRegion : Node2D
         if (what == NotificationInternalProcess) {
             QueueRedraw();
 
-            bool isMousePressed = Input.IsMouseButtonPressed(MouseButton.Left);
+            bool isMousePressed = Input.IsMouseButtonPressed(MouseButton.Xbutton1);
             if(isMousePressed) {
-                if(!isDragging && activeDragRegion == null) {
+                if(!isDragging && activeDragRegion == null && IsSelectedInEditor()) {
                     Vector2 mousePos = EditorInterface.Singleton.GetEditorViewport2D().GetMousePosition();
                     if (IsMouseOverControlPoint(mousePos)) {
                         GD.Print("Drag-resize started.");
