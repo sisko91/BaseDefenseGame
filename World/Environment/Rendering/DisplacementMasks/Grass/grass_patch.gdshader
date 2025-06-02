@@ -14,7 +14,7 @@ uniform float blade_width = 4.0;
 uniform float blade_height = 24.0;
 uniform vec4 blade_color = vec4(0.51, 0.97, 0.0, 1.0);
 // 0 - 1 degree of how strongly the blade comes to a point near the top.
-uniform float blade_pointiness = 1.0;
+uniform float blade_pointiness : hint_range(0.0, 1.0) = 1.0;
 uniform float ambient_sway_amount = 3.0;
 uniform float ambient_sway_speed = 0.5;
 uniform float displacement_bend_intensity = 10.0;
@@ -53,7 +53,9 @@ void vertex() {
 	base_displacement_uv = (blade_base_world_pos - uvRect.xy) / uvRect.zw;
 
 	// Extend the grass vertex according to its UV coordinate, but coming to a point near the top.
-	VERTEX.x += (UV.x - 0.5) * blade_width * (1.0 - UV.y * blade_pointiness);
+	// We use a nonlinear taper for the pointiness because a linear taper just makes a perfect triangle.
+	float taper = smoothstep(blade_pointiness/2.0, blade_pointiness, UV.y);
+	VERTEX.x += (UV.x - 0.5) * blade_width * (1.0 - taper * phase);
 	VERTEX.y -= UV.y * blade_height;
 
 	// Compute ambient sway (not caused by any direct influence).
