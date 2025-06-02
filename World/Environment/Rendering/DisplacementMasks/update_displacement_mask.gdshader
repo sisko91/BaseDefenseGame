@@ -86,7 +86,6 @@ void fragment() {
 			// Note: We clamp here because this is an HDR texture that can accept values MUCH higher 
 			// than 1.0 on each color channel. But the code that uses the color information wants to
 			// treat 1.0 as the max (i.e. "all white").
-			// NOTE FOR CHATGPT: This isn't right. I need to fade *towards* zero, for each color channel.
 			COLOR.rgb = clamp(faded, -abs(intensity_ceiling), abs(intensity_ceiling));
 		}
 		else {

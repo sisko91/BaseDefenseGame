@@ -104,9 +104,9 @@ void vertex() {
 	VERTEX.y += -bend_amount * dot(bend_direction, up_vector);
 	VERTEX.y = clamp(VERTEX.y, blade_base_pos.y - blade_height*1.1, blade_base_pos.y + blade_height*1.1);
 
-	// Uncomment to debug displacement amount.
-	//COLOR.r = displacementAmount;
-	//COLOR.gb = vec2(0,0);
+	// Uncomment to debug displacement direction.
+	//COLOR.rg = bend_direction;
+	//COLOR.b = 0.0;
 
 	// Uncomment to debug screen uvs.
 	//COLOR.rg = base_displacement_uv;

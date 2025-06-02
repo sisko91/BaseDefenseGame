@@ -16,6 +16,7 @@ shader_parameter/fade_rate_mask = Vector3(1, 1, 1)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tljpn"]
 shader = ExtResource("3_jg0np")
+shader_parameter/unit_velocity = Vector2(0, 0)
 
 [node name="DisplacementMaskViewport" type="SubViewport"]
 use_hdr_2d = true

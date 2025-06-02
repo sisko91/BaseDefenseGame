@@ -155,7 +155,9 @@ public partial class DisplacementMaskViewport : SubViewport
             {
                 marker.DisplacementSprite.UseParentMaterial = true;
             }
-            marker.Material = MarkerMaterialOverride;
+
+            var newMat = MarkerMaterialOverride.Duplicate() as ShaderMaterial;
+            marker.Material = newMat;
         }
     }
 }

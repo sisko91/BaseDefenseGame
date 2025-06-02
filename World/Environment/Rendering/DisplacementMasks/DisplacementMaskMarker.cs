@@ -36,6 +36,14 @@ public partial class DisplacementMaskMarker : Node2D
         {
             GlobalPosition = TrackedNode.GlobalPosition;
             DisplacementSprite.SelfModulate = Colors.White;
+
+            if (TrackedNode is CharacterBody2D characterBody)
+            {
+                if (Material is ShaderMaterial shaderMaterial)
+                {
+                    shaderMaterial.SetShaderParameter("unit_velocity", characterBody.Velocity.Normalized());
+                }
+            }
         }
         else
         {

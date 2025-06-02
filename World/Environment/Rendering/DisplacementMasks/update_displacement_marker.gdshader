@@ -2,6 +2,12 @@ shader_type canvas_item;
 
 render_mode blend_add;
 
+global uniform float time_delta;
+
+// Velocity on the scale of 0 - 1. This can be the velocity direction/normal but the size of the
+// vector is expected to be <= 1.0 and is interpreted as the relative speed/intensity (out of 1.0).
+uniform vec2 unit_velocity = vec2(0.0, 0.0);
+
 // This shader calculates a Red/Green/Blue color value representing the direction of displacement at
 // every point on the marker sprite. The intensity of the R/G vector along the sprite indicates
 // the relative power of the displacement force. Since values output by this shader include negative
@@ -16,15 +22,20 @@ render_mode blend_add;
 // and will either default to 1.0 or otherwise will be set by the marker base texture.
 
 void fragment() {
-	// compute deviation from center
+	// compute the initial displacement direction as a deviation from center
 	vec2 direction = UV - vec2(0.5); 
-	// Practically the center, where intensity should be high but direction should be "none".
+	// At the exact center the intensity should be high but direction should be "none".
 	if(length(direction) < 0.001) {
 		// We choose "up" rather than "none".
 		direction = vec2(0.0, -1.0);
 	}
-	else {
-		direction = normalize(direction); // TODO: Is normalize the right thing here?
+	
+	// We also want to include the velocity.
+	direction = normalize(direction + unit_velocity);
+	if(length(unit_velocity) < 0.1) {
+		// dampen the intensity even further when the velocity is zero to compensate, and so 
+		// stationary displacements aren't super powerful.
+		direction *= time_delta * 2.0;
 	}
 	
 	// R/G already carries the intensity vector, so just combine with direction.
