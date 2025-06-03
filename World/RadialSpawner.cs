@@ -76,13 +76,6 @@ public partial class RadialSpawner : Node2D
 
     public override void _Ready()
     {
-        // If we're in the editor we don't want this doing any actual work, we just want the rendering calls to happen.
-        if (Engine.IsEditorHint())
-        {
-            EditorInterface.Singleton.GetSelection().SelectionChanged += OnEditorSelectionChanged;
-            return;
-        }
-
         for (uint i = 0; i < InitialCount; i++)
         {
             // Certain things (like the debug renderers) can't be invoked during _Ready().
@@ -117,17 +110,34 @@ public partial class RadialSpawner : Node2D
 
         return instance;
     }
+
+    // _EnterTree is called whenever the scene tab changes in the editor, so that's where we need to handle editor
+    // event subscription.
+    public override void _EnterTree()
+    {
+        // If we're in the editor we don't want this doing any actual work, we just want the rendering calls to happen.
+        if (Engine.IsEditorHint())
+        {
+            var editorSelection = EditorInterface.Singleton.GetSelection();
+            if (editorSelection != null)
+            {
+                editorSelection.SelectionChanged += OnEditorSelectionChanged;
+                //GD.Print($"{Name}:{GetInstanceId()} Subscribing to selection: ", editorSelection.GetInstanceId());
+            }
+        }
+    }
     
     public override void _ExitTree()
     {
         // We have to deliberately unsubscribe from the SelectionChanged event whenever this node exits the tree
-        // (such as when it is being disposed of).
+        // (such as when it is being disposed of or the scene is changed in the editor).
         if (Engine.IsEditorHint())
         {
-            var selection = EditorInterface.Singleton.GetSelection();
-            if (selection != null)
+            var editorSelection = EditorInterface.Singleton.GetSelection();
+            if (editorSelection != null)
             {
-                selection.SelectionChanged -= OnEditorSelectionChanged;
+                //GD.Print($"{Name}:{GetInstanceId()} Unsubscribing from selection: {EditorInterface.Singleton.GetSelection().GetInstanceId()}");
+                editorSelection.SelectionChanged -= OnEditorSelectionChanged;
             }
         }
     }
