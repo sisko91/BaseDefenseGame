@@ -1,3 +1,4 @@
+using ExtensionMethods;
 using Godot;
 using System;
 
@@ -100,13 +101,15 @@ namespace AI
                     c.CollisionMask = c.CollisionMask << OwnerNpc.CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
                 }
 
-                OwnerNpc.AddChild(rangedAttackInstance);
-                rangedAttackInstance.Position = AttackInstanceSpawnOffset;
+                var parent = OwnerNpc.CurrentRegion?.Foreground ?? OwnerNpc.GetGameWorld().Foreground;
+                parent.AddChild(rangedAttackInstance);
+
+                rangedAttackInstance.GlobalPosition = OwnerNpc.GlobalPosition + AttackInstanceSpawnOffset.Rotated(OwnerNpc.GlobalRotation);
+                rangedAttackInstance.GlobalRotation = OwnerNpc.GlobalRotation;
             }
 
             protected override void OnDeactivate() {
-                // HACK:
-                OwnerNpc?.RemoveChild(rangedAttackInstance);
+                rangedAttackInstance.QueueFree();
             }
         }
 

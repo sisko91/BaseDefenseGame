@@ -103,7 +103,8 @@ public partial class Grenade : Projectile, IInstigated
             explosion.CollisionMask = explosion.CollisionMask << CurrentElevationLevel * CollisionConfig.LAYERS_PER_FLOOR;
 
             explosion.Visible = Visible;
-            GetParent().AddChild(explosion);
+            var parent = CurrentRegion?.Foreground ?? this.GetGameWorld().Foreground;
+            parent.AddChild(explosion);
             explosion.GlobalPosition = GlobalPosition;
             explosion.CollisionLayer = collisionLayer;
         }

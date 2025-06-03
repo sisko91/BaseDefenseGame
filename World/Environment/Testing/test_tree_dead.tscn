@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://cf0w6hmvqdiet"]
+[gd_scene load_steps=7 format=3 uid="uid://cf0w6hmvqdiet"]
 
 [ext_resource type="Script" uid="uid://d2yt05ht15iv2" path="res://World/ProcGen/Placeable.cs" id="1_qn4mf"]
 [ext_resource type="Shader" uid="uid://7akcch5ndkta" path="res://Shaders/silhouette.gdshader" id="1_yjwy8"]
 [ext_resource type="Script" uid="uid://duyw2hn54xkre" path="res://World/ProcGen/RectRegion.cs" id="3_nyhqy"]
-[ext_resource type="Texture2D" uid="uid://eyj1xy3h0f4t" path="res://art/World/tree_craggy.png" id="3_yjwy8"]
+[ext_resource type="Texture2D" uid="uid://y4wwu71r4ruu" path="res://art/World/tree_craggy_trunk.png" id="4_yjwy8"]
+[ext_resource type="Texture2D" uid="uid://bl341wudbqeve" path="res://art/World/tree_craggy_top.png" id="5_w8jln"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_w8jln"]
 shader = ExtResource("1_yjwy8")
@@ -14,11 +15,6 @@ collision_layer = 2147483649
 collision_mask = 3
 script = ExtResource("1_qn4mf")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(0, -86)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("3_yjwy8")
-
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(1, -17, 26, -9, 36, 2, 28, 18, -26, 18, -43, 5, -30, -6)
 
@@ -28,3 +24,15 @@ script = ExtResource("3_nyhqy")
 Size = Vector2(124, 54)
 Tags = Array[String](["ProcGen.Exclude.Forest"])
 metadata/_custom_type_script = "uid://duyw2hn54xkre"
+
+[node name="SpriteTrunk" type="Sprite2D" parent="."]
+use_parent_material = true
+position = Vector2(0, -86)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("4_yjwy8")
+
+[node name="SpriteTop" type="Sprite2D" parent="."]
+use_parent_material = true
+position = Vector2(0, -86)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("5_w8jln")
