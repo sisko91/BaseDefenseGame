@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=41 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
@@ -25,6 +25,8 @@
 [ext_resource type="PackedScene" uid="uid://blio7x08xw4te" path="res://NPC/Merchant/merchant.tscn" id="22_hkmll"]
 [ext_resource type="Resource" uid="uid://wi0ppwstcfuk" path="res://World/ShopItems/scattergun.tres" id="23_80b3c"]
 [ext_resource type="Resource" uid="uid://b77gn5emtpi6g" path="res://World/ShopItems/barber.tres" id="24_782py"]
+[ext_resource type="PackedScene" uid="uid://r8beuv2k40wo" path="res://World/Structures/Testing/test_stairs_level.tscn" id="24_k0axg"]
+[ext_resource type="PackedScene" uid="uid://boqkf2m03fkvg" path="res://World/Levels/test_world2.tscn" id="25_ymjjk"]
 [ext_resource type="PackedScene" uid="uid://c70igcsd325bm" path="res://World/Structures/Testing/3.4PerspectiveBuilding/test_building_flat_roof.tscn" id="26_fbbf8"]
 [ext_resource type="Script" uid="uid://cmn5skjw5opfn" path="res://World/Environment/Rendering/GrassPainter.cs" id="27_qinvk"]
 [ext_resource type="PackedScene" uid="uid://6prx14s7d1am" path="res://World/Environment/Testing/test_tree.tscn" id="28_fbbf8"]
@@ -179,6 +181,12 @@ position = Vector2(0, -1000)
 position = Vector2(0.0317078, -239.143)
 ShopItems = Array[Resource]([ExtResource("23_80b3c"), ExtResource("24_782py")])
 
+[node name="TestStairsLevel" parent="Middleground/TestBuilding/Floor1/Middleground" index="0" instance=ExtResource("24_k0axg")]
+position = Vector2(-342, -255)
+LevelKey = "BasementStairs"
+TargetLevelKey = "Default"
+TargetLevelScene = ExtResource("25_ymjjk")
+
 [node name="TestBuildingFlatRoof" parent="Middleground" instance=ExtResource("26_fbbf8")]
 position = Vector2(-525, -162)
 
@@ -234,6 +242,8 @@ InnerRadius = 300.0
 OuterRadius = 400.0
 StartAngleDegrees = 270.0
 StopAngleDegrees = 90.0
+
+[connection signal="HealthChanged" from="Middleground/Shambler" to="Middleground/Shambler/FloatingHealthBar" method="OnCharacterHealthChanged"]
 
 [editable path="Middleground/TestBuilding"]
 [editable path="Middleground/TestBuilding/Floor1/Middleground/WallTorch"]

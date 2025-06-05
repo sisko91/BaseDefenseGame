@@ -1,23 +1,23 @@
 [gd_scene load_steps=5 format=3 uid="uid://boifro8bbs3lu"]
 
-[ext_resource type="Script" uid="uid://cwqsayor2n4rq" path="res://World/Structures/Stairs.cs" id="1_1feta"]
+[ext_resource type="Script" uid="uid://cwqsayor2n4rq" path="res://World/Structures/Stairs.cs" id="1_mo5bw"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_unihn"]
 size = Vector2(64, 64)
 
-[sub_resource type="Gradient" id="Gradient_un72y"]
+[sub_resource type="Gradient" id="Gradient_qj14h"]
 offsets = PackedFloat32Array(0.662338, 1)
 colors = PackedColorArray(0.481789, 0.481789, 0.481789, 1, 0.180005, 0.180005, 0.180005, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_h27ra"]
-gradient = SubResource("Gradient_un72y")
+gradient = SubResource("Gradient_qj14h")
 fill = 2
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0, 0)
 
 [node name="TestStairs" type="Area2D"]
 collision_layer = 8
-script = ExtResource("1_1feta")
+script = ExtResource("1_mo5bw")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_unihn")

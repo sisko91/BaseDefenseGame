@@ -9,7 +9,7 @@ namespace ExtensionMethods
         // Note: This is different from GetWorld2D() / GetWorld3D() which have to do with referencing the *spaces* that the physics engine populates for that side of the simulation.
         public static World GetGameWorld(this Node node)
         {
-            return GetSceneTree().Root.GetNode<World>("Main/World");
+            return Main.Instance.World;
         }
 
         public static CanvasLayer GetGameHUD(this Node node)
@@ -64,6 +64,18 @@ namespace ExtensionMethods
             }
 
             return children;
+        }
+
+        public static bool IsInWorld(this Node node, World world) {
+            var parent = node.GetParent();
+            while (parent != null) {
+                if (parent == world) {
+                    return true;
+                }
+                parent = parent.GetParent();
+            }
+
+            return false;
         }
     }
 }

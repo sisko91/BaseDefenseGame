@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://drac3p47binwd" path="res://World/Structures/Building.cs" id="1_7tk4g"]
 [ext_resource type="Script" uid="uid://cbfqcsyk76tqo" path="res://World/Structures/BuildingRegion.cs" id="1_k8hfp"]
-[ext_resource type="PackedScene" uid="uid://boifro8bbs3lu" path="res://World/Structures/Testing/FlatBuilding/test_stairs.tscn" id="2_7tk4g"]
+[ext_resource type="PackedScene" uid="uid://boifro8bbs3lu" path="res://World/Structures/Testing/test_stairs.tscn" id="2_7tk4g"]
 [ext_resource type="Shader" uid="uid://2w4nawe78dfh" path="res://Shaders/indoors.gdshader" id="2_g1518"]
 [ext_resource type="Texture2D" uid="uid://oe3re6tn0ddh" path="res://art/World/woodfloor.png" id="3_7tk4g"]
 [ext_resource type="PackedScene" uid="uid://c4cuetga8qjva" path="res://World/Structures/Testing/wall_torch.tscn" id="4_8aka2"]

@@ -9,10 +9,12 @@ public partial class Main : Node
     public PackedScene WorldScene { get; private set; }
 
     // Cached reference to the world node instantiated as part of the main.tscn.
-    private World world;
+    public World World;
+
+    public CanvasLayer TransitionScreen;
 
     // Cached reference to the player node instantiated below during scene startup.
-    private Player player;
+    public Player Player;
     private PlayerCamera playerCamera;
 
     [Export]
@@ -55,22 +57,23 @@ public partial class Main : Node
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
+        TransitionScreen = GetNode<CanvasLayer>("TransitionScreen");
+
         // Fetch and configure the displacement viewport very first thing. Other things (like the player character) may
         // want to access it so it's important that it's available right away on the Main scene.
         GlobalDisplacementViewport = GetNode<DisplacementMaskViewport>("GlobalDisplacementViewport");
         RenderingServer.GlobalShaderParameterSet("global_displacement_mask_tex", GlobalDisplacementViewport.GetTexture());
         
-        world = WorldScene.Instantiate<World>();
-        world.Name = "World";
-        world.ProcessMode = ProcessModeEnum.Pausable;
-        AddChild(world);
+        World = WorldScene.Instantiate<World>();
+        World.ProcessMode = ProcessModeEnum.Pausable;
+        AddChild(World);
 
-        player = PlayerTemplate.Instantiate<Player>();
-        player.Name = "Player";
+        Player = PlayerTemplate.Instantiate<Player>();
+        Player.Name = "Player";
         //Place player in a dummy node so we can control the render order in the world
-        world.Middleground.AddChild(player);
+        World.Middleground.AddChild(Player);
 
-        player.HealthChanged += OnPlayerHealthChanged;
+        Player.HealthChanged += OnPlayerHealthChanged;
 
         //Weapon.ProjectileSpawner += OnPlayerShoot;
 
@@ -84,7 +87,7 @@ public partial class Main : Node
         pauseMenu.VisibilityChanged += CheckAndUpdatePause;
 
         playerCamera = new PlayerCamera();
-        playerCamera.Target = player;
+        playerCamera.Target = Player;
         AddChild(playerCamera);
         MoveChild(playerCamera, 0);
 

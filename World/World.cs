@@ -78,6 +78,8 @@ public partial class World : Node2D
         }
     }
 
+    public Dictionary<string, LevelTransition> LevelKeyMap = new Dictionary<string, LevelTransition>();
+
     // Cached reference to the background sprite defined by the .tscn.
     private Sprite2D backgroundSprite;
 

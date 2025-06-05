@@ -148,6 +148,10 @@ public partial class Building : Placeable
 
     private void OnBodyExitedRegion(Node2D body, BuildingRegion region)
     {
+        if (!this.IsInWorld(Main.Instance.World)) {
+            return;
+        }
+
         if (region.ShouldIgnoreNode(body)) {
             return;
         }
@@ -218,7 +222,7 @@ public partial class Building : Placeable
     }
 
     private void UpdateNonPlayerBody(IEntity body) {
-        if (this.GetGameWorld().Players.Count == 0)
+        if (this.GetGameWorld().Players.Count == 0 || !((Node2D)body).IsInWorld(Main.Instance.World))
         {
             return;
         }

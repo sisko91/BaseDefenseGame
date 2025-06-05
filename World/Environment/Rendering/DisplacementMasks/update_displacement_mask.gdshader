@@ -5,7 +5,7 @@ shader_type canvas_item;
 // This shader expects to render on a rectangular sprite that covers the entire
 // viewport.
 //
-// This shader expects to be used on a DisplacementMaskViewport. If that 
+// This shader expects to be used on a DisplacementMaskViewport. If that
 // viewport was configured with a frame buffer to provide the last frame's
 // displacement data as well, then it will be available as the COLOR vec4
 // automatically in this fragment shader.
@@ -29,7 +29,7 @@ uniform float intensity_ceiling = 1.0;
 
 group_uniforms Fade;
 // What type of decay to apply to existing pixels when updating the mask.
-// If fade_function = Exponential, fade_time is expected to be passed the 
+// If fade_function = Exponential, fade_time is expected to be passed the
 // log(fade_time).
 uniform int fade_function : hint_enum("Linear", "Exponential") = 0;
 
@@ -37,7 +37,7 @@ uniform int fade_function : hint_enum("Linear", "Exponential") = 0;
 // (Inactive unless update_mode == 1).
 uniform float fade_time : hint_range(0, 360) = 1.0;
 
-// Color mask for the fade rate calculation. Any color channel with a value > 0 
+// Color mask for the fade rate calculation. Any color channel with a value > 0
 // will have fade applied until reaching 0 over fade_time. Values above 1 will
 // cause the fade to occur at higher speeds. Alpha is not supported.
 uniform vec3 fade_rate_mask = vec3(1, 1, 1); // fade RGB by default.
@@ -64,11 +64,11 @@ void fragment() {
 	else {
 		// Fade factor: how quickly the value should decay each frame (0 = no fade, 1 = immediate disappear)
 		vec3 fade_per_second = fade_rate_mask / fade_time;
-		
+
 		// Right now, RGB on the frame buffer all contains the same value.
 		// If/when this changes we need to adjust here.
 		vec3 current = COLOR.rgb;
-		
+
 		// Don't fade if we're already close to full black; The math will loop on negative values.
 		if(length(current) > 0.01) {
 			// Apply fade
@@ -81,9 +81,9 @@ void fragment() {
 			else if(fade_function == 1) {
 				faded = sign(current) * abs(current) * exp((fade_decay_lambda / fade_time) * fade_rate_mask * time_delta);
 			}
-			
+
 			// Output the new value
-			// Note: We clamp here because this is an HDR texture that can accept values MUCH higher 
+			// Note: We clamp here because this is an HDR texture that can accept values MUCH higher
 			// than 1.0 on each color channel. But the code that uses the color information wants to
 			// treat 1.0 as the max (i.e. "all white").
 			COLOR.rgb = clamp(faded, -abs(intensity_ceiling), abs(intensity_ceiling));

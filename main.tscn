@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://fsemlkislawf"]
+[gd_scene load_steps=15 format=3 uid="uid://fsemlkislawf"]
 
 [ext_resource type="Script" uid="uid://djo07ped2qw88" path="res://Main.cs" id="1_yq6fc"]
 [ext_resource type="PackedScene" uid="uid://bapcmf72ww8v3" path="res://World/Levels/test_world.tscn" id="2_7mycd"]
@@ -18,6 +18,60 @@ shader_parameter/intensity_ceiling = 1.0
 shader_parameter/fade_function = 1
 shader_parameter/fade_time = 5.0
 shader_parameter/fade_rate_mask = Vector3(1, 1, 1)
+
+[sub_resource type="Animation" id="Animation_4c57u"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ColorRect:color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_efxa6"]
+resource_name = "fade_in"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ColorRect:color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(0, 0, 0, 1), Color(0, 0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_kek77"]
+resource_name = "fade_out"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ColorRect:color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(0, 0, 0, 0), Color(0, 0, 0, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_dg77c"]
+_data = {
+&"RESET": SubResource("Animation_4c57u"),
+&"fade_in": SubResource("Animation_efxa6"),
+&"fade_out": SubResource("Animation_kek77")
+}
 
 [node name="Main" type="Node"]
 script = ExtResource("1_yq6fc")
@@ -46,5 +100,22 @@ canvas_item_default_texture_filter = 0
 render_target_update_mode = 4
 script = ExtResource("8_5vw27")
 Source = NodePath("../GlobalDisplacementViewport")
+
+[node name="TransitionScreen" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="ColorRect" type="ColorRect" parent="TransitionScreen"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="TransitionScreen"]
+libraries = {
+&"": SubResource("AnimationLibrary_dg77c")
+}
 
 [editable path="GlobalDisplacementViewport"]
