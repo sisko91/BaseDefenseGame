@@ -29,7 +29,6 @@ public partial class Building : Placeable
                     if(child is BuildingRegion region)
                     {
                         region.OwningBuilding = this;
-                        region.AddToGroup($"{NavigationConfig.FLOOR_GROUP_PREFIX}{region.ElevationLevel}");
                         _allRegions.Add(region);
                         // Record the highest elevation in the building.
                         if(region.ElevationLevel > HighestElevation)

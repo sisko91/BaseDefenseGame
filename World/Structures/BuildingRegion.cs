@@ -67,6 +67,9 @@ public partial class BuildingRegion : Area2D
         Background = GetNodeOrNull<Node2D>("Background");
         Middleground = GetNodeOrNull<Node2D>("Middleground");
         Foreground = GetNodeOrNull<Node2D>("Foreground");
+        
+        // Add this region to the correct navigation map group.
+        AddToGroup(NavigationConfig.GetFloorGroupName(ElevationLevel));
     }
 
     public override void _Process(double delta) {

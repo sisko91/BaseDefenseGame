@@ -123,6 +123,21 @@ public partial class World : Node2D
 
     private void SetupNavMesh()
     {
+        // Nodes in the Middleground get automatically added to group 0 for navigation map baking.
+        var floorZeroGroupName = NavigationConfig.GetFloorGroupName(0);
+        foreach (var child in Middleground.GetChildren())
+        {
+            if (child is Building or BuildingRegion)
+            {
+                continue; // skip these as they handle navigation setup themselves.
+            }
+
+            if (!child.GetGroups().Contains(floorZeroGroupName))
+            {
+                child.AddToGroup(floorZeroGroupName);
+            }
+        }
+        
         NavMaps = new List<Rid>();
         NavRegions = new List<NavigationRegion2D>();
         var boundingOutline = new Vector2[] {
@@ -136,7 +151,7 @@ public partial class World : Node2D
             var navRegion = new NavigationRegion2D();
             NavigationPolygon navPolygon = new NavigationPolygon();
             navPolygon.SourceGeometryMode = NavigationPolygon.SourceGeometryModeEnum.GroupsWithChildren;
-            navPolygon.SourceGeometryGroupName = NavigationConfig.FLOOR_GROUP_PREFIX + i;
+            navPolygon.SourceGeometryGroupName = NavigationConfig.GetFloorGroupName(i);
             navPolygon.AgentRadius = NavigationConfig.NAV_POLYGON_AGENT_RADIUS;
             navPolygon.ParsedCollisionMask = (uint)Math.Pow(2, i * CollisionConfig.LAYERS_PER_FLOOR + CollisionConfig.ENVIRONMENT_LAYER - 1) | (uint)Math.Pow(2, CollisionConfig.WORLD_BOUNDS_LAYER - 1);
             navPolygon.AddOutline(boundingOutline);
