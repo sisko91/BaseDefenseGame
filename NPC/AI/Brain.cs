@@ -70,10 +70,8 @@ public partial class Brain : Node2D, IWorldLifecycleListener
     public void PostWorldInit(World world)
     {
         // We initialize actions on the next frame so that any setup to the parent hierarchy here is complete.
-        GD.Print($"{this} initializing for {world}");
         for (int i = 0; i < currentActions.Count; i++)
         {
-            GD.Print($"{currentActions[i]}->{this}");
             currentActions[i].Initialize(this);
         }
     }

@@ -24,7 +24,11 @@ public partial class WorldLifecycleManager : Node
 
     public WorldLifecycleState CurrentState = WorldLifecycleState.LifecycleInit;
 
+    // All listeners in existence right now.
     private List<IWorldLifecycleListener> listeners = [];
+    
+    // Listeners which have already been notified PostWorldInit.
+    private readonly HashSet<WeakReference<IWorldLifecycleListener>> notifiedInitListeners = new();
 
     private World gameWorld = null;
     public override void _EnterTree()
@@ -58,17 +62,30 @@ public partial class WorldLifecycleManager : Node
 
         if (addedNode is IWorldLifecycleListener listener)
         {
-            listeners.Add(listener);
+            if (!listeners.Contains(listener))
+            {
+                listeners.Add(listener);
+            }
+            
+            // Call PostWorldInit on any new listener that hasn't heard it yet.
             if (CurrentState == WorldLifecycleState.LifecyclePlay)
             {
+                foreach (var weak in notifiedInitListeners)
+                {
+                    if (weak.TryGetTarget(out var target) && target == listener)
+                    {
+                        // this listener has already been notified, so we're done.
+                        return;
+                    }
+                }
                 // Tell the new object that the world is already initialized. We always do this on the next frame,
                 // because the node was likely added to the scene during its _Ready() and may need one cycle to be
                 // ready for this callback.
                 void announce()
                 {
                     listener.PostWorldInit(gameWorld);
+                    notifiedInitListeners.Add(new WeakReference<IWorldLifecycleListener>(listener));
                 }
-
                 Callable.From(announce).CallDeferred();
             }
         }
@@ -88,6 +105,7 @@ public partial class WorldLifecycleManager : Node
         foreach (var listener in listeners)
         {
             listener.PostWorldInit(gameWorld);
+            notifiedInitListeners.Add(new WeakReference<IWorldLifecycleListener>(listener));
         }
     }
 }
