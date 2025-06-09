@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=3 uid="uid://bapcmf72ww8v3"]
+[gd_scene load_steps=43 format=3 uid="uid://bapcmf72ww8v3"]
 
 [ext_resource type="Script" uid="uid://1s0nn03ol1jc" path="res://World/World.cs" id="1_tr0n8"]
 [ext_resource type="Texture2D" uid="uid://buj3341jfp5mn" path="res://art/debug_texture_noise.tres" id="2_rsvub"]
@@ -32,6 +32,7 @@
 [ext_resource type="PackedScene" uid="uid://6prx14s7d1am" path="res://World/Environment/Testing/test_tree.tscn" id="28_fbbf8"]
 [ext_resource type="Shader" uid="uid://dpfrjcnn7bkp5" path="res://World/Environment/Rendering/DisplacementMasks/Grass/grass_patch.gdshader" id="28_k0axg"]
 [ext_resource type="PackedScene" uid="uid://thlbbsrf6pcr" path="res://World/Environment/Testing/test_grass_patch.tscn" id="29_qinvk"]
+[ext_resource type="Shader" uid="uid://cfv027nbsnbss" path="res://Shaders/character.gdshader" id="33_mlolg"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_fn2eg"]
 frequency = 0.0075
@@ -70,6 +71,15 @@ _data = {
 "points": PackedVector2Array(0, 1582.05, 0, -1582.05, -2400, 3089, 0, 0, 0, 0, -2400, 750, 0, 0, 0, 0, 2000, 750, 0, 0, 0, 0, 2000, -2000, -992.486, -1.39261, 992.486, 1.39261, 3000, -2000)
 }
 point_count = 5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_p5icg"]
+resource_local_to_scene = true
+shader = ExtResource("33_mlolg")
+shader_parameter/is_hit = false
+shader_parameter/is_inside = false
+shader_parameter/window_light_strength = 0.0
+shader_parameter/time_scale = 20.0
+shader_parameter/gb_ceil = 0.75
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ymjjk"]
 shader = ExtResource("28_k0axg")
@@ -169,6 +179,10 @@ y_sort_enabled = true
 [node name="Middleground" type="Node2D" parent="."]
 y_sort_enabled = true
 
+[node name="StaticShambler" parent="Middleground" instance=ExtResource("6_a6glu")]
+material = SubResource("ShaderMaterial_p5icg")
+position = Vector2(100, 28)
+
 [node name="CrystalTarget" parent="Middleground" instance=ExtResource("7_8h8jj")]
 position = Vector2(-312, 233.01)
 script = ExtResource("11_dghf1")
@@ -242,8 +256,6 @@ InnerRadius = 300.0
 OuterRadius = 400.0
 StartAngleDegrees = 270.0
 StopAngleDegrees = 90.0
-
-[connection signal="HealthChanged" from="Middleground/Shambler" to="Middleground/Shambler/FloatingHealthBar" method="OnCharacterHealthChanged"]
 
 [editable path="Middleground/TestBuilding"]
 [editable path="Middleground/TestBuilding/Floor1/Middleground/WallTorch"]

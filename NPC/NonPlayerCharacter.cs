@@ -3,7 +3,7 @@ using ExtensionMethods;
 using Godot;
 using static Godot.HttpClient;
 
-public partial class NonPlayerCharacter : Character
+public partial class NonPlayerCharacter : Character, IWorldLifecycleListener
 {
     [Export]
     public float MoveAccel = 5f;
@@ -30,15 +30,20 @@ public partial class NonPlayerCharacter : Character
         if (Brain == null)
         {
             Brain = this.GetChildrenOfType<Brain>().FirstOrDefault();
-            GD.Print(Brain);
+            //GD.Print($"NPC {GetPath()}: using discovered Brain: {Brain?.GetPath()}");
         }
 
         NearbyBodySensor.PlayerSensed += OnPlayerSensed;
         NearbyBodySensor.NpcSensed += OnNpcSensed;
 
-        SetupNavAgent();
-
         RotationGoal = GlobalRotation;
+    }
+    
+    // Satisfies IWorldLifecycleListener; Used to initialize NavAgent so that it happens after the world is
+    // fully initialized.
+    public void PostWorldInit(World gameWorld)
+    {
+        SetupNavAgent();
     }
 
     private void SetupNavAgent()
@@ -51,8 +56,8 @@ public partial class NonPlayerCharacter : Character
         NavAgent.PathDesiredDistance = NavigationConfig.PATH_DESIRED_DISTANCE;
         NavAgent.TargetDesiredDistance = NavigationConfig.DEFAULT_TARGET_DESIRED_DISTANCE; // Updated by the AI depending on what the target is.
 
-        //Default to the first floor nav map. NPCs spawned in upstairs regions should automatically switch to the right map on game load
-        NavAgent.SetNavigationMap(this.GetGameWorld().NavMaps[0]);
+        //Default to the current elevation nav map. NPCs spawned in upstairs regions should automatically switch to the right map on game load
+        NavAgent.SetNavigationMap(this.GetGameWorld().NavMaps[CurrentElevationLevel]);
         NavAgent.TargetPosition = GlobalPosition;
         AddChild(NavAgent);
     }
@@ -60,6 +65,12 @@ public partial class NonPlayerCharacter : Character
     public override void _Process(double delta)
     {
         base._Process(delta);
+        // Don't do anything until the NavAgent is fully initialized.
+        if (NavAgent == null)
+        {
+            return;
+        }
+        
         if (Brain != null)
         {
             Brain.Think(delta);
@@ -68,6 +79,13 @@ public partial class NonPlayerCharacter : Character
 
     public override void _PhysicsProcess(double delta)
     {
+        base._PhysicsProcess(delta);
+        // Don't do anything until the NavAgent is fully initialized.
+        if (NavAgent == null)
+        {
+            return;
+        }
+        
         if(Brain != null)
         {
             Brain.ThinkPhysics(delta);
@@ -127,7 +145,11 @@ public partial class NonPlayerCharacter : Character
     public override void ChangeFloor(int targetFloor) {
         base.ChangeFloor(targetFloor);
 
-        NavAgent.SetNavigationMap(this.GetGameWorld().NavMaps[CurrentElevationLevel]);
+        // This may be called early before NavAgent is set up. It will get corrected if so when SetupNavAgent() runs.
+        if (NavAgent != null)
+        {
+            NavAgent.SetNavigationMap(this.GetGameWorld().NavMaps[CurrentElevationLevel]);
+        }
     }
 
     public void RefreshConfig() {

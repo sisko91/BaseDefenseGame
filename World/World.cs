@@ -87,6 +87,9 @@ public partial class World : Node2D
     public List<Rid> NavMaps;
     private List<NavigationRegion2D> NavRegions;
 
+    [Signal]
+    public delegate void WorldInitializedEventHandler(World world);
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -95,6 +98,9 @@ public partial class World : Node2D
         SetupWorldBarriers();
         
         UpdateGlobalUniforms();
+
+        // Announce to anything listening that this world is fully initialized (from its perspective).
+        EmitSignalWorldInitialized(this);
     }
 
     //TODO: Only rebake floors we need to

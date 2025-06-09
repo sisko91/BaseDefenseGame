@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 // The brain belongs to an NPC and is responsible for deciding what the NPC does on both _Process() and _PhysicsProcess().
 [GlobalClass]
-public partial class Brain : Node2D
+public partial class Brain : Node2D, IWorldLifecycleListener
 {
     [Export]
     public bool CanOpenDoors = false;
@@ -26,9 +26,12 @@ public partial class Brain : Node2D
 
     private Vector2 lastNavPathDirection = Vector2.Zero;
 
-    // All actions this Brain has to select from.
+    // Design-time action templates. These are duplicated per-brain instance and initialized for each character.
     [Export]
     protected Godot.Collections.Array<AI.Action> actions;
+
+    // All actions this Brain has to select from at runtime.
+    protected List<AI.Action> currentActions = [];
 
     // The currently-selected AI action this brain is executing.
     private AI.Action currentAction;
@@ -50,14 +53,25 @@ public partial class Brain : Node2D
         if(actions == null) {
             actions = new Godot.Collections.Array<AI.Action>();
         }
-
-        Callable.From(() =>
+        // Since actions are resources they need to be duplicated per-brain. The ones that are set in the editor
+        // may not have LocalToScene configured properly (even when they do it doesn't seem to work consistently).
+        foreach (var action in actions)
         {
-            // We initialize actions on the next frame so that any setup to the parent hierarchy here is complete.
-            foreach (var action in actions) {
-                action.Initialize(this);
-            }
-        }).CallDeferred();
+            currentActions.Add(action.Duplicate(true) as AI.Action);
+        }
+    }
+
+    // Satisfies IWorldLifecycleListener; Handles initializing the actions list once the world is fully created above
+    // this node.
+    public void PostWorldInit(World world)
+    {
+        // We initialize actions on the next frame so that any setup to the parent hierarchy here is complete.
+        GD.Print($"{this} initializing for {world}");
+        for (int i = 0; i < currentActions.Count; i++)
+        {
+            GD.Print($"{currentActions[i]}->{this}");
+            currentActions[i].Initialize(this);
+        }
     }
 
     // This is sealed so that children cannot override it and must override Think() instead.
@@ -82,7 +96,7 @@ public partial class Brain : Node2D
         var nextAction = currentAction;
         // Find the highest-scoring action.
         float nextActionScore = currentAction == null ? 0 : currentAction.CalculateScore();
-        foreach (var candidate in actions) {
+        foreach (var candidate in currentActions) {
             if (currentAction == candidate) {
                 //continue; // don't pick the same action twice in a row if possible.
             }
@@ -102,6 +116,7 @@ public partial class Brain : Node2D
         // If we're changing actions and there's a current action in progress, we can't swap without interrupting first.
         bool changingActions = nextAction != null && nextAction != currentAction;
         if (changingActions) {
+            //GD.Print($"{GetPath()} changing actions {nextAction}");
             if (currentAction == null || currentAction.TryInterrupt()) {
                 currentAction = nextAction;
             }
@@ -116,6 +131,7 @@ public partial class Brain : Node2D
             }
             else
             {
+                //GD.Print($"{GetPath()} activating {currentAction}");
                 currentAction.Activate();
             }
         }

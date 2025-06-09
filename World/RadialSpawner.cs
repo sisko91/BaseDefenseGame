@@ -2,7 +2,7 @@ using Godot;
 
 // Radial Spawner spawns the specified template at locations within a radius from its central position.
 [Tool] // Enables the script to run in the editor
-public partial class RadialSpawner : Node2D
+public partial class RadialSpawner : Node2D, IWorldLifecycleListener
 {
     // The template scene to spawn.
     [Export]
@@ -75,6 +75,13 @@ public partial class RadialSpawner : Node2D
     public string GroupName = null;
 
     public override void _Ready()
+    {
+        // Nothing happens in _Ready() as it all happens in PostWorldInit() callback later.
+    }
+    
+    // Satisfies IWorldLifecycleListener; Used to initialize spawner routines so that they happen after the world is
+    // fully initialized.
+    public void PostWorldInit(World gameWorld)
     {
         for (uint i = 0; i < InitialCount; i++)
         {
