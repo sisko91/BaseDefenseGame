@@ -92,6 +92,7 @@ ImpactResponseTable = Dictionary[int, PackedScene]({
 
 [node name="Brain" type="Node2D" parent="."]
 script = ExtResource("3_kbqjp")
+HostileGroups = Array[String](["Player", "Crystal"])
 actions = Array[Object]([SubResource("Resource_j7bkh"), SubResource("Resource_12p5w"), SubResource("Resource_v3cfa")])
 metadata/_custom_type_script = "uid://ehohhro0kwsq"
 

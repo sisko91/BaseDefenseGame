@@ -4,6 +4,7 @@ using System;
 
 public partial class BodySensor : Area2D
 {
+    public Godot.Collections.Array<Character> AllCharacters { get; private set; }
     public Godot.Collections.Array<Player> Players { get; private set; }
     public Godot.Collections.Array<NonPlayerCharacter> NPCs { get; private set; }
     public Godot.Collections.Array<StaticBody2D> Walls { get; private set; }
@@ -20,9 +21,10 @@ public partial class BodySensor : Area2D
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
-        Players = new Godot.Collections.Array<Player>();
-        NPCs = new Godot.Collections.Array<NonPlayerCharacter>();
-        Walls = new Godot.Collections.Array<StaticBody2D>();
+        AllCharacters = [];
+        Players = [];
+        NPCs = [];
+        Walls = [];
 
         BodyEntered += OnBodyEntered;
         BodyExited += OnBodyExited;
@@ -30,14 +32,22 @@ public partial class BodySensor : Area2D
 
     private void OnBodyEntered(Node2D body)
     {
+        if (body == GetParent())
+        {
+            // Don't track ourselves.
+            return;
+        }
+        
         switch (body)
         {
             case Player player:
                 Players.Add(player);
+                AllCharacters.Add(player);
                 EmitSignal(SignalName.PlayerSensed, player, true);
                 break;
             case NonPlayerCharacter npc:
                 NPCs.Add(npc);
+                AllCharacters.Add(npc);
                 EmitSignal(SignalName.NpcSensed, npc, true);
                 break;
             case StaticBody2D staticBody:
@@ -56,10 +66,12 @@ public partial class BodySensor : Area2D
         {
             case Player player:
                 Players.Remove(player);
+                AllCharacters.Remove(player);
                 EmitSignal(SignalName.PlayerSensed, player, false);
                 break;
             case NonPlayerCharacter npc:
                 NPCs.Remove(npc);
+                AllCharacters.Remove(npc);
                 EmitSignal(SignalName.NpcSensed, npc, false);
                 break;
             case StaticBody2D staticBody:

@@ -2,6 +2,7 @@ using ExtensionMethods;
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 // The brain belongs to an NPC and is responsible for deciding what the NPC does on both _Process() and _PhysicsProcess().
 [GlobalClass]
@@ -13,6 +14,9 @@ public partial class Brain : Node2D, IWorldLifecycleListener
     // Distance after which a perfectly viable enemy target is forgotten (unless there's nothing better to focus on).
     [Export]
     public float AggroResetRange = 500.0f;
+
+    // The groups of characters that this brain is hostile towards. May be empty.
+    [Export] public Godot.Collections.Array<string> HostileGroups = [];
 
     public NonPlayerCharacter OwnerNpc => GetParent() as NonPlayerCharacter;
 
@@ -140,62 +144,33 @@ public partial class Brain : Node2D, IWorldLifecycleListener
     private Character FindTarget()
     {
         // TODO: Consider adding a "DefaultTarget" that the AI falls back to and setting the crystal there instead of all this other logic.
-        // Maintain any existing (non-crystal) target if they are still within aggro distance.
-        if(EnemyTarget != null && EnemyTarget is not CrystalTarget && EnemyTarget.CurrentHealth > 0) {
+        // Maintain any existing target if they are still within aggro distance.
+        if(EnemyTarget is { CurrentHealth: > 0 }) {
             if(EnemyTarget.GlobalPosition.DistanceSquaredTo(OwnerNpc.GlobalPosition) < AggroResetRange*AggroResetRange) {
                 return EnemyTarget;
             }
         }
 
-        // Pick any nearby player to aggro.
-        foreach (var player in OwnerNpc.NearbyBodySensor.Players) {
-            if (player != null) {
-                return player;
-            }
-        }
-
-        // Find the nearest crystal to attack.
-        CrystalTarget nearestCrystal = null;
-        float nearest = 0;
-        foreach(var crystal in OwnerNpc.GetGameWorld().Crystals)
+        // Pick the closest character in a hostile group to aggro.
+        // TODO: Character Factions instead of raw groups.
+        //       Ref: https://app.asana.com/1/1209778638119403/project/1209778597616183/task/1210503004879774
+        Character closestHostile = null;
+        float closestSquared = float.MaxValue;
+        foreach (var character in this.GetGameWorld().Characters)
         {
-            var candidate = (CrystalTarget)crystal;
-            if(candidate.CurrentHealth <= 0)
+            // Is the character hostile?
+            if (character.GetGroups().Any(g => HostileGroups.Contains(g)))
             {
-                // Skip dead crystals
-                continue;
-            }
-
-            if (nearestCrystal == null)
-            {
-                nearestCrystal = candidate;
-                nearest = candidate.GlobalPosition.DistanceTo(OwnerNpc.GlobalPosition);
-            }
-            else
-            {
-                var distance = candidate.GlobalPosition.DistanceTo(OwnerNpc.GlobalPosition);
-                if (distance < nearest)
+                float distSquared = character.GlobalPosition.DistanceSquaredTo(OwnerNpc.GlobalPosition);
+                if (distSquared < closestSquared)
                 {
-                    nearestCrystal = candidate;
-                    nearest = distance;
+                    closestSquared = distSquared;
+                    closestHostile = character;
                 }
             }
         }
 
-        // Pick any player at all when there's no living crystal (though this is probably game over).
-        if(nearestCrystal == null || nearestCrystal.CurrentHealth <= 0)
-        {
-            foreach (var p in OwnerNpc.GetGameWorld().Players)
-            {
-                var player = p as Player;
-                if (player != null)
-                {
-                    return player;
-                }
-            }
-        }
-        
-        return nearestCrystal;
+        return closestHostile;
     }
     
     // This is sealed so that children cannot override it and must override ThinkPhysics() instead.
@@ -216,10 +191,14 @@ public partial class Brain : Node2D, IWorldLifecycleListener
         }
 
         OwnerNpc.ClearDebugDrawCallGroup(OwnerNpc.GetPath());
-        lastNavPathDirection = OwnerNpc.GlobalPosition.DirectionTo(OwnerNpc.NavAgent.GetNextPathPosition());
 
         // Always update interests and dangers.
-        SetInterest(lastNavPathDirection);
+        if (!OwnerNpc.NavAgent.IsNavigationFinished())
+        {
+            lastNavPathDirection = OwnerNpc.GlobalPosition.DirectionTo(OwnerNpc.NavAgent.GetNextPathPosition());
+            SetInterest(lastNavPathDirection);
+        }
+        
         SetDanger();
 
         if (!OwnerNpc.Stunned) {
@@ -333,7 +312,7 @@ public partial class Brain : Node2D, IWorldLifecycleListener
             OwnerNpc.DrawDebugLine(OwnerNpc.GlobalPosition, OwnerNpc.GlobalPosition + direction.Normalized() * 150, new Color(1, 1, 0), 0.1, OwnerNpc.GetPath());
         }
 
-        return direction.Normalized();
+        return direction.IsZeroApprox() ? Vector2.Zero : direction.Normalized();
     }
 
     private void SetInterest(Vector2 pathDirection)

@@ -86,6 +86,9 @@ public partial class Character : Moveable, IImpactMaterial
     public override void _Ready()
     {
         base._Ready();
+        
+        AddToGroup("Character");
+        
         CurrentHealth = MaxHealth;
         Stunned = false;
 

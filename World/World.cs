@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ExtensionMethods;
 
 public partial class World : Node2D
 {
@@ -27,6 +28,9 @@ public partial class World : Node2D
             return GetTree().GetNodesInGroup("Player").Cast<Player>().ToList();
         }
     }
+    
+    // All characters currently defined in the world.
+    public IEnumerable<Character> Characters => GetTree().GetTypedNodesInGroup<Character>("Character");
 
     // All Hostile NPC nodes currently in the scene.
     public Godot.Collections.Array<Node> Hostiles
