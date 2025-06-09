@@ -52,6 +52,14 @@ public partial class Character : Moveable, IImpactMaterial
 
     [Export]
     public bool CanDamageSelf = false;
+    
+    // LookAtAngle is where the NPC should be looking / rotated towards. It may not be where their GlobalRotation is
+    // currently.
+    // TODO: Expose RotationSpeed as configureable? 
+    public float LookAtAngle = 0;
+    
+    // When true the character will rotate gradually towards their LookAtAngle.
+    [Export] public bool RotateTowardsLookAt = true;
 
     // Cached reference to the NearbyBodySensor defined on the .tscn
     public BodySensor NearbyBodySensor { get; protected set; }
@@ -105,6 +113,8 @@ public partial class Character : Moveable, IImpactMaterial
 
         AddChild(HitTimer);
         AddChild(StunTimer);
+        
+        LookAtAngle = GlobalRotation;
     }
 
     public override void _Process(double delta) {
@@ -115,6 +125,18 @@ public partial class Character : Moveable, IImpactMaterial
         }
         if (DebugConfig.Instance.DRAW_COLLISION_BOUNDING_BOX) {
             DrawCollisionBoundingBox();
+        }
+    }
+
+    public override void _PhysicsProcess(double delta)
+    {
+        // The engine uses a fixed timestep for physics, so this is always a constant value at runtime.
+        float physicsTickDelta = 1.0f / Engine.PhysicsTicksPerSecond;
+
+        const int turnConstant = 4;
+        if(RotateTowardsLookAt && !Mathf.IsEqualApprox(GlobalRotation, LookAtAngle))
+        {
+            GlobalRotation = Mathf.LerpAngle(GlobalRotation, LookAtAngle, physicsTickDelta * turnConstant);
         }
     }
 

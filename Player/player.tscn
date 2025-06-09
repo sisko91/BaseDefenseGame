@@ -110,6 +110,7 @@ script = ExtResource("1_imx3i")
 StarterWeaponTemplates = Array[PackedScene]([ExtResource("2_psqbx")])
 ThrowerTemplate = ExtResource("5_00tjw")
 CanDamageSelf = true
+RotateTowardsLookAt = false
 ImpactResponseTable = Dictionary[int, PackedScene]({
 0: ExtResource("6_x3vf3"),
 2: ExtResource("6_x3vf3"),

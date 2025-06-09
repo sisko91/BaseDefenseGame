@@ -226,11 +226,11 @@ public partial class Brain : Node2D, IWorldLifecycleListener
         }
 
         OwnerNpc.Knockback = OwnerNpc.Knockback.Lerp(Vector2.Zero, 0.4f);
-        OwnerNpc.RotationGoal = GetRotationGoal();
+        OwnerNpc.LookAtAngle = GetLookAtAngle();
     }
 
-    private float GetRotationGoal() {
-        var current = OwnerNpc.RotationGoal;
+    private float GetLookAtAngle() {
+        var current = OwnerNpc.LookAtAngle;
 
         if(currentAction != null && currentAction.IsActive && currentAction.PausesMotionWhileActive) {
             // Maintain current angle while the action is active.
@@ -253,7 +253,7 @@ public partial class Brain : Node2D, IWorldLifecycleListener
         }
         */
 
-        // Orient to face the direction the NPC is moving by default.
+        // Look in the direction the NPC is moving by default.
         return OwnerNpc.Velocity.Angle();
     }
 

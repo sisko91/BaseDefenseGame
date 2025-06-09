@@ -25,8 +25,12 @@ public partial class WeaponRing : Node2D
 		get => _aimAngle;
         set
 		{
-            AttachmentPoint.Position = Vector2.FromAngle(value)*AttachmentRadius;
-			_aimAngle = value;
+            _aimAngle = value;
+            AttachmentPoint.Position = Vector2.FromAngle(_aimAngle)*AttachmentRadius;
+            if(EquippedWeapon != null)
+            {
+                EquippedWeapon.Rotation = _aimAngle;
+            }
         }
 	}
 	private float _aimAngle;
@@ -49,15 +53,5 @@ public partial class WeaponRing : Node2D
         AttachmentPoint = new Node2D();
         AttachmentPoint.Name = "AttachmentPoint";
         AddChild(AttachmentPoint);
-    }
-
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-		// Update the rotation of the equipped weapon so that it stays oriented parallel to the aim vector.
-		if(EquippedWeapon != null)
-		{
-            EquippedWeapon.Rotation = _aimAngle;
-        }
     }
 }

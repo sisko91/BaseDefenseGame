@@ -1,7 +1,6 @@
 using System.Linq;
 using ExtensionMethods;
 using Godot;
-using static Godot.HttpClient;
 
 public partial class NonPlayerCharacter : Character, IWorldLifecycleListener
 {
@@ -18,9 +17,6 @@ public partial class NonPlayerCharacter : Character, IWorldLifecycleListener
     [Export]
     public Brain Brain { get; protected set; }
 
-    // RotationGoal is where the NPC should be looking / rotated towards. The character will rotate gradually towards their rotation goal.
-    // TODO: Expose RotationSpeed as configureable? 
-    public float RotationGoal = 0;
     public override void _Ready()
     {
         base._Ready();
@@ -35,8 +31,6 @@ public partial class NonPlayerCharacter : Character, IWorldLifecycleListener
 
         NearbyBodySensor.PlayerSensed += OnPlayerSensed;
         NearbyBodySensor.NpcSensed += OnNpcSensed;
-
-        RotationGoal = GlobalRotation;
     }
     
     // Satisfies IWorldLifecycleListener; Used to initialize NavAgent so that it happens after the world is
@@ -79,7 +73,6 @@ public partial class NonPlayerCharacter : Character, IWorldLifecycleListener
 
     public override void _PhysicsProcess(double delta)
     {
-        base._PhysicsProcess(delta);
         // Don't do anything until the NavAgent is fully initialized.
         if (NavAgent == null)
         {
@@ -91,17 +84,9 @@ public partial class NonPlayerCharacter : Character, IWorldLifecycleListener
             Brain.ThinkPhysics(delta);
         }
 
-        // The brain may have set a rotation goal or our velocity.
-
-        // The engine uses a fixed timestep for physics, so this is always a constant value at runtime.
-        float physicsTickDelta = 1.0f / Engine.PhysicsTicksPerSecond;
-
-        const int turnConstant = 4;
-        if(!Mathf.IsEqualApprox(GlobalRotation, RotationGoal))
-        {
-            GlobalRotation = Mathf.LerpAngle(GlobalRotation, RotationGoal, physicsTickDelta * turnConstant);
-        }
-
+        // The brain may have set a rotation goal or our velocity, so we delay the base physics processing until after.
+        base._PhysicsProcess(delta);
+        
         Vector2 velocity;
         if (Falling && AffectedByGravity) {
             velocity = HandleFalling(delta);

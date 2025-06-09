@@ -40,7 +40,7 @@ public partial class Moveable : CharacterBody2D, IEntity {
 
     public override void _Ready() {
         base._Ready();
-	CollisionShape = GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
+	    CollisionShape = GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
         if (CollisionShape == null) {
             CollisionShape = GetNodeOrNull<CollisionPolygon2D>("CollisionPolygon2D");
         }
@@ -53,13 +53,14 @@ public partial class Moveable : CharacterBody2D, IEntity {
 
         if (DisplaceGrass) {
             // Create our grass displacement marker. This tracks the character itself so we don't need a stored reference.
-            // Note: We currently create two of these and register one with each displacement viewport (global and screenspace).
-            //       This will likely be simplified over time but right now comparing the two approaches is useful.
             var grassMarker = GrassDisplacementMarkerOverride?.Instantiate<DisplacementMaskMarker>() ?? 
                               DefaultGrassDisplacementMarkerScene?.Instantiate<DisplacementMaskMarker>();
-            grassMarker.GetNode<Sprite2D>("Sprite2D").Position = CollisionShapePosition;
-            grassMarker?.RegisterWithViewport(Main.GetGlobalDisplacementViewport(),this);
-            if (grassMarker == null)
+            if (grassMarker != null)
+            {
+                grassMarker.GetNode<Sprite2D>("Sprite2D").Position = CollisionShapePosition;
+                grassMarker.RegisterWithViewport(Main.GetGlobalDisplacementViewport(),this);
+            }
+            else
             {
                 GD.PushError($"{Name} had DisplaceGrass configured but provided no GrassDisplacementMarker (via Override or default).");
             }

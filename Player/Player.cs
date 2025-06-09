@@ -196,13 +196,17 @@ public partial class Player : Character
                 // TODO: Lerp?
                 aim = Velocity;
             }
-            WeaponRing.AimAngle = aim.Angle();
+
+            LookAtAngle = aim.Angle();
+            
         }
         else
         {
             float mouseAim = (GetGlobalMousePosition() - WeaponRing.GlobalPosition).Angle();
-            WeaponRing.AimAngle = mouseAim;
+            LookAtAngle = mouseAim;
         }
+        // Update the WeaponRing as well.
+        WeaponRing.AimAngle = LookAtAngle;
     }
 
     private void HandleCollision(KinematicCollision2D collision)
@@ -255,7 +259,7 @@ public partial class Player : Character
         if (!isDashing && now - lastDashTime >= DashCoolDown) {
             dashDirection = Input.GetVector("player_move_left", "player_move_right", "player_move_up", "player_move_down");
             if (dashDirection.IsZeroApprox()) {
-                dashDirection = Vector2.Right.Rotated(WeaponRing.AimAngle);
+                dashDirection = Vector2.Right.Rotated(LookAtAngle);
             }
             isDashing = true;
             AffectedByGravity = false;
