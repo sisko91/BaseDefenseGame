@@ -60,5 +60,10 @@ public partial class GiuseppeBrain : Brain
             }
         }
     }
+
+    protected void OnPlayerInteracted(InteractionArea area, Character character)
+    {
+        GD.Print("CONFUSED YELLING");
+    }
     
 }

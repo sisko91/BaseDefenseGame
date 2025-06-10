@@ -13,9 +13,6 @@
 radius = 38.0
 height = 120.0
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_gwxwj"]
-radius = 100.0
-
 [sub_resource type="SpriteFrames" id="SpriteFrames_gwxwj"]
 animations = [{
 "frames": [{
@@ -51,6 +48,9 @@ animations = [{
 "speed": 5.0
 }]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_gwxwj"]
+radius = 100.0
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_821qw"]
 radius = 250.0
 
@@ -68,20 +68,32 @@ metadata/_custom_type_script = "uid://ehohhro0kwsq"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CapsuleShape2D_spubi")
 
-[node name="InteractionArea" type="Area2D" parent="."]
-script = ExtResource("3_gwxwj")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea"]
-shape = SubResource("CircleShape2D_gwxwj")
-
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 scale = Vector2(0.1, 0.1)
 sprite_frames = SubResource("SpriteFrames_gwxwj")
 animation = &"idle_down"
 autoplay = "idle_down"
 
+[node name="InteractionArea" type="Area2D" parent="." node_paths=PackedStringArray("InteractionPrompt")]
+script = ExtResource("3_gwxwj")
+InteractionPrompt = NodePath("TextPrompt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea"]
+shape = SubResource("CircleShape2D_gwxwj")
+
+[node name="TextPrompt" type="CenterContainer" parent="InteractionArea"]
+visible = false
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TextLabel" type="Label" parent="InteractionArea/TextPrompt"]
+layout_mode = 2
+text = "(Talk) Giuseppe"
+
 [node name="NearbyBodySensor" type="Area2D" parent="."]
 script = ExtResource("8_821qw")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NearbyBodySensor"]
 shape = SubResource("CircleShape2D_821qw")
+
+[connection signal="Interacted" from="InteractionArea" to="Brain" method="OnPlayerInteracted"]
