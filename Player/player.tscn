@@ -687,7 +687,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"move_down",
-"speed": 5.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -716,7 +716,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"move_down_left",
-"speed": 5.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -745,7 +745,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"move_down_right",
-"speed": 5.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -774,7 +774,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"move_left",
-"speed": 5.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -803,7 +803,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"move_right",
-"speed": 5.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -832,7 +832,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"move_up",
-"speed": 5.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -861,7 +861,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"move_up_left",
-"speed": 5.0
+"speed": 10.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -890,7 +890,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"move_up_right",
-"speed": 5.0
+"speed": 10.0
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_od3ui"]
@@ -909,7 +909,6 @@ StarterWeaponTemplates = Array[PackedScene]([ExtResource("2_psqbx")])
 ThrowerTemplate = ExtResource("5_00tjw")
 CanDamageSelf = true
 RotateTowardsLookAt = false
-IdleAnimationUsesLookAtAngle = true
 ImpactResponseTable = Dictionary[int, PackedScene]({
 0: ExtResource("6_x3vf3"),
 2: ExtResource("6_x3vf3"),
@@ -930,7 +929,7 @@ use_parent_material = true
 position = Vector2(0, -1)
 scale = Vector2(3, 3)
 sprite_frames = SubResource("SpriteFrames_pisgm")
-animation = &"idle_down"
+animation = &"move_down"
 autoplay = "idle_down"
 offset = Vector2(0, -10)
 
