@@ -18,6 +18,9 @@ public partial class ActionOrientedBrain : Brain, IWorldLifecycleListener
     // Design-time action templates. These are duplicated per-brain instance and initialized for each character.
     [Export]
     protected Godot.Collections.Array<AI.Action> Actions;
+    
+    // What target - if any - the brain is currently focused on.
+    public Character EnemyTarget { get; set; }
 
     // All actions this Brain has to select from at runtime.
     protected List<AI.Action> currentActions = [];
@@ -159,6 +162,11 @@ public partial class ActionOrientedBrain : Brain, IWorldLifecycleListener
             // TODO: Separate the notions here. There are skills which lock the current rotation and skills which lock the current
             //       *target* of the rotation (but want to keep facing that target while they are active).
             return current;
+        }
+        
+        // Look at the enemy if they exist and are nearby.
+        if (EnemyTarget != null && EnemyTarget is Player player && OwnerNpc.NearbyBodySensor.Players.Contains(player)) {
+            return OwnerNpc.GlobalPosition.DirectionTo(player.GlobalPosition).Angle();
         }
 
         return base.GetLookAtAngle();

@@ -40,7 +40,7 @@ namespace AI
                 PausesMotionWhileActive = true;
             }
 
-            public override void Initialize(Brain brain) {
+            public override void Initialize(ActionOrientedBrain brain) {
                 base.Initialize(brain);
 
                 if(IncludeTraceTest) {

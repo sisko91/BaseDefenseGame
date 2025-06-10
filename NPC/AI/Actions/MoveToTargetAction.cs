@@ -14,7 +14,7 @@ namespace AI
 
             private Character originalEnemy = null;
 
-            public override void Initialize(Brain brain) {
+            public override void Initialize(ActionOrientedBrain brain) {
                 base.Initialize(brain);
                 StairsPathCache = new Dictionary<Tuple<BuildingRegion, BuildingRegion>, List<Stairs>>();
             }

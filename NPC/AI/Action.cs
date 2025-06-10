@@ -7,7 +7,7 @@ namespace AI
     public abstract partial class Action : Resource
     {
         // The Brain controlling the NPC.
-        public Brain Brain { get; private set; }
+        public ActionOrientedBrain Brain { get; private set; }
 
         // The NPC owning this AI action.
         public NonPlayerCharacter OwnerNpc => Brain?.GetParent() as NonPlayerCharacter;
@@ -24,7 +24,7 @@ namespace AI
             ResourceLocalToScene = true;
         }
 
-        public virtual void Initialize(Brain brain)
+        public virtual void Initialize(ActionOrientedBrain brain)
         {
             Brain = brain;
         }

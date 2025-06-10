@@ -12,9 +12,6 @@ public partial class Brain : Node2D
 
     public NonPlayerCharacter OwnerNpc => GetParent() as NonPlayerCharacter;
 
-    // What target - if any - the brain is currently focused on.
-    public Character EnemyTarget { get; set; }
-
     //Context-based steering
     private int Directions = 16;
     private List<float> Interest;
@@ -104,13 +101,6 @@ public partial class Brain : Node2D
     }
 
     protected virtual float GetLookAtAngle() {
-        var current = OwnerNpc.LookAtAngle;
-
-        // Look at the enemy if they exist and are nearby.
-        if (EnemyTarget != null && EnemyTarget is Player player && OwnerNpc.NearbyBodySensor.Players.Contains(player)) {
-            return OwnerNpc.GlobalPosition.DirectionTo(player.GlobalPosition).Angle();
-        }
-
         // look along the nav path if stuck
         //TODO: Fix this, just need to implement some version of GetRealVelocity since it only works with
         //MoveAndSlide
