@@ -1,0 +1,87 @@
+[gd_scene load_steps=13 format=3 uid="uid://8ckqm5hci8jr"]
+
+[ext_resource type="Script" uid="uid://c2u67ufhm0qxl" path="res://NPC/NonPlayerCharacter.cs" id="1_4co5l"]
+[ext_resource type="Script" uid="uid://ojodyhar62c8" path="res://NPC/Giuseppe/GiuseppeBrain.cs" id="2_ttemp"]
+[ext_resource type="Script" uid="uid://bolljvejit73e" path="res://Gameplay/InteractionArea.cs" id="3_gwxwj"]
+[ext_resource type="Texture2D" uid="uid://ec6xa0hp48qc" path="res://art/NPCs/OldMan/old_man_front.png" id="4_vpt1k"]
+[ext_resource type="Texture2D" uid="uid://dxhomuxsn3edp" path="res://art/NPCs/OldMan/old_man_side.png" id="4_xdlg2"]
+[ext_resource type="Texture2D" uid="uid://cciehgjlysfn0" path="res://art/NPCs/OldMan/old_man_side_2.png" id="5_a05h7"]
+[ext_resource type="Texture2D" uid="uid://bpbwrwrva7xpw" path="res://art/NPCs/OldMan/old_man_back.png" id="6_a05h7"]
+[ext_resource type="Script" uid="uid://2ajhnisvj48l" path="res://Gameplay/BodySensor.cs" id="8_821qw"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_spubi"]
+radius = 38.0
+height = 120.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_gwxwj"]
+radius = 100.0
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_gwxwj"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_vpt1k")
+}],
+"loop": true,
+"name": &"idle_down",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_a05h7")
+}],
+"loop": true,
+"name": &"idle_left",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_xdlg2")
+}],
+"loop": true,
+"name": &"idle_right",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_a05h7")
+}],
+"loop": true,
+"name": &"idle_up",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_821qw"]
+radius = 250.0
+
+[node name="GiuseppeNpc" type="CharacterBody2D" node_paths=PackedStringArray("Brain")]
+script = ExtResource("1_4co5l")
+Group = "NonHostile"
+Brain = NodePath("Brain")
+MaxHealth = 100000.0
+RotateTowardsLookAt = false
+
+[node name="Brain" type="Node2D" parent="."]
+script = ExtResource("2_ttemp")
+metadata/_custom_type_script = "uid://ehohhro0kwsq"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_spubi")
+
+[node name="InteractionArea" type="Area2D" parent="."]
+script = ExtResource("3_gwxwj")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea"]
+shape = SubResource("CircleShape2D_gwxwj")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.1, 0.1)
+sprite_frames = SubResource("SpriteFrames_gwxwj")
+animation = &"idle_down"
+autoplay = "idle_down"
+
+[node name="NearbyBodySensor" type="Area2D" parent="."]
+script = ExtResource("8_821qw")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NearbyBodySensor"]
+shape = SubResource("CircleShape2D_821qw")
