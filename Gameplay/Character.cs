@@ -61,6 +61,10 @@ public partial class Character : Moveable, IImpactMaterial
     // When true the character will rotate gradually towards their LookAtAngle.
     [Export] public bool RotateTowardsLookAt = true;
 
+    // When true, the idle animation rendered will be selected based on the LookAtAngle of the character when velocity
+    // is zero.
+    [Export] public bool IdleAnimationUsesLookAtAngle = true;
+
     // Cached reference to the NearbyBodySensor defined on the .tscn
     public BodySensor NearbyBodySensor { get; protected set; }
 
@@ -119,6 +123,8 @@ public partial class Character : Moveable, IImpactMaterial
 
     public override void _Process(double delta) {
         base._Process(delta);
+
+        UpdateAnimation();
         
         if (DebugConfig.Instance.DRAW_COLLISION_BODY_RADIUS) {
             DrawCollisionBodyRadius();
@@ -183,6 +189,63 @@ public partial class Character : Moveable, IImpactMaterial
     {
         //die
         QueueFree();
+    }
+
+    protected void UpdateAnimation()
+    {
+        // If we can animate the sprite associated with this character, let's do it.
+        if (Sprite is AnimatedSprite2D animation)
+        {
+            Vector2 direction = Velocity;
+            bool isMoving = !direction.IsZeroApprox();
+
+            if (!isMoving && IdleAnimationUsesLookAtAngle)
+            {
+                direction = Vector2.FromAngle(LookAtAngle);
+            }
+            // If no direction is defined, default to "facing the camera".
+            if (direction.IsZeroApprox())
+            {
+                direction = Vector2.Down;
+            }
+
+            string prefix = isMoving ? "move_" : "idle_";
+
+            bool dominantX = Mathf.Abs(direction.X) > Mathf.Abs(direction.Y);
+            bool isLeft = direction.X < 0;
+            bool isUp = direction.Y < 0;
+            if (dominantX)
+            {
+                
+                //string anim = isLeft ? prefix + "left" : prefix + "right";
+                string anim = prefix;
+                // When the Y value is > 50% of the X value, we want to use the angular animations.
+                if (Mathf.Abs(direction.Y) * 2f > Mathf.Abs(direction.X))
+                {
+                    anim += isUp ? "up_" : "down_";
+                }
+                anim += isLeft ? "left" : "right";
+                
+                if (animation.SpriteFrames.HasAnimation(anim))
+                {
+                    animation.Play(anim);
+                }
+            }
+            else
+            {
+                string anim = isUp ? prefix + "up" : prefix + "down";
+                // When the X value is > 50% of the Y value, we want to use the angular animations.
+                if (Mathf.Abs(direction.X) * 2f > Mathf.Abs(direction.Y))
+                {
+                    anim += isLeft ? "_left" : "_right";
+                }
+
+                if (animation.SpriteFrames.HasAnimation(anim))
+                {
+                    animation.Play(anim);
+                }
+            }
+        }
     }
 
     public void InteractWithNearestObject() {
