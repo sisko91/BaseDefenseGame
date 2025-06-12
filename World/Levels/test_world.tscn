@@ -171,7 +171,7 @@ y_sort_enabled = true
 y_sort_enabled = true
 
 [node name="GiuseppeNpc" parent="Middleground" instance=ExtResource("33_mlolg")]
-position = Vector2(136, 86)
+position = Vector2(825, 77)
 
 [node name="CrystalTarget" parent="Middleground" instance=ExtResource("7_8h8jj")]
 position = Vector2(-312, 233.01)

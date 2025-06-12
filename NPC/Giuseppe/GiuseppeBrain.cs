@@ -1,11 +1,20 @@
 using Godot;
-using System;
 using System.Linq;
+using ExtensionMethods;
 
 // Giuseppe is an NPC for testing dialog and interactions. His brain serves as a testbed for those features.
 public partial class GiuseppeBrain : Brain
 {
     private Player trackedPlayer = null;
+
+    // Lines of dialog that will be presented as free-floating chat bubbles above the NPC.
+    [ExportCategory("Dialog")]
+    
+    [Export] public Godot.Collections.Array<string> ChatLines = [];
+
+    private static PackedScene ChatBubbleScene = GD.Load<PackedScene>("res://UI/chat_bubble.tscn");
+
+    private ChatBubble chatBubble = null;
     
     public override void _Ready()
     {
@@ -21,6 +30,13 @@ public partial class GiuseppeBrain : Brain
     public override void Think(double deltaTime)
     {
         // Nothing yet.
+        if (IsInstanceValid(trackedPlayer) && (chatBubble == null || chatBubble.Visible == false))
+        {
+            if (ChatLines.Count > 0)
+            {
+                OpenChatBubble(ChatLines.PickRandom());
+            }
+        }
     }
 
     protected override float GetLookAtAngle()
@@ -50,6 +66,8 @@ public partial class GiuseppeBrain : Brain
             {
                 // remove
                 trackedPlayer = null;
+                CloseChatBubble();
+                
                 // replace (if possible)
                 if (OwnerNpc.NearbyBodySensor.Players.Count > 0)
                 {
@@ -64,6 +82,28 @@ public partial class GiuseppeBrain : Brain
     protected void OnPlayerInteracted(InteractionArea area, Character character)
     {
         GD.Print("CONFUSED YELLING");
+    }
+
+    protected void OpenChatBubble(string chatText)
+    {
+        if (!IsInstanceValid(chatBubble))
+        {
+            chatBubble = ChatBubbleScene.Instantiate<ChatBubble>();
+            chatBubble.AnchorNode = OwnerNpc;
+            // TODO: Add convenience to the game hud class for opening chat bubbles?
+            Main.Instance.GetGameHUD().AddChild(chatBubble);
+            chatBubble.Text = chatText;
+        }
+    }
+
+    protected void CloseChatBubble()
+    {
+        if (IsInstanceValid(chatBubble))
+        {
+            chatBubble.Visible = false;
+            chatBubble.QueueFree();
+            chatBubble = null;
+        }
     }
     
 }

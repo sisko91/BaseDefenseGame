@@ -63,6 +63,7 @@ RotateTowardsLookAt = false
 
 [node name="Brain" type="Node2D" parent="."]
 script = ExtResource("2_ttemp")
+ChatLines = Array[String](["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH!"])
 metadata/_custom_type_script = "uid://ehohhro0kwsq"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

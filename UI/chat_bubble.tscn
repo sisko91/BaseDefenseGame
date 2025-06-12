@@ -1,0 +1,39 @@
+[gd_scene load_steps=3 format=3 uid="uid://ba6edyk1t4pdc"]
+
+[ext_resource type="Texture2D" uid="uid://bt1td4bpxibln" path="res://art/UI/dialog_nine_patch.png" id="1_hlljq"]
+[ext_resource type="Script" uid="uid://dqd64x2vyb65l" path="res://UI/ChatBubble.cs" id="1_j02uj"]
+
+[node name="ChatBubble" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 600.0
+offset_bottom = 120.0
+script = ExtResource("1_j02uj")
+
+[node name="Background" type="NinePatchRect" parent="."]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_hlljq")
+region_rect = Rect2(0, 0, 12, 12)
+patch_margin_left = 5
+patch_margin_top = 5
+patch_margin_right = 5
+patch_margin_bottom = 5
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 31.0
+grow_horizontal = 2
+
+[node name="RichText" type="RichTextLabel" parent="MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+bbcode_enabled = true
+fit_content = true
